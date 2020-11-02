@@ -436,6 +436,13 @@ dnx_oam_endpoint_create_accelerated_local_mep_verify(
         SHR_ERR_EXIT(_SHR_E_PARAM, "Only self-contained endpoints are allowed in JR1 system headers mode");
     }
 
+    if ((dnx_data_headers.system_headers.system_headers_mode_get(unit) ==
+         dnx_data_headers.system_headers.system_headers_mode_jericho_get(unit)) &&
+        _SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL))
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "Additional GAL special label is not supported in JR1 system headers mode");
+    }
+
     if (endpoint_info->flags & BCM_OAM_ENDPOINT_WITH_ID)
     {
         if (endpoint_info->endpoint_memory_type == bcmOamEndpointMemoryTypeShortEntry)
@@ -1874,6 +1881,11 @@ dnx_oam_endpoint_info_store_in_sw_state(
         sw_endpoint_info.rx_signal = endpoint_info->rx_signal;
         sw_endpoint_info.tx_signal = endpoint_info->tx_signal;
     }
+    if (DNX_OAM_DISSECT_IS_ENDPOINT_ENABLED_ADDITIONAL_GAL_SPECIAL_LABEL(endpoint_info))
+    {
+        sw_endpoint_info.sw_state_flags |= DBAL_DEFINE_OAM_ENDPOINT_SW_STATE_FLAGS_ADDITIONAL_GAL_SPECIAL_LABEL;
+    }
+
     if (DNX_OAM_DISSECT_IS_ENDPOINT_ENABLED_TX_STATISTICS(endpoint_info))
     {
         sw_endpoint_info.sw_state_flags |= DBAL_DEFINE_OAM_ENDPOINT_SW_STATE_FLAGS_TX_STATISTICS;
@@ -3954,6 +3966,13 @@ dnx_oam_local_endpoint_get(
             (sw_endpoint_info->sw_state_flags, DBAL_DEFINE_OAM_ENDPOINT_SW_STATE_FLAGS_PER_OPCODE_STATISTICS))
         {
             endpoint_info->flags2 |= BCM_OAM_ENDPOINT_FLAGS2_PER_OPCODE_STATISTICS;
+        }
+
+        /** Set additional GAL label flag */
+        if (_SHR_IS_FLAG_SET
+            (sw_endpoint_info->sw_state_flags, DBAL_DEFINE_OAM_ENDPOINT_SW_STATE_FLAGS_ADDITIONAL_GAL_SPECIAL_LABEL))
+        {
+            endpoint_info->flags2 |= BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL;
         }
     }
 

@@ -75,7 +75,7 @@ j2p_a0_dnx_data_port_static_add_header_type_set(
     table->values[0].property.method = dnxc_data_property_method_port_suffix_direct_map;
     table->values[0].property.method_str = "port_suffix_direct_map";
     table->values[0].property.suffix = "in";
-    table->values[0].property.nof_mapping = 11;
+    table->values[0].property.nof_mapping = 12;
     DNXC_DATA_ALLOC(table->values[0].property.mapping, dnxc_data_property_map_t, table->values[0].property.nof_mapping, "dnx_data_port_static_add_header_type_t property mapping");
 
     table->values[0].property.mapping[0].name = "ETH";
@@ -99,8 +99,10 @@ j2p_a0_dnx_data_port_static_add_header_type_set(
     table->values[0].property.mapping[8].val = BCM_SWITCH_PORT_HEADER_TYPE_RCH_0;
     table->values[0].property.mapping[9].name = "RCH_1";
     table->values[0].property.mapping[9].val = BCM_SWITCH_PORT_HEADER_TYPE_RCH_1;
-    table->values[0].property.mapping[10].name = "STACKING";
-    table->values[0].property.mapping[10].val = BCM_SWITCH_PORT_HEADER_TYPE_STACKING;
+    table->values[0].property.mapping[10].name = "RCH_SRV6_USP_PSP";
+    table->values[0].property.mapping[10].val = BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP;
+    table->values[0].property.mapping[11].name = "STACKING";
+    table->values[0].property.mapping[11].val = BCM_SWITCH_PORT_HEADER_TYPE_STACKING;
     
     table->values[1].property.name = spn_TM_PORT_HEADER_TYPE;
     table->values[1].property.doc =
@@ -397,8 +399,8 @@ j2p_a0_dnx_data_port_general_prt_configuration_set(
     table->flags |= DNXC_DATA_F_SUPPORTED;
 
     
-    table->keys[0].size = 13;
-    table->info_get.key_size[0] = 13;
+    table->keys[0].size = 14;
+    table->info_get.key_size[0] = 14;
 
     
     table->values[0].default_val = "0";
@@ -921,6 +923,41 @@ j2p_a0_dnx_data_port_general_prt_configuration_set(
         data->ffc_0_width = 2;
         data->ffc_0_input_offset = 236;
         data->src_sys_port_prt_mode = 0;
+        data->pp_port_en = 1;
+        data->tcam_mode_full_en = 0;
+    }
+    if (13 < table->keys[0].size)
+    {
+        data = (dnx_data_port_general_prt_configuration_t *) dnxc_data_mgmt_table_data_get(unit, table, 13, 0);
+        data->prt_recycle_profile = DBAL_ENUM_FVAL_RECYCLE_CMD_PRT_PROFILE_NONE;
+        data->port_termination_ptc_profile = DBAL_ENUM_FVAL_PORT_TERMINATION_PTC_PROFILE_SRV6_USP_PSP;
+        data->prt_qual_mode = 0;
+        data->layer_offset = 0;
+        data->context_select = 1;
+        data->kbr_valid_bitmap_4 = 2;
+        data->kbr_valid_bitmap_3 = 4;
+        data->kbr_valid_bitmap_2 = 32;
+        data->kbr_valid_bitmap_1 = 9;
+        data->kbr_valid_bitmap_0 = 0;
+        data->ffc_5_offset = 0;
+        data->ffc_5_width = 15;
+        data->ffc_5_input_offset = 232;
+        data->ffc_4_offset = 2;
+        data->ffc_4_width = 0;
+        data->ffc_4_input_offset = 248;
+        data->ffc_3_offset = 16;
+        data->ffc_3_width = 0;
+        data->ffc_3_input_offset = 321;
+        data->ffc_2_offset = 0;
+        data->ffc_2_width = 4;
+        data->ffc_2_input_offset = 316;
+        data->ffc_1_offset = 0;
+        data->ffc_1_width = 3;
+        data->ffc_1_input_offset = 252;
+        data->ffc_0_offset = 0;
+        data->ffc_0_width = 15;
+        data->ffc_0_input_offset = 232;
+        data->src_sys_port_prt_mode = 2;
         data->pp_port_en = 1;
         data->tcam_mode_full_en = 0;
     }

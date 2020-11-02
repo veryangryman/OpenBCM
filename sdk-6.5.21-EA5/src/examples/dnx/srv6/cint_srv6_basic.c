@@ -313,6 +313,182 @@ srv6_endpoint_tunnel(int unit, uint8 next_protocol_is_l2, uint8 is_termination)
     return BCM_E_NONE;
 }
 
+int
+srv6_endpoint_tunnel_prefix_function_classic_sid(int unit)
+{
+    bcm_ip6_t ip6_mask = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+    bcm_ip6_t ip6_mask_96_loc = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00};
+    bcm_ip6_t ip6_mask_96_func = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0xFF,0x00,0x00};
+    bcm_ip6_t ip6_mask_64_loc = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+    bcm_ip6_t ip6_mask_64_func = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00};
+    bcm_ip6_t ip6_dip_96 = {0,0,0,0,0,0,0,0,0x12,0x34,0,0,0xFF,0xFF,0xFF,0x13};
+    bcm_ip6_t ip6_dip_64 = {0x12,0x34,0,0,0xFF,0xFE,0xFF,0x15,0x12,0x34,0,0,0xFF,0xFF,0xFF,0x13};
+    bcm_ip6_t ip6_sip = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0xAA};
+    bcm_ip6_t ip6_dip_next_endpoint = {0,0,0,0,0,0,0,0,0x12,0x34,0,0,0,0,0xFF,0x13};
+    bcm_tunnel_terminator_t tunnel_term_set;
+    l3_ingress_intf ingress_rif;
+    int rv;
+    bcm_gport_t default_tunnel;
+    int fec;
+
+    rv = get_first_fec_in_range_which_not_in_ecmp_range(unit, 0, &fec);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error, get_first_fec_in_range_which_not_in_ecmp_range\n");
+        return rv;
+    }
+    fec += 0x500;
+
+    /*
+     * 1. Create 96 locator tunnel VRF is 10
+     */
+    bcm_tunnel_terminator_t_init(&tunnel_term_set);
+    tunnel_term_set.flags = BCM_TUNNEL_TERM_UP_TO_96_LOCATOR_SEGMENT_ID;
+    tunnel_term_set.type = bcmTunnelTypeSR6;
+    sal_memcpy(tunnel_term_set.dip6, ip6_dip_96, 16);
+    sal_memcpy(tunnel_term_set.sip6, ip6_sip, 16);
+    sal_memcpy(tunnel_term_set.dip6_mask, ip6_mask_96_loc, 16);
+    sal_memcpy(tunnel_term_set.sip6_mask, ip6_mask, 16);
+    tunnel_term_set.vrf = 1;
+    tunnel_term_set.ingress_qos_model.ingress_ttl = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_phb = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_remark = bcmQosIngressModelPipe;
+    rv = bcm_tunnel_terminator_create(unit, &tunnel_term_set);
+    if(rv != BCM_E_NONE)
+    {
+        printf("Error bcm_tunnel_terminator_create. rv = %d \n", rv);
+        return rv;
+    }
+    srv6_term_tunnel_id = tunnel_term_set.tunnel_id;
+    l3_ingress_intf_init(&ingress_rif);
+    ingress_rif.vrf = 10;
+    BCM_GPORT_TUNNEL_TO_L3_ITF_LIF(ingress_rif.intf_id, tunnel_term_set.tunnel_id);
+    rv = intf_ingress_rif_set(unit, &ingress_rif);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error intf_ingress_rif_set. rv = %d \n", rv);
+        return rv;
+    }
+    rv = add_route_ipv6(unit, ip6_dip_next_endpoint, ip6_mask, 10, fec);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error, in function add_route_ipv6: vrf = 10");
+        return rv;
+    }
+    default_tunnel = tunnel_term_set.tunnel_id;
+    /*
+     * 2. Create 96 func tunnel VRF is 20
+     */
+    bcm_tunnel_terminator_t_init(&tunnel_term_set);
+    tunnel_term_set.type = bcmTunnelTypeCascadedFunct;
+    tunnel_term_set.default_tunnel_id = default_tunnel;
+    sal_memcpy(tunnel_term_set.dip6, ip6_dip_96, 16);
+    sal_memcpy(tunnel_term_set.sip6, ip6_sip, 16);
+    sal_memcpy(tunnel_term_set.dip6_mask, ip6_mask_96_func, 16);
+    sal_memcpy(tunnel_term_set.sip6_mask, ip6_mask, 16);
+    tunnel_term_set.vrf = 1;
+    tunnel_term_set.ingress_qos_model.ingress_ttl = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_phb = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_remark = bcmQosIngressModelPipe;
+    rv = bcm_tunnel_terminator_create(unit, &tunnel_term_set);
+    if(rv != BCM_E_NONE)
+    {
+        printf("Error bcm_tunnel_terminator_create. rv = %d \n", rv);
+        return rv;
+    }
+    srv6_term_tunnel_id = tunnel_term_set.tunnel_id;
+    l3_ingress_intf_init(&ingress_rif);
+    ingress_rif.vrf = 20;
+    BCM_GPORT_TUNNEL_TO_L3_ITF_LIF(ingress_rif.intf_id, tunnel_term_set.tunnel_id);
+    rv = intf_ingress_rif_set(unit, &ingress_rif);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error intf_ingress_rif_set. rv = %d \n", rv);
+        return rv;
+    }
+    rv = add_route_ipv6(unit, ip6_dip_next_endpoint, ip6_mask, 20, fec);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error, in function add_route_ipv6: vrf = 20");
+        return rv;
+    }
+
+    /*
+     * 3. Create 64 locator tunnel VRF is 30
+     */
+    bcm_tunnel_terminator_t_init(&tunnel_term_set);
+    tunnel_term_set.flags = BCM_TUNNEL_TERM_UP_TO_64_LOCATOR_SEGMENT_ID;
+    tunnel_term_set.type = bcmTunnelTypeSR6;
+    sal_memcpy(tunnel_term_set.dip6, ip6_dip_64, 16);
+    sal_memcpy(tunnel_term_set.sip6, ip6_sip, 16);
+    sal_memcpy(tunnel_term_set.dip6_mask, ip6_mask_64_loc, 16);
+    sal_memcpy(tunnel_term_set.sip6_mask, ip6_mask, 16);
+    tunnel_term_set.vrf = 1;
+    tunnel_term_set.ingress_qos_model.ingress_ttl = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_phb = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_remark = bcmQosIngressModelPipe;
+    rv = bcm_tunnel_terminator_create(unit, &tunnel_term_set);
+    if(rv != BCM_E_NONE)
+    {
+        printf("Error bcm_tunnel_terminator_create. rv = %d \n", rv);
+        return rv;
+    }
+    srv6_term_tunnel_id = tunnel_term_set.tunnel_id;
+    l3_ingress_intf_init(&ingress_rif);
+    ingress_rif.vrf = 30;
+    BCM_GPORT_TUNNEL_TO_L3_ITF_LIF(ingress_rif.intf_id, tunnel_term_set.tunnel_id);
+    rv = intf_ingress_rif_set(unit, &ingress_rif);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error intf_ingress_rif_set. rv = %d \n", rv);
+        return rv;
+    }
+    rv = add_route_ipv6(unit, ip6_dip_next_endpoint, ip6_mask, 30, fec);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error, in function add_route_ipv6: vrf = 30");
+        return rv;
+    }
+    default_tunnel = tunnel_term_set.tunnel_id;
+    /*
+     * 2. Create 96 func tunnel VRF is 40
+     */
+    bcm_tunnel_terminator_t_init(&tunnel_term_set);
+    tunnel_term_set.type = bcmTunnelTypeCascadedFunct;
+    tunnel_term_set.default_tunnel_id = default_tunnel;
+    sal_memcpy(tunnel_term_set.dip6, ip6_dip_64, 16);
+    sal_memcpy(tunnel_term_set.sip6, ip6_sip, 16);
+    sal_memcpy(tunnel_term_set.dip6_mask, ip6_mask_64_func, 16);
+    sal_memcpy(tunnel_term_set.sip6_mask, ip6_mask, 16);
+    tunnel_term_set.vrf = 1;
+    tunnel_term_set.ingress_qos_model.ingress_ttl = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_phb = bcmQosIngressModelPipe;
+    tunnel_term_set.ingress_qos_model.ingress_remark = bcmQosIngressModelPipe;
+    rv = bcm_tunnel_terminator_create(unit, &tunnel_term_set);
+    if(rv != BCM_E_NONE)
+    {
+        printf("Error bcm_tunnel_terminator_create. rv = %d \n", rv);
+        return rv;
+    }
+    srv6_term_tunnel_id = tunnel_term_set.tunnel_id;
+    l3_ingress_intf_init(&ingress_rif);
+    ingress_rif.vrf = 40;
+    BCM_GPORT_TUNNEL_TO_L3_ITF_LIF(ingress_rif.intf_id, tunnel_term_set.tunnel_id);
+    rv = intf_ingress_rif_set(unit, &ingress_rif);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error intf_ingress_rif_set. rv = %d \n", rv);
+        return rv;
+    }
+    rv = add_route_ipv6(unit, ip6_dip_next_endpoint, ip6_mask, 40, fec);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error, in function add_route_ipv6: vrf = 40");
+        return rv;
+    }
+    return BCM_E_NONE;
+}
+
 /*
  * This function creates an SRv6 Endpoint, with P2P information, using the BCM_TUNNEL_TERM_CROSS_CONNECT flag
  * The forwarding information is set with the bcm_vswitch_cross_connect_add API.
@@ -399,6 +575,7 @@ srv6_usid_endpoint_tunnel_cross_connect(int unit, int out_port, int fec, uint8 n
 {
 
     bcm_ip6_t ip6_mask = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+    bcm_ip6_t ip6_usid_prefix_mask = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
     bcm_ip6_t ip6_dip  = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0x00, 0xEE, 0x01, 0xEE, 0x02, 0xEE, 0x03, 0xEE, 0x04, 0xEE, 0x05};
     bcm_ip6_t ip6_sip  = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xee, 0xff, 0xff, 0xee, 0xcb, 0xa9, 0x87, 0x65, 0x43, 0x21};
 
@@ -421,7 +598,7 @@ srv6_usid_endpoint_tunnel_cross_connect(int unit, int out_port, int fec, uint8 n
     tunnel_term_set.type = tunnel_type;
     sal_memcpy(tunnel_term_set.dip6, ip6_dip, 16);
     sal_memcpy(tunnel_term_set.sip6, ip6_sip, 16);
-    sal_memcpy(tunnel_term_set.dip6_mask, ip6_mask, 16);
+    sal_memcpy(tunnel_term_set.dip6_mask, ip6_usid_prefix_mask, 16);
     sal_memcpy(tunnel_term_set.sip6_mask, ip6_mask, 16);
     tunnel_term_set.ingress_qos_model.ingress_ttl = bcmQosIngressModelPipe;
     tunnel_term_set.flags = BCM_TUNNEL_TERM_MICRO_SEGMENT_ID | BCM_TUNNEL_TERM_CROSS_CONNECT;
@@ -1145,7 +1322,7 @@ dnx_basic_example_ipvx_for_srv6_inner(
             return rv;
         }
     }
-    else if(srh_next_protocol == 143) /* L2 o SRv6 case, configure MAC-T address */
+    else if((srh_next_protocol == 143) || (srh_next_protocol == 59)) /* L2 o SRv6 case, configure MAC-T address */
     {
         bcm_l2_addr_t l2_addr;
 
@@ -1419,4 +1596,209 @@ dnx_basic_example_eth_is_fwd_cross_connect_for_srv6(
     }
 
     return rv;
+}
+
+int srv6_endpoint_psp_extended_configuration(int unit, int rch_port, int field_ctx_ipmf2, int field_ctx_ipmf3)
+{
+    /* For PSP extended termination, the configurations that needs to be applied are:
+     * 1. Map the packet to RCY port with RCH outlif.
+     *    - The mapping is done in PMF2, before FEC resolution, as the packet was forwarded correctly.
+     *    - As the IPv6 Endpoint is a LIF with a Global LIF, need to do In_LIF[0]=In_LIF[1] (to get correct ETH-RIF at second pass)
+     */
+    bcm_switch_control_key_t key;
+    bcm_switch_control_info_t value;
+    int rv;
+
+    /** Set incoming port header type of RCY port to BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP */
+    key.type = bcmSwitchPortHeaderType;
+    key.index = 1;
+    value.value = BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP;
+    rv = bcm_switch_control_indexed_port_set(unit, rch_port, key, value);
+    if (rv != BCM_E_NONE) {
+        printf("Error, bcm_switch_control_indexed_port_set (port %d)\n", rch_port);
+        return rv;
+    }
+
+    /** Create CTRL-LIF LIF */
+    bcm_vlan_port_t vlan_port;
+    bcm_vlan_port_t_init(&vlan_port);
+    vlan_port.criteria = BCM_VLAN_PORT_MATCH_NONE;
+    vlan_port.vsi = 0;
+    vlan_port.flags = BCM_VLAN_PORT_CREATE_INGRESS_ONLY | BCM_VLAN_PORT_RECYCLE;
+    vlan_port.ingress_qos_model.ingress_phb = bcmQosIngressModelShortpipe;
+    vlan_port.ingress_qos_model.ingress_remark = bcmQosIngressModelShortpipe;
+    vlan_port.ingress_qos_model.ingress_ttl = bcmQosIngressModelShortpipe;
+
+    rv = bcm_vlan_port_create(unit, &vlan_port);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error, bcm_vlan_port_create\n");
+        return rv;
+    }
+
+    /** Create recycle encap */
+    bcm_l2_egress_t recycle_entry;
+    bcm_l2_egress_t_init(&recycle_entry);
+    recycle_entry.flags = BCM_L2_EGRESS_RECYCLE_HEADER;
+    recycle_entry.recycle_app = bcmL2EgressRecycleAppSrv6UspPsp;
+    recycle_entry.vlan_port_id = vlan_port.vlan_port_id;
+    rv = bcm_l2_egress_create(unit, &recycle_entry);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error, bcm_l2_egress_create \n");
+        return rv;
+    }
+
+
+    /** PMF */
+    /**destination qualifier */
+    bcm_field_qualify_t qual_info_dest;
+    bcm_field_qualifier_info_create_t qual_info_dest_info;
+    bcm_field_qualify_t qual_info_outlif;
+    bcm_field_qualifier_info_create_t qual_info_outlif_info;
+
+    bcm_field_qualifier_info_create_t_init(&qual_info_dest_info);
+    qual_info_dest_info.size = 32;
+    qual_info_dest_info.name[0] = 'T';
+    qual_info_dest_info.name[1] = '0';
+    qual_info_dest_info.name[2] = '\0';
+
+    rv = bcm_field_qualifier_create(unit, 0, &qual_info_dest_info, &qual_info_dest);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error (%d) in bcm_field_qualifier_create qual_info_dest_info\n", rv);
+        return rv;
+    }
+    bcm_field_qualifier_info_create_t_init(&qual_info_outlif_info);
+    qual_info_outlif_info.size = 22;
+    qual_info_outlif_info.name[0] = 'T';
+    qual_info_outlif_info.name[1] = '1';
+    qual_info_outlif_info.name[2] = '\0';
+
+    rv = bcm_field_qualifier_create(unit, 0, &qual_info_outlif_info, &qual_info_outlif);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error (%d) in bcm_field_qualifier_create qual_info_outlif_info\n", rv);
+        return rv;
+    }
+
+    bcm_field_group_info_t fg_info;
+    int fg_id;
+    bcm_field_group_info_t_init(&fg_info);
+    fg_info.fg_type = bcmFieldGroupTypeDirectExtraction;
+    fg_info.stage = bcmFieldStageIngressPMF2;
+    fg_info.name[0] = 'T';
+    fg_info.name[1] = '2';
+    fg_info.name[2] = '\0';
+
+    fg_info.nof_quals = 2;
+    fg_info.qual_types[0] = qual_info_dest;
+    fg_info.qual_types[1] = qual_info_outlif;
+
+    /*
+     * Set actions - Width of the actions write to,
+     *               dictate how many bits to take from the Qualifiers
+     */
+    fg_info.nof_actions = 2;
+    fg_info.action_types[0] = bcmFieldActionForward;
+    fg_info.action_with_valid_bit[0] = FALSE;
+    fg_info.action_types[1] = bcmFieldActionOutVport0;
+    fg_info.action_with_valid_bit[1] = FALSE;
+    rv = bcm_field_group_add(unit, 0, &fg_info, &fg_id);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error (%d), in bcm_field_group_add Egress PSP ext cut ipmf3_fg\n", rv);
+        return rv;
+    }
+
+    /*
+     * copy the information of the FG into the attach structure
+     * & adding to it the "input_type" and "offset" - from where
+     * to take the qualifier information
+     */
+    int ii;
+    uint32 hw_value[4] = {0};
+    bcm_field_group_attach_info_t attach_info;
+    bcm_field_group_attach_info_t_init(&attach_info);
+
+    attach_info.key_info.nof_quals = fg_info.nof_quals;
+    attach_info.payload_info.nof_actions = fg_info.nof_actions;
+
+    for (ii = 0; ii < fg_info.nof_quals; ii++)
+    {
+        attach_info.key_info.qual_types[ii] = fg_info.qual_types[ii];
+    }
+    for (ii = 0; ii < fg_info.nof_actions; ii++)
+    {
+        attach_info.payload_info.action_types[ii] = fg_info.action_types[ii];
+    }
+    uint32 destination[4] = {0};
+    *destination = rch_port | 0xc0000;
+    rv = bcm_field_action_value_map(unit, bcmFieldStageIngressPMF2, bcmFieldActionForward, destination, hw_value);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error (%d), in bcm_dnx_field_action_value_map\n", rv);
+        return rv;
+    }
+
+    attach_info.key_info.qual_info[0].input_type = bcmFieldInputTypeConst;
+    attach_info.key_info.qual_info[0].input_arg = *hw_value;
+
+    /** Set the value of fwd_layer_idx */
+    attach_info.key_info.qual_info[1].input_type = bcmFieldInputTypeConst;
+    attach_info.key_info.qual_info[1].input_arg = recycle_entry.encap_id & 0x3FFFFF;
+
+     /** context id is defined in appl_ref_init */
+    rv = bcm_field_group_context_attach(unit, 0, fg_id, field_ctx_ipmf2, &attach_info);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error (%d), in bcm_field_group_context_attach ipmf2\n", rv);
+        return rv;
+    }
+
+    /** PMF 3 */
+    bcm_field_group_info_t fg_info3;
+    int fg_id3;
+    bcm_field_group_info_t_init(&fg_info3);
+    fg_info3.fg_type = bcmFieldGroupTypeDirectExtraction;
+    fg_info3.stage = bcmFieldStageIngressPMF3;
+    fg_info3.name[0] = 'T';
+    fg_info3.name[1] = '3';
+    fg_info3.name[2] = '\0';
+    fg_info3.nof_quals = 1;
+    fg_info3.qual_types[0] = bcmFieldQualifyInVPort1;
+    fg_info3.nof_actions = 1;
+    fg_info3.action_types[0] = bcmFieldActionInVport0;
+    fg_info3.action_with_valid_bit[0] = FALSE;
+    rv = bcm_field_group_add(unit, 0, &fg_info3, &fg_id3);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error (%d), in bcm_field_group_add Egress PSP ext cut ipmf3_fg\n", rv);
+        return rv;
+    }
+    bcm_field_group_attach_info_t attach_info3;
+    bcm_field_group_attach_info_t_init(&attach_info3);
+
+    attach_info3.key_info.nof_quals = fg_info3.nof_quals;
+    attach_info3.payload_info.nof_actions = fg_info3.nof_actions;
+
+    for (ii = 0; ii < fg_info3.nof_quals; ii++)
+    {
+        attach_info3.key_info.qual_types[ii] = fg_info3.qual_types[ii];
+    }
+    for (ii = 0; ii < fg_info3.nof_actions; ii++)
+    {
+        attach_info3.payload_info.action_types[ii] = fg_info3.action_types[ii];
+    }
+    attach_info3.key_info.qual_info[0].input_type = bcmFieldInputTypeMetaData;
+
+    /** context id is defined in appl_ref_init */
+    rv = bcm_field_group_context_attach(unit, 0, fg_id3, field_ctx_ipmf3, &attach_info3);
+    if (rv != BCM_E_NONE)
+    {
+        printf("Error (%d), in bcm_field_group_context_attach ipmf3\n", rv);
+        return rv;
+    }
+
+    return 0;
 }

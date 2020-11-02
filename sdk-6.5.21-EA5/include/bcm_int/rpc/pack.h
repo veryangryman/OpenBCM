@@ -695,6 +695,7 @@
 #define	BCM_PACKLEN_INSTRU_EVENTOR_PERIODIC_CONFIG		6
 #define	BCM_PACKLEN_INSTRU_EVENTOR_PERIODIC_SOURCE		8
 #define	BCM_PACKLEN_INSTRU_IFA_INFO		13
+#define	BCM_PACKLEN_INSTRU_IFIT_ENCAP_INFO		33
 #define	BCM_PACKLEN_INSTRU_IPT		20
 #define	BCM_PACKLEN_INSTRU_SFLOW_ENCAP_EXTENDED_DST_INFO		48
 #define	BCM_PACKLEN_INSTRU_SFLOW_ENCAP_EXTENDED_SRC_INFO		16
@@ -1091,7 +1092,7 @@
 #define	BCM_PACKLEN_TUNNEL_DSCP_MAP		12
 #define	BCM_PACKLEN_TUNNEL_INITIATOR		157
 #define	BCM_PACKLEN_TUNNEL_TERMINATOR_CONFIG_KEY		54
-#define	BCM_PACKLEN_TUNNEL_TERMINATOR		213
+#define	BCM_PACKLEN_TUNNEL_TERMINATOR		217
 #endif	/* INCLUDE_L3 */
 #define	BCM_PACKLEN_UDF_ABSTRACT_PKT_FORMAT_INFO		16
 #define	BCM_PACKLEN_UDF_ALLOC_HINTS		236
@@ -2138,6 +2139,8 @@ extern uint8 *_bcm_pack_instru_eventor_periodic_source(uint8 *, bcm_instru_event
 extern uint8 *_bcm_unpack_instru_eventor_periodic_source(uint8 *, bcm_instru_eventor_periodic_source_t *);
 extern uint8 *_bcm_pack_instru_ifa_info(uint8 *, bcm_instru_ifa_info_t *);
 extern uint8 *_bcm_unpack_instru_ifa_info(uint8 *, bcm_instru_ifa_info_t *);
+extern uint8 *_bcm_pack_instru_ifit_encap_info(uint8 *, bcm_instru_ifit_encap_info_t *);
+extern uint8 *_bcm_unpack_instru_ifit_encap_info(uint8 *, bcm_instru_ifit_encap_info_t *);
 extern uint8 *_bcm_pack_instru_ipt(uint8 *, bcm_instru_ipt_t *);
 extern uint8 *_bcm_unpack_instru_ipt(uint8 *, bcm_instru_ipt_t *);
 extern uint8 *_bcm_pack_instru_sflow_encap_extended_dst_info(uint8 *, bcm_instru_sflow_encap_extended_dst_info_t *);

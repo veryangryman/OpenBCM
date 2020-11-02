@@ -6467,7 +6467,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    sal_memset(cur_field_type_param->define, 0x0, 39 * sizeof(dbal_db_defines_info_struct_t));
+    sal_memset(cur_field_type_param->define, 0x0, 40 * sizeof(dbal_db_defines_info_struct_t));
     sal_strncpy(cur_field_type_param->define[0].define_name, "MPLS_BOS", sizeof(cur_field_type_param->define[0].define_name));
     cur_field_type_param->define[0].define_value = 0;
     sal_strncpy(cur_field_type_param->define[1].define_name, "MPLS", sizeof(cur_field_type_param->define[1].define_name));
@@ -6490,63 +6490,65 @@ dbal_field_types_basic_info_t ** field_types_info)
     cur_field_type_param->define[9].define_value = 41;
     sal_strncpy(cur_field_type_param->define[10].define_name, "ETHERNET_OVER_IP", sizeof(cur_field_type_param->define[10].define_name));
     cur_field_type_param->define[10].define_value = 143;
-    sal_strncpy(cur_field_type_param->define[11].define_name, "SRV6_OVER_IPV6", sizeof(cur_field_type_param->define[11].define_name));
-    cur_field_type_param->define[11].define_value = 43;
-    sal_strncpy(cur_field_type_param->define[12].define_name, "GRE_OVER_IP", sizeof(cur_field_type_param->define[12].define_name));
-    cur_field_type_param->define[12].define_value = 47;
-    sal_strncpy(cur_field_type_param->define[13].define_name, "IPV6_OVER_PPPOE", sizeof(cur_field_type_param->define[13].define_name));
-    cur_field_type_param->define[13].define_value = 87;
-    sal_strncpy(cur_field_type_param->define[14].define_name, "LT2PV3_OVER_IP", sizeof(cur_field_type_param->define[14].define_name));
-    cur_field_type_param->define[14].define_value = 115;
-    sal_strncpy(cur_field_type_param->define[15].define_name, "MPLS_OVER_IP", sizeof(cur_field_type_param->define[15].define_name));
-    cur_field_type_param->define[15].define_value = 137;
-    sal_strncpy(cur_field_type_param->define[16].define_name, "PTP_EVENT", sizeof(cur_field_type_param->define[16].define_name));
-    cur_field_type_param->define[16].define_value = 319;
-    sal_strncpy(cur_field_type_param->define[17].define_name, "PTP_GENERAL", sizeof(cur_field_type_param->define[17].define_name));
-    cur_field_type_param->define[17].define_value = 320;
-    sal_strncpy(cur_field_type_param->define[18].define_name, "MPLS_OVER_PPPOE", sizeof(cur_field_type_param->define[18].define_name));
-    cur_field_type_param->define[18].define_value = 641;
-    sal_strncpy(cur_field_type_param->define[19].define_name, "LT2PV3_OVER_UDP", sizeof(cur_field_type_param->define[19].define_name));
-    cur_field_type_param->define[19].define_value = 1701;
-    sal_strncpy(cur_field_type_param->define[20].define_name, "GTPU_OVER_UDP", sizeof(cur_field_type_param->define[20].define_name));
-    cur_field_type_param->define[20].define_value = 2152;
-    sal_strncpy(cur_field_type_param->define[21].define_name, "IPV4_OVER_ETHERNET", sizeof(cur_field_type_param->define[21].define_name));
-    cur_field_type_param->define[21].define_value = 2048;
-    sal_strncpy(cur_field_type_param->define[22].define_name, "BFD_SINGLE_HOP", sizeof(cur_field_type_param->define[22].define_name));
-    cur_field_type_param->define[22].define_value = 3784;
-    sal_strncpy(cur_field_type_param->define[23].define_name, "BFD_MULTI_HOP", sizeof(cur_field_type_param->define[23].define_name));
-    cur_field_type_param->define[23].define_value = 4784;
-    sal_strncpy(cur_field_type_param->define[24].define_name, "GRE_OVER_UDP", sizeof(cur_field_type_param->define[24].define_name));
-    cur_field_type_param->define[24].define_value = 4754;
-    sal_strncpy(cur_field_type_param->define[25].define_name, "VXLAN_OVER_UDP", sizeof(cur_field_type_param->define[25].define_name));
-    cur_field_type_param->define[25].define_value = 4789;
-    sal_strncpy(cur_field_type_param->define[26].define_name, "VXLAN_GPE_OVER_UDP", sizeof(cur_field_type_param->define[26].define_name));
-    cur_field_type_param->define[26].define_value = 4790;
-    sal_strncpy(cur_field_type_param->define[27].define_name, "GENEVE_OVER_UDP", sizeof(cur_field_type_param->define[27].define_name));
-    cur_field_type_param->define[27].define_value = 6081;
-    sal_strncpy(cur_field_type_param->define[28].define_name, "IPV4_OVER_UDP", sizeof(cur_field_type_param->define[28].define_name));
-    cur_field_type_param->define[28].define_value = 0x6605;
-    sal_strncpy(cur_field_type_param->define[29].define_name, "IPV6_OVER_UDP", sizeof(cur_field_type_param->define[29].define_name));
-    cur_field_type_param->define[29].define_value = 0x6615;
-    sal_strncpy(cur_field_type_param->define[30].define_name, "MPLS_OVER_UDP", sizeof(cur_field_type_param->define[30].define_name));
-    cur_field_type_param->define[30].define_value = 6635;
-    sal_strncpy(cur_field_type_param->define[31].define_name, "IPV6_OVER_ETHERNET", sizeof(cur_field_type_param->define[31].define_name));
-    cur_field_type_param->define[31].define_value = 34525;
-    sal_strncpy(cur_field_type_param->define[32].define_name, "MPLS_OVER_ETHERNET", sizeof(cur_field_type_param->define[32].define_name));
-    cur_field_type_param->define[32].define_value = 34887;
-    sal_strncpy(cur_field_type_param->define[33].define_name, "ETHERNET_OVER_ETHERNET", sizeof(cur_field_type_param->define[33].define_name));
-    cur_field_type_param->define[33].define_value = 0x1234;
-    sal_strncpy(cur_field_type_param->define[34].define_name, "PPPOE_OVER_ETHERNET", sizeof(cur_field_type_param->define[34].define_name));
-    cur_field_type_param->define[34].define_value = 34916;
-    sal_strncpy(cur_field_type_param->define[35].define_name, "PTP_OVER_ETHERNET", sizeof(cur_field_type_param->define[35].define_name));
-    cur_field_type_param->define[35].define_value = 35063;
-    sal_strncpy(cur_field_type_param->define[36].define_name, "Y_1731_OVER_ETHERNET", sizeof(cur_field_type_param->define[36].define_name));
-    cur_field_type_param->define[36].define_value = 35074;
-    sal_strncpy(cur_field_type_param->define[37].define_name, "FCOE_OVER_ETHERNET", sizeof(cur_field_type_param->define[37].define_name));
-    cur_field_type_param->define[37].define_value = 35078;
-    sal_strncpy(cur_field_type_param->define[38].define_name, "ERSPAN_OVER_GRE", sizeof(cur_field_type_param->define[38].define_name));
-    cur_field_type_param->define[38].define_value = 35006;
-    cur_field_type_param->nof_defined_vals = 39;
+    sal_strncpy(cur_field_type_param->define[11].define_name, "NO_NEXT_PROTOCOL_OVER_IP", sizeof(cur_field_type_param->define[11].define_name));
+    cur_field_type_param->define[11].define_value = 59;
+    sal_strncpy(cur_field_type_param->define[12].define_name, "SRV6_OVER_IPV6", sizeof(cur_field_type_param->define[12].define_name));
+    cur_field_type_param->define[12].define_value = 43;
+    sal_strncpy(cur_field_type_param->define[13].define_name, "GRE_OVER_IP", sizeof(cur_field_type_param->define[13].define_name));
+    cur_field_type_param->define[13].define_value = 47;
+    sal_strncpy(cur_field_type_param->define[14].define_name, "IPV6_OVER_PPPOE", sizeof(cur_field_type_param->define[14].define_name));
+    cur_field_type_param->define[14].define_value = 87;
+    sal_strncpy(cur_field_type_param->define[15].define_name, "LT2PV3_OVER_IP", sizeof(cur_field_type_param->define[15].define_name));
+    cur_field_type_param->define[15].define_value = 115;
+    sal_strncpy(cur_field_type_param->define[16].define_name, "MPLS_OVER_IP", sizeof(cur_field_type_param->define[16].define_name));
+    cur_field_type_param->define[16].define_value = 137;
+    sal_strncpy(cur_field_type_param->define[17].define_name, "PTP_EVENT", sizeof(cur_field_type_param->define[17].define_name));
+    cur_field_type_param->define[17].define_value = 319;
+    sal_strncpy(cur_field_type_param->define[18].define_name, "PTP_GENERAL", sizeof(cur_field_type_param->define[18].define_name));
+    cur_field_type_param->define[18].define_value = 320;
+    sal_strncpy(cur_field_type_param->define[19].define_name, "MPLS_OVER_PPPOE", sizeof(cur_field_type_param->define[19].define_name));
+    cur_field_type_param->define[19].define_value = 641;
+    sal_strncpy(cur_field_type_param->define[20].define_name, "LT2PV3_OVER_UDP", sizeof(cur_field_type_param->define[20].define_name));
+    cur_field_type_param->define[20].define_value = 1701;
+    sal_strncpy(cur_field_type_param->define[21].define_name, "GTPU_OVER_UDP", sizeof(cur_field_type_param->define[21].define_name));
+    cur_field_type_param->define[21].define_value = 2152;
+    sal_strncpy(cur_field_type_param->define[22].define_name, "IPV4_OVER_ETHERNET", sizeof(cur_field_type_param->define[22].define_name));
+    cur_field_type_param->define[22].define_value = 2048;
+    sal_strncpy(cur_field_type_param->define[23].define_name, "BFD_SINGLE_HOP", sizeof(cur_field_type_param->define[23].define_name));
+    cur_field_type_param->define[23].define_value = 3784;
+    sal_strncpy(cur_field_type_param->define[24].define_name, "BFD_MULTI_HOP", sizeof(cur_field_type_param->define[24].define_name));
+    cur_field_type_param->define[24].define_value = 4784;
+    sal_strncpy(cur_field_type_param->define[25].define_name, "GRE_OVER_UDP", sizeof(cur_field_type_param->define[25].define_name));
+    cur_field_type_param->define[25].define_value = 4754;
+    sal_strncpy(cur_field_type_param->define[26].define_name, "VXLAN_OVER_UDP", sizeof(cur_field_type_param->define[26].define_name));
+    cur_field_type_param->define[26].define_value = 4789;
+    sal_strncpy(cur_field_type_param->define[27].define_name, "VXLAN_GPE_OVER_UDP", sizeof(cur_field_type_param->define[27].define_name));
+    cur_field_type_param->define[27].define_value = 4790;
+    sal_strncpy(cur_field_type_param->define[28].define_name, "GENEVE_OVER_UDP", sizeof(cur_field_type_param->define[28].define_name));
+    cur_field_type_param->define[28].define_value = 6081;
+    sal_strncpy(cur_field_type_param->define[29].define_name, "IPV4_OVER_UDP", sizeof(cur_field_type_param->define[29].define_name));
+    cur_field_type_param->define[29].define_value = 0x6605;
+    sal_strncpy(cur_field_type_param->define[30].define_name, "IPV6_OVER_UDP", sizeof(cur_field_type_param->define[30].define_name));
+    cur_field_type_param->define[30].define_value = 0x6615;
+    sal_strncpy(cur_field_type_param->define[31].define_name, "MPLS_OVER_UDP", sizeof(cur_field_type_param->define[31].define_name));
+    cur_field_type_param->define[31].define_value = 6635;
+    sal_strncpy(cur_field_type_param->define[32].define_name, "IPV6_OVER_ETHERNET", sizeof(cur_field_type_param->define[32].define_name));
+    cur_field_type_param->define[32].define_value = 34525;
+    sal_strncpy(cur_field_type_param->define[33].define_name, "MPLS_OVER_ETHERNET", sizeof(cur_field_type_param->define[33].define_name));
+    cur_field_type_param->define[33].define_value = 34887;
+    sal_strncpy(cur_field_type_param->define[34].define_name, "ETHERNET_OVER_ETHERNET", sizeof(cur_field_type_param->define[34].define_name));
+    cur_field_type_param->define[34].define_value = 0x1234;
+    sal_strncpy(cur_field_type_param->define[35].define_name, "PPPOE_OVER_ETHERNET", sizeof(cur_field_type_param->define[35].define_name));
+    cur_field_type_param->define[35].define_value = 34916;
+    sal_strncpy(cur_field_type_param->define[36].define_name, "PTP_OVER_ETHERNET", sizeof(cur_field_type_param->define[36].define_name));
+    cur_field_type_param->define[36].define_value = 35063;
+    sal_strncpy(cur_field_type_param->define[37].define_name, "Y_1731_OVER_ETHERNET", sizeof(cur_field_type_param->define[37].define_name));
+    cur_field_type_param->define[37].define_value = 35074;
+    sal_strncpy(cur_field_type_param->define[38].define_name, "FCOE_OVER_ETHERNET", sizeof(cur_field_type_param->define[38].define_name));
+    cur_field_type_param->define[38].define_value = 35078;
+    sal_strncpy(cur_field_type_param->define[39].define_name, "ERSPAN_OVER_GRE", sizeof(cur_field_type_param->define[39].define_name));
+    cur_field_type_param->define[39].define_value = 35006;
+    cur_field_type_param->nof_defined_vals = 40;
     
     
     
@@ -8429,7 +8431,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 15;
+    cur_field_type_param->nof_enum_vals = 16;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -8463,6 +8465,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "UD6", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "PON", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_USP_PSP", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     
@@ -8522,6 +8526,9 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         
         enum_info->value_from_mapping = 14;
+        enum_info++;
+
+        enum_info->value_from_mapping = 15;
         enum_info++;
     }
     
@@ -21311,7 +21318,7 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "PTCH2", sizeof(enum_info->name_from_interface));
         enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "RESERVED_0", sizeof(enum_info->name_from_interface));
+        sal_strncpy(enum_info->name_from_interface, "SRV6_USP_PSP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "RESERVED_1", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -25468,6 +25475,130 @@ dbal_field_types_basic_info_t ** field_types_info)
     cur_field_type_param->const_value = DBAL_DB_INVALID;
     cur_field_type_param->default_val = 0;
     cur_field_type_param->default_val_valid = FALSE;
+
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
+_dbal_init_field_types_field_types_definition_classic_sid_locater64_function_16_init(
+int unit,
+field_type_db_struct_t * cur_field_type_param,
+dbal_field_types_basic_info_t ** field_types_info)
+{
+    dbal_field_types_basic_info_t * cur_field_types_info = field_types_info[DBAL_FIELD_TYPE_DEF_CLASSIC_SID_LOCATER64_FUNCTION_16];
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "CLASSIC_SID_LOCATER64_FUNCTION_16" , 20 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_UINT32 , 0 , 1 , FALSE ));
+
+
+
+
+
+
+
+
+    cur_field_type_param->nof_illegal_value = 0;
+    cur_field_type_param->min_value = DBAL_DB_INVALID;
+    cur_field_type_param->max_value = DBAL_DB_INVALID;
+    cur_field_type_param->const_value = DBAL_DB_INVALID;
+    cur_field_type_param->default_val = 0;
+    cur_field_type_param->default_val_valid = FALSE;
+
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
+_dbal_init_field_types_field_types_definition_classic_sid_locater96_function_16_init(
+int unit,
+field_type_db_struct_t * cur_field_type_param,
+dbal_field_types_basic_info_t ** field_types_info)
+{
+    dbal_field_types_basic_info_t * cur_field_types_info = field_types_info[DBAL_FIELD_TYPE_DEF_CLASSIC_SID_LOCATER96_FUNCTION_16];
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "CLASSIC_SID_LOCATER96_FUNCTION_16" , 20 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_UINT32 , 0 , 1 , FALSE ));
+
+
+
+
+
+
+
+
+    cur_field_type_param->nof_illegal_value = 0;
+    cur_field_type_param->min_value = DBAL_DB_INVALID;
+    cur_field_type_param->max_value = DBAL_DB_INVALID;
+    cur_field_type_param->const_value = DBAL_DB_INVALID;
+    cur_field_type_param->default_val = 0;
+    cur_field_type_param->default_val_valid = FALSE;
+
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
+_dbal_init_field_types_field_types_definition_usid_prefix_32_usid_16_init(
+int unit,
+field_type_db_struct_t * cur_field_type_param,
+dbal_field_types_basic_info_t ** field_types_info)
+{
+    dbal_field_types_basic_info_t * cur_field_types_info = field_types_info[DBAL_FIELD_TYPE_DEF_USID_PREFIX_32_USID_16];
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "USID_PREFIX_32_USID_16" , 20 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_UINT32 , 0 , 1 , FALSE ));
+
+
+
+
+
+
+
+
+    cur_field_type_param->nof_illegal_value = 0;
+    cur_field_type_param->min_value = DBAL_DB_INVALID;
+    cur_field_type_param->max_value = DBAL_DB_INVALID;
+    cur_field_type_param->const_value = DBAL_DB_INVALID;
+    cur_field_type_param->default_val = 0;
+    cur_field_type_param->default_val_valid = FALSE;
+
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
+_dbal_init_field_types_field_types_definition_gsid_prefix_48_gsid_16_init(
+int unit,
+field_type_db_struct_t * cur_field_type_param,
+dbal_field_types_basic_info_t ** field_types_info)
+{
+    dbal_field_types_basic_info_t * cur_field_types_info = field_types_info[DBAL_FIELD_TYPE_DEF_GSID_PREFIX_48_GSID_16];
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "GSID_PREFIX_48_GSID_16" , 20 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_UINT32 , 0 , 1 , FALSE ));
+
+
+
+
+
+
+
+
+    cur_field_type_param->nof_illegal_value = 0;
+    cur_field_type_param->min_value = DBAL_DB_INVALID;
+    cur_field_type_param->max_value = DBAL_DB_INVALID;
+    cur_field_type_param->const_value = DBAL_DB_INVALID;
+    cur_field_type_param->default_val = 0;
+    cur_field_type_param->default_val_valid = FALSE;
     
     SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
 exit:
@@ -25484,16 +25615,20 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "IRPP_CROSS_STAGE_VAR_2" , 22 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_UINT32 , 0 , 1 , FALSE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "IRPP_CROSS_STAGE_VAR_2" , 24 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_UINT32 , 0 , 1 , FALSE ));
     
     
     
     
     
-    sal_memset(cur_field_type_param->childs, 0x0, 2 * sizeof(dbal_db_child_field_info_struct_t));
-    sal_strncpy(cur_field_type_param->childs[0].name, "IN_LIF", sizeof(cur_field_type_param->childs[0].name));
-    sal_strncpy(cur_field_type_param->childs[1].name, "DIP_IDX_INTERMIDIATE", sizeof(cur_field_type_param->childs[1].name));
-    cur_field_type_param->nof_childs = 2;
+    sal_memset(cur_field_type_param->childs, 0x0, 6 * sizeof(dbal_db_child_field_info_struct_t));
+    sal_strncpy(cur_field_type_param->childs[0].name, "DIP_IDX_INTERMIDIATE", sizeof(cur_field_type_param->childs[0].name));
+    sal_strncpy(cur_field_type_param->childs[1].name, "IN_LIF", sizeof(cur_field_type_param->childs[1].name));
+    sal_strncpy(cur_field_type_param->childs[2].name, "CLASSIC_SID_LOCATER64_FUNCTION_16", sizeof(cur_field_type_param->childs[2].name));
+    sal_strncpy(cur_field_type_param->childs[3].name, "CLASSIC_SID_LOCATER96_FUNCTION_16", sizeof(cur_field_type_param->childs[3].name));
+    sal_strncpy(cur_field_type_param->childs[4].name, "USID_PREFIX_32_USID_16", sizeof(cur_field_type_param->childs[4].name));
+    sal_strncpy(cur_field_type_param->childs[5].name, "GSID_PREFIX_48_GSID_16", sizeof(cur_field_type_param->childs[5].name));
+    cur_field_type_param->nof_childs = 6;
     
     
     
@@ -25507,12 +25642,32 @@ dbal_field_types_basic_info_t ** field_types_info)
     {
         
         sal_strncpy(cur_field_type_param->childs[0].encode_type, "PREFIX" , DBAL_MAX_SHORT_STRING_LENGTH);
-        cur_field_type_param->childs[0].encode_param1 = 1;
+        cur_field_type_param->childs[0].encode_param1 = 0;
     }
     {
         
         sal_strncpy(cur_field_type_param->childs[1].encode_type, "PREFIX" , DBAL_MAX_SHORT_STRING_LENGTH);
-        cur_field_type_param->childs[1].encode_param1 = 0;
+        cur_field_type_param->childs[1].encode_param1 = 1;
+    }
+    {
+
+        sal_strncpy(cur_field_type_param->childs[2].encode_type, "PREFIX" , DBAL_MAX_SHORT_STRING_LENGTH);
+        cur_field_type_param->childs[2].encode_param1 = 2;
+    }
+    {
+
+        sal_strncpy(cur_field_type_param->childs[3].encode_type, "PREFIX" , DBAL_MAX_SHORT_STRING_LENGTH);
+        cur_field_type_param->childs[3].encode_param1 = 3;
+    }
+    {
+
+        sal_strncpy(cur_field_type_param->childs[4].encode_type, "PREFIX" , DBAL_MAX_SHORT_STRING_LENGTH);
+        cur_field_type_param->childs[4].encode_param1 = 4;
+    }
+    {
+
+        sal_strncpy(cur_field_type_param->childs[5].encode_type, "PREFIX" , DBAL_MAX_SHORT_STRING_LENGTH);
+        cur_field_type_param->childs[5].encode_param1 = 5;
     }
     
     SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
@@ -33434,6 +33589,90 @@ exit:
 }
 
 shr_error_e
+_dbal_init_field_types_field_types_definition_ipv6_address_16_init(
+int unit,
+field_type_db_struct_t * cur_field_type_param,
+dbal_field_types_basic_info_t ** field_types_info)
+{
+    dbal_field_types_basic_info_t * cur_field_types_info = field_types_info[DBAL_FIELD_TYPE_DEF_IPV6_ADDRESS_16];
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "IPV6_ADDRESS_16" , 16 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_UINT32 , 0 , 1 , FALSE ));
+
+
+
+
+
+
+
+
+    cur_field_type_param->nof_illegal_value = 0;
+    cur_field_type_param->min_value = DBAL_DB_INVALID;
+    cur_field_type_param->max_value = DBAL_DB_INVALID;
+    cur_field_type_param->const_value = DBAL_DB_INVALID;
+    cur_field_type_param->default_val = 0;
+    cur_field_type_param->default_val_valid = FALSE;
+
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
+_dbal_init_field_types_field_types_definition_srv6_sid_formats_init(
+int unit,
+field_type_db_struct_t * cur_field_type_param,
+dbal_field_types_basic_info_t ** field_types_info)
+{
+    dbal_field_types_basic_info_t * cur_field_types_info = field_types_info[DBAL_FIELD_TYPE_DEF_SRV6_SID_FORMATS];
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "SRV6_SID_FORMATS" , 2 , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , FALSE ));
+
+
+
+
+    cur_field_type_param->nof_enum_vals = 4;
+
+    sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
+    {
+        dbal_db_enum_info_struct_t * enum_info = cur_field_type_param->enums;
+        sal_strncpy(enum_info->name_from_interface, "96_BIT_LOCATOR", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "64_BIT_LOCATOR", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "MICRO_SEGMENT_ID", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "GENERALIZED_SEGMENT_ID", sizeof(enum_info->name_from_interface));
+        enum_info++;
+    }
+
+
+
+
+    cur_field_type_param->nof_illegal_value = 0;
+    cur_field_type_param->min_value = DBAL_DB_INVALID;
+    cur_field_type_param->max_value = DBAL_DB_INVALID;
+    cur_field_type_param->const_value = DBAL_DB_INVALID;
+    cur_field_type_param->default_val = 0;
+    cur_field_type_param->default_val_valid = FALSE;
+
+    {
+        int enum_index = 0;
+        for (enum_index = 0; enum_index < 4; enum_index++)
+        {
+            cur_field_type_param->enums[enum_index].value_from_mapping = enum_index;
+        }
+    }
+
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
 dbal_init_field_types_field_types_definition_init(
 int unit,
 field_type_db_struct_t * cur_field_type_param,
@@ -33959,6 +34198,10 @@ dbal_field_types_basic_info_t ** field_types_info)
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_is_icmp_v6_init(unit, cur_field_type_param, field_types_info));
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_protocol_type_init(unit, cur_field_type_param, field_types_info));
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_dip_idx_intermidiate_init(unit, cur_field_type_param, field_types_info));
+    SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_classic_sid_locater64_function_16_init(unit, cur_field_type_param, field_types_info));
+    SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_classic_sid_locater96_function_16_init(unit, cur_field_type_param, field_types_info));
+    SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_usid_prefix_32_usid_16_init(unit, cur_field_type_param, field_types_info));
+    SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_gsid_prefix_48_gsid_16_init(unit, cur_field_type_param, field_types_info));
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_irpp_cross_stage_var_2_init(unit, cur_field_type_param, field_types_info));
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_graceful_active_configuration_init(unit, cur_field_type_param, field_types_info));
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_sit_profile_init(unit, cur_field_type_param, field_types_info));
@@ -34117,6 +34360,8 @@ dbal_field_types_basic_info_t ** field_types_info)
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_bta_sop_delta_init(unit, cur_field_type_param, field_types_info));
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_btr_eop_delta_init(unit, cur_field_type_param, field_types_info));
     SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_bta_eop_delta_init(unit, cur_field_type_param, field_types_info));
+    SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_ipv6_address_16_init(unit, cur_field_type_param, field_types_info));
+    SHR_IF_ERR_EXIT(_dbal_init_field_types_field_types_definition_srv6_sid_formats_init(unit, cur_field_type_param, field_types_info));
 exit:
     SHR_FUNC_EXIT;
 }

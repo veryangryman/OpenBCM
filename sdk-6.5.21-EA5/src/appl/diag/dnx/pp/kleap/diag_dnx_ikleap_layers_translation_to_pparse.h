@@ -55,6 +55,11 @@ static kleap_layer_to_pparse_t RCH_header = {
     {"RCH"},
     {""}
 };
+static kleap_layer_to_pparse_t SRV6_RCH_USP_PSP_AND_PSP_EXT_header = {
+    1,
+    {"RCH_SRv6_USP_PSP"},
+    {""}
+};
 static kleap_layer_to_pparse_t IPv4_header = {
     1,
     {"IPv4"},
@@ -116,6 +121,11 @@ static kleap_layer_to_pparse_t ETHERNET_layer = {
     {""}
 };
 static kleap_layer_to_pparse_t RCH_layer = {
+    0,
+    {""},
+    {""}
+};
+static kleap_layer_to_pparse_t SRV6_RCH_USP_PSP_AND_PSP_EXT_layer = {
     0,
     {""},
     {""}

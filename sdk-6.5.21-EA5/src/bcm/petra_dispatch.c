@@ -25192,6 +25192,39 @@ bcm_petra_instru_ifa_encap_traverse(
     return BCM_E_UNAVAIL;
 }
 
+int
+bcm_petra_instru_ifit_encap_create(
+    int unit,
+    bcm_instru_ifit_encap_info_t *ifit_encap_info)
+{
+    return BCM_E_UNAVAIL;
+}
+
+int
+bcm_petra_instru_ifit_encap_delete(
+    int unit,
+    bcm_instru_ifit_encap_info_t *ifit_encap_info)
+{
+    return BCM_E_UNAVAIL;
+}
+
+int
+bcm_petra_instru_ifit_encap_get(
+    int unit,
+    bcm_instru_ifit_encap_info_t *ifit_encap_info)
+{
+    return BCM_E_UNAVAIL;
+}
+
+int
+bcm_petra_instru_ifit_encap_traverse(
+    int unit,
+    bcm_instru_ifit_encap_traverse_cb cb,
+    void *user_data)
+{
+    return BCM_E_UNAVAIL;
+}
+
 int 
 bcm_petra_instru_ipt_profile_get(
     int unit, 

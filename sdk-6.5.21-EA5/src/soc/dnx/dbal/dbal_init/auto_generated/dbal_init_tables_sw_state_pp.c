@@ -25,6 +25,7 @@ dbal_logical_table_t * table_info)
     SHR_IF_ERR_EXIT(dbal_init_tables_sw_state_pp_sw_pp_algo_gpm_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(dbal_init_tables_sw_state_pp_sw_pp_tcam_tables_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(dbal_init_tables_sw_state_pp_sw_pp_virtual_port_init(unit, cur_table_param, table_info));
+    SHR_IF_ERR_EXIT(dbal_init_tables_sw_state_pp_tunnel_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(dbal_init_tables_sw_state_pp_vlan_init(unit, cur_table_param, table_info));
 exit:
     SHR_FUNC_EXIT;

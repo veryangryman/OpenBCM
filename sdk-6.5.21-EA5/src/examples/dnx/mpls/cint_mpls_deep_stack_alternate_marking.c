@@ -214,6 +214,14 @@ int tod_append_mode =1;
  */
 int in_port_is_nif =0;
 
+
+/**
+ * Using iFIT for altermate marking
+ *
+ */
+int ifit_enable =0;
+
+
 /*
  * IPT main function for alternate marking.
  * Calls:
@@ -1052,6 +1060,12 @@ int mpls_alternate_marking_termination(int unit, int in_port, int out_port, int 
         mirror_dest.gport = cpu_port;
         break;
     }
+
+    if (ifit_enable)
+    {
+        BCM_IF_ERROR_RETURN(bcm_switch_control_set(unit,bcmSwitchMplsFlowInstructionIndicatorSpecialLabel, 12));
+    }
+
 
     /* Set up snoop + snoop header*/
     BCM_IF_ERROR_RETURN(cint_field_ip_snoop_set(unit,cpu_port,1,0,0,snoop_trap_gport_id,&snoop_code));

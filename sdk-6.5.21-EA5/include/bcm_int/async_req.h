@@ -20549,6 +20549,23 @@ typedef struct bcm_async_req_s {
 		} instru_ifa_encap_traverse;
 		struct {
 			int unit;
+			bcm_instru_ifit_encap_info_t * ifit_encap_info;
+		} instru_ifit_encap_create;
+		struct {
+			int unit;
+			bcm_instru_ifit_encap_info_t * ifit_encap_info;
+		} instru_ifit_encap_delete;
+		struct {
+			int unit;
+			bcm_instru_ifit_encap_info_t * ifit_encap_info;
+		} instru_ifit_encap_get;
+		struct {
+			int unit;
+			bcm_instru_ifit_encap_traverse_cb cb;
+			void * user_data;
+		} instru_ifit_encap_traverse;
+		struct {
+			int unit;
 			uint32 flags;
 			int ipt_profile;
 			bcm_instru_ipt_t * config;
@@ -41370,6 +41387,10 @@ typedef enum {
 	BCM_ASYNC_ENTRY_INSTRU_IFA_ENCAP_DELETE,
 	BCM_ASYNC_ENTRY_INSTRU_IFA_ENCAP_GET,
 	BCM_ASYNC_ENTRY_INSTRU_IFA_ENCAP_TRAVERSE,
+	BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_CREATE,
+	BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_DELETE,
+	BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_GET,
+	BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_TRAVERSE,
 	BCM_ASYNC_ENTRY_INSTRU_IPT_PROFILE_GET,
 	BCM_ASYNC_ENTRY_INSTRU_IPT_PROFILE_SET,
 	BCM_ASYNC_ENTRY_INSTRU_SFLOW_ENCAP_CREATE,

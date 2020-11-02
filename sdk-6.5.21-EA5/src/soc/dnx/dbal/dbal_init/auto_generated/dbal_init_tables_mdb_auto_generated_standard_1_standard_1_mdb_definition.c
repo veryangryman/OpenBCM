@@ -5353,6 +5353,112 @@ exit:
 }
 
 shr_error_e
+_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv6_tt_mp_em_16_init(
+int unit,
+table_db_struct_t * cur_table_param,
+dbal_logical_table_t * table_info)
+{
+    dbal_logical_table_t * table_entry = table_info + DBAL_TABLE_IPV6_TT_MP_EM_16;
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_table_db_struct_clear(cur_table_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_general_info_set(unit, table_entry, DBAL_TABLE_IPV6_TT_MP_EM_16 , is_valid , "IPV6_TT_MP_EM_16" , DBAL_ACCESS_METHOD_MDB ));
+
+
+    table_entry->maturity_level = DBAL_MATURITY_HIGH;
+
+
+
+
+    table_entry->table_type = DBAL_TABLE_TYPE_EM;
+
+
+    table_entry->nof_labels = 3;
+    SHR_ALLOC_SET_ZERO(table_entry->table_labels, table_entry->nof_labels * sizeof(dbal_labels_e), "table labels allocation", "%s%s%s\r\n", table_entry->table_name, EMPTY, EMPTY);
+    table_entry->table_labels[0] = DBAL_LABEL_L2;
+    table_entry->table_labels[1] = DBAL_LABEL_L3;
+    table_entry->table_labels[2] = DBAL_LABEL_MPLS;
+
+    {
+        int field_index = 0;
+        dbal_table_field_info_t * dbal_db_field;
+        table_db_field_params_struct_t db_field;
+        SHR_ALLOC_SET_ZERO(table_entry->keys_info, 3 * sizeof(dbal_table_field_info_t), "key fields info allocation", "%s%s%s\r\n", "IPV6_TT_MP_EM_16" , EMPTY, EMPTY);
+
+        {
+            dbal_db_field = &table_entry->keys_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_IPV6_ADDRESS_16 , DBAL_FIELD_TYPE_DEF_IPV6_ADDRESS_16 , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 16;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, TRUE));
+            field_index += dbal_db_field->nof_instances;
+        }
+        {
+            dbal_db_field = &table_entry->keys_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_IPV6_MP_TUNNEL_IDX , DBAL_FIELD_TYPE_DEF_IPV6_MP_TUNNEL_IDX , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 20;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, TRUE));
+            field_index += dbal_db_field->nof_instances;
+        }
+        {
+            dbal_db_field = &table_entry->keys_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_CORE_ID , DBAL_FIELD_TYPE_DEF_CORE_ID , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 1;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, TRUE));
+            field_index += dbal_db_field->nof_instances;
+        }
+        table_entry->nof_key_fields = field_index;
+        dbal_db_init_table_calculate_key_size(table_entry);
+    }
+
+    {
+        int field_index = 0;
+        int result_type_counter = 0;
+        dbal_table_field_info_t * dbal_db_field;
+        table_db_field_params_struct_t db_field;
+        DBAL_DB_INIT_TABLE_NOF_RESULT_TYPES_SET(table_entry, 1);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_db_interface_results_alloc(unit, table_entry));
+
+        DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 1);
+        DBAL_DB_INIT_TABLE_INTERFACE_RESULT_FIELDS_ALLOC(table_entry, table_entry->multi_res_info[result_type_counter]);
+
+        {
+            dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_IN_LIF , DBAL_FIELD_TYPE_DEF_IN_LIF , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 20;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
+            field_index += dbal_db_field->nof_instances;
+        }
+    }
+
+
+
+
+    dbal_db_init_table_db_struct_access_clear(cur_table_param, table_entry);
+
+    {
+
+        uint8 is_standard_1 = TRUE;
+
+        uint8 is_compatible_with_all_images = FALSE;
+        DBAL_DB_INIT_TABLE_IMAGE_SPECIFIC_TABLE_INDICATION_SET(table_entry, is_standard_1, is_compatible_with_all_images);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_set_table_incompatible_image_sw_state_indication(unit, DBAL_TABLE_IPV6_TT_MP_EM_16, is_standard_1, is_compatible_with_all_images));
+    }
+
+    table_entry->core_mode = DBAL_CORE_MODE_DPC;
+
+
+    dbal_db_init_table_add_result_type_physical_values_by_result_type_index(table_entry);
+    SHR_IF_ERR_EXIT(dbal_db_init_table_set_mdb_info(unit, cur_table_param, "ISEM2" , 6 , 58 , DBAL_STAGE_NONE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_table_add(unit, cur_table_param, DBAL_TABLE_IPV6_TT_MP_EM_16, table_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
 _dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv6_tt_p2p_em_basic_init(
 int unit,
 table_db_struct_t * cur_table_param,
@@ -18750,7 +18856,7 @@ dbal_logical_table_t * table_info)
             dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_IRPP_CROSS_STAGE_VAR_2 , DBAL_FIELD_TYPE_DEF_IRPP_CROSS_STAGE_VAR_2 , dbal_db_field));
             dbal_db_init_table_field_params_init(&db_field);
-            db_field.size = 22;
+            db_field.size = 24;
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
             field_index += dbal_db_field->nof_instances;
         }
@@ -18864,7 +18970,7 @@ dbal_logical_table_t * table_info)
             dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_IRPP_CROSS_STAGE_VAR_2 , DBAL_FIELD_TYPE_DEF_IRPP_CROSS_STAGE_VAR_2 , dbal_db_field));
             dbal_db_init_table_field_params_init(&db_field);
-            db_field.size = 22;
+            db_field.size = 24;
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
             field_index += dbal_db_field->nof_instances;
         }
@@ -22047,6 +22153,109 @@ dbal_logical_table_t * table_info)
     SHR_IF_ERR_EXIT(dbal_db_init_table_add_result_type_physical_values_by_reference_field(unit, &(table_entry->multi_res_info[1]), DBAL_FIELD_TYPE_DEF_IRPP_IN_LIF_FORMATS));
     SHR_IF_ERR_EXIT(dbal_db_init_table_set_mdb_info(unit, cur_table_param, "INLIF2" , 0 , 0 , DBAL_STAGE_NONE ));
     SHR_IF_ERR_EXIT(dbal_db_init_table_add(unit, cur_table_param, DBAL_TABLE_IN_LIF_FORMAT_BIER, table_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
+_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_in_lif_format_dummy_init(
+int unit,
+table_db_struct_t * cur_table_param,
+dbal_logical_table_t * table_info)
+{
+    dbal_logical_table_t * table_entry = table_info + DBAL_TABLE_IN_LIF_FORMAT_DUMMY;
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_table_db_struct_clear(cur_table_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_general_info_set(unit, table_entry, DBAL_TABLE_IN_LIF_FORMAT_DUMMY , is_valid , "IN_LIF_FORMAT_DUMMY" , DBAL_ACCESS_METHOD_MDB ));
+
+
+    table_entry->maturity_level = DBAL_MATURITY_HIGH;
+
+
+
+
+    table_entry->table_type = DBAL_TABLE_TYPE_DIRECT;
+
+
+    table_entry->nof_labels = 3;
+    SHR_ALLOC_SET_ZERO(table_entry->table_labels, table_entry->nof_labels * sizeof(dbal_labels_e), "table labels allocation", "%s%s%s\r\n", table_entry->table_name, EMPTY, EMPTY);
+    table_entry->table_labels[0] = DBAL_LABEL_L2;
+    table_entry->table_labels[1] = DBAL_LABEL_L3;
+    table_entry->table_labels[2] = DBAL_LABEL_MPLS;
+
+    {
+        int field_index = 0;
+        dbal_table_field_info_t * dbal_db_field;
+        table_db_field_params_struct_t db_field;
+        SHR_ALLOC_SET_ZERO(table_entry->keys_info, 1 * sizeof(dbal_table_field_info_t), "key fields info allocation", "%s%s%s\r\n", "IN_LIF_FORMAT_DUMMY" , EMPTY, EMPTY);
+
+        {
+            dbal_db_field = &table_entry->keys_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_IN_LIF , DBAL_FIELD_TYPE_DEF_IN_LIF , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 20;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, TRUE));
+            field_index += dbal_db_field->nof_instances;
+        }
+        table_entry->nof_key_fields = field_index;
+        dbal_db_init_table_calculate_key_size(table_entry);
+    }
+
+    {
+        int field_index = 0;
+        int result_type_counter = 0;
+        dbal_table_field_info_t * dbal_db_field;
+        table_db_field_params_struct_t db_field;
+        DBAL_DB_INIT_TABLE_NOF_RESULT_TYPES_SET(table_entry, 1);
+        SHR_BITSET(table_entry->indications_bm, DBAL_TABLE_IND_HAS_RESULT_TYPE);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_db_interface_results_alloc(unit, table_entry));
+
+
+        field_index = 0;
+        if (DBAL_IS_JR2_B0 || DBAL_IS_J2C_A0 || DBAL_IS_Q2A_A0 || DBAL_IS_Q2A_B0 || DBAL_IS_J2P_A0)
+        {
+            DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 1);
+            DBAL_DB_INIT_TABLE_INTERFACE_RESULT_FIELDS_ALLOC(table_entry, table_entry->multi_res_info[result_type_counter]);
+
+            {
+                dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
+                SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_RESULT_TYPE , DBAL_FIELD_TYPE_DEF_RESULT_TYPE , dbal_db_field));
+                dbal_db_init_table_field_params_init(&db_field);
+                db_field.size = 6;
+                SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
+                field_index += dbal_db_field->nof_instances;
+            }
+        }
+        else
+        {
+            DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 0);
+            table_entry->multi_res_info[result_type_counter].is_disabled = TRUE;
+        }
+        sal_strncpy(table_entry->multi_res_info[result_type_counter].result_type_name, "IN_LIF_DUMMY", sizeof(table_entry->multi_res_info[result_type_counter].result_type_name));
+        result_type_counter++;
+    }
+
+
+
+
+    dbal_db_init_table_db_struct_access_clear(cur_table_param, table_entry);
+
+    {
+
+        uint8 is_standard_1 = TRUE;
+
+        uint8 is_compatible_with_all_images = FALSE;
+        DBAL_DB_INIT_TABLE_IMAGE_SPECIFIC_TABLE_INDICATION_SET(table_entry, is_standard_1, is_compatible_with_all_images);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_set_table_incompatible_image_sw_state_indication(unit, DBAL_TABLE_IN_LIF_FORMAT_DUMMY, is_standard_1, is_compatible_with_all_images));
+    }
+
+    table_entry->core_mode = DBAL_CORE_MODE_SBC;
+
+
+    SHR_IF_ERR_EXIT(dbal_db_init_table_add_result_type_physical_values_by_reference_field(unit, &(table_entry->multi_res_info[0]), DBAL_FIELD_TYPE_DEF_IRPP_IN_LIF_FORMATS));
+    SHR_IF_ERR_EXIT(dbal_db_init_table_set_mdb_info(unit, cur_table_param, "INLIF2" , 0 , 0 , DBAL_STAGE_NONE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_table_add(unit, cur_table_param, DBAL_TABLE_IN_LIF_FORMAT_DUMMY, table_info));
 exit:
     SHR_FUNC_EXIT;
 }
@@ -36219,6 +36428,7 @@ dbal_logical_table_t * table_info)
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv4_tt_mp_em_basic_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv4_tt_p2p_em_2nd_pass_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv4_tt_p2p_em_basic_init(unit, cur_table_param, table_info));
+    SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv6_tt_mp_em_16_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv6_tt_p2p_em_basic_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipv6_tt_sip_msb_compress_em_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_ipvx_tt_ipsec_init(unit, cur_table_param, table_info));
@@ -36311,6 +36521,7 @@ dbal_logical_table_t * table_info)
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_inner_eth_vlan_edit_classification_vlan_edit_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_pon_dtc_classification_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_in_lif_format_bier_init(unit, cur_table_param, table_info));
+    SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_in_lif_format_dummy_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_in_lif_format_evpn_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_in_lif_ipvx_tunnels_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_mdb_auto_generated_standard_1_standard_1_mdb_definition_in_lif_format_mim_init(unit, cur_table_param, table_info));

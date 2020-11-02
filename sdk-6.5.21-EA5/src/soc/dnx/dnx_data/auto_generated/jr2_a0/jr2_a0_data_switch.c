@@ -764,6 +764,34 @@ exit:
 }
 
 
+static shr_error_e
+jr2_a0_dnx_data_switch_feature_silent_dummy_lif_lookup_set(
+    int unit)
+{
+    dnxc_data_feature_t *feature;
+    int module_index = dnx_data_module_switch;
+    int submodule_index = dnx_data_switch_submodule_feature;
+    int feature_index = dnx_data_switch_feature_silent_dummy_lif_lookup;
+    SHR_FUNC_INIT_VARS(unit);
+
+    feature = &_dnxc_data[unit].modules[module_index].submodules[submodule_index].features[feature_index];
+
+    feature->default_data = 0;
+
+
+    feature->data = 0;
+
+
+    feature->flags |= DNXC_DATA_F_SUPPORTED;
+
+
+    SHR_IF_ERR_EXIT(dnxc_data_dyn_loader_feature_value_set(unit, feature));
+
+exit:
+    SHR_FUNC_EXIT;
+}
+
+
 
 
 
@@ -872,6 +900,9 @@ jr2_a0_data_switch_attach(
     data_index = dnx_data_switch_feature_excluded_header_bits_from_hash;
     feature = &submodule->features[data_index];
     feature->set = jr2_a0_dnx_data_switch_feature_excluded_header_bits_from_hash_set;
+    data_index = dnx_data_switch_feature_silent_dummy_lif_lookup;
+    feature = &submodule->features[data_index];
+    feature->set = jr2_a0_dnx_data_switch_feature_silent_dummy_lif_lookup_set;
 
     
 

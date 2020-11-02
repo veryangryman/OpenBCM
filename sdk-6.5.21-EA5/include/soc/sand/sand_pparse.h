@@ -315,6 +315,12 @@ shr_error_e packet_rch(
     rhlist_t * args,
     uint32 *enabled);
 
+shr_error_e packet_rch_srv6_usp_psp(
+    int unit,
+    int core,
+    rhlist_t * args,
+    uint32 *enabled);
+
 shr_error_e packet_ftmh_opt(
     int unit,
     int core,

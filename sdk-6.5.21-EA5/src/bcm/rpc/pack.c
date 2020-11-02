@@ -25454,6 +25454,42 @@ _bcm_unpack_instru_ifa_info(uint8 *buf, bcm_instru_ifa_info_t *var)
 }
 
 uint8 *
+_bcm_pack_instru_ifit_encap_info(uint8 *buf, bcm_instru_ifit_encap_info_t *var)
+{
+	BCM_PACK_U32(buf, var->flags);
+	BCM_PACK_U32(buf, var->ifit_encap_id);
+	BCM_PACK_U8(buf, var->fieh_length);
+	BCM_PACK_U8(buf, var->fii_exp);
+	BCM_PACK_U8(buf, var->fii_ttl);
+	BCM_PACK_U32(buf, var->fih_flow_id);
+	BCM_PACK_U8(buf, var->fih_r_s_bits);
+	BCM_PACK_U8(buf, var->fih_header_type_indicator);
+	BCM_PACK_U32(buf, var->fieh_ext_data[0]);
+	BCM_PACK_U32(buf, var->fieh_ext_data[1]);
+	BCM_PACK_U32(buf, var->fieh_ext_data[2]);
+	BCM_PACK_U32(buf, var->qos_map_id);
+	return buf;
+}
+
+uint8 *
+_bcm_unpack_instru_ifit_encap_info(uint8 *buf, bcm_instru_ifit_encap_info_t *var)
+{
+	BCM_UNPACK_U32(buf, var->flags);
+	BCM_UNPACK_U32(buf, var->ifit_encap_id);
+	BCM_UNPACK_U8(buf, var->fieh_length);
+	BCM_UNPACK_U8(buf, var->fii_exp);
+	BCM_UNPACK_U8(buf, var->fii_ttl);
+	BCM_UNPACK_U32(buf, var->fih_flow_id);
+	BCM_UNPACK_U8(buf, var->fih_r_s_bits);
+	BCM_UNPACK_U8(buf, var->fih_header_type_indicator);
+	BCM_UNPACK_U32(buf, var->fieh_ext_data[0]);
+	BCM_UNPACK_U32(buf, var->fieh_ext_data[1]);
+	BCM_UNPACK_U32(buf, var->fieh_ext_data[2]);
+	BCM_UNPACK_U32(buf, var->qos_map_id);
+	return buf;
+}
+
+uint8 *
 _bcm_pack_instru_ipt(uint8 *buf, bcm_instru_ipt_t *var)
 {
 	BCM_PACK_U32(buf, var->node_type);
@@ -40461,6 +40497,7 @@ _bcm_pack_tunnel_terminator(uint8 *buf, bcm_tunnel_terminator_t *var)
 	BCM_PACK_U32(buf, var->egress_if);
 	BCM_PACK_U32(buf, var->default_vrf);
 	BCM_PACK_U32(buf, var->sci);
+	BCM_PACK_U32(buf, var->default_tunnel_id);
 	return buf;
 }
 
@@ -40529,6 +40566,7 @@ _bcm_unpack_tunnel_terminator(uint8 *buf, bcm_tunnel_terminator_t *var)
 	BCM_UNPACK_U32(buf, var->egress_if);
 	BCM_UNPACK_U32(buf, var->default_vrf);
 	BCM_UNPACK_U32(buf, var->sci);
+	BCM_UNPACK_U32(buf, var->default_tunnel_id);
 	return buf;
 }
 

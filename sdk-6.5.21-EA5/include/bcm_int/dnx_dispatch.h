@@ -3781,6 +3781,10 @@ extern int bcm_dnx_instru_ifa_encap_create(int,bcm_instru_ifa_info_t *);
 extern int bcm_dnx_instru_ifa_encap_delete(int,bcm_instru_ifa_info_t *);
 extern int bcm_dnx_instru_ifa_encap_get(int,bcm_instru_ifa_info_t *);
 extern int bcm_dnx_instru_ifa_encap_traverse(int,bcm_instru_ifa_encap_traverse_cb,void *);
+extern int bcm_dnx_instru_ifit_encap_create(int,bcm_instru_ifit_encap_info_t *);
+extern int bcm_dnx_instru_ifit_encap_delete(int,bcm_instru_ifit_encap_info_t *);
+extern int bcm_dnx_instru_ifit_encap_get(int,bcm_instru_ifit_encap_info_t *);
+extern int bcm_dnx_instru_ifit_encap_traverse(int,bcm_instru_ifit_encap_traverse_cb,void *);
 extern int bcm_dnx_instru_ipt_profile_get(int,uint32,int,bcm_instru_ipt_t *);
 extern int bcm_dnx_instru_ipt_profile_set(int,uint32,int,bcm_instru_ipt_t *);
 /* bcm_instru_ipt_t_init not dispatchable */

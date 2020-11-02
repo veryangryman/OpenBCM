@@ -14,6 +14,7 @@
  * Include files.
  * {
  */
+#include <shared/shrextend/shrextend_debug.h>
 #include "tunnel_term_txsci.h"
 #include <soc/dnx/dbal/dbal.h>
 #include <bcm/types.h>
@@ -64,8 +65,50 @@ typedef enum
      * The TXSCI will used for the TT lookup.
      */
 
-    TUNNEL_TERM_LOOKUP_TYPE_TXSCI = 2
+    TUNNEL_TERM_LOOKUP_TYPE_TXSCI = 2,
+
+    /*
+     * CASCADED indicate the result from previous TCAM lookup is used as key in this lookup
+     * Note: lookup SIP6 -> sip_idx_data, configured by bcm_tunnel_terminator_config_add API
+     * tunnel_class is used in bcm_tunnel_terminator_create, but it's not cascaded because it's not from TCAM db.
+     */
+    TUNNEL_TERM_LOOKUP_TYPE_CASCADED = 3,
+
+    /*
+     * unsupported lookup type
+     */
+    TUNNEL_TERM_LOOKUP_TYPE_UNSUPPORTED = 4
 } tunnel_term_lookup_type_e;
+
+/**
+ * \brief
+ * Information copied from bcm_tunnel_terminator_t struct and bcm_tunnel_terminator_config_key_t
+ * to configure ipv6 tcam table key
+ * Since both bcm_tunnel_terminator and bcm_tunnel_terminator_config APIs can configure IPv6 tcam table
+ */
+typedef struct dnx_tunnel_term_ipv6_tcam_table_key_s
+{
+    bcm_tunnel_type_t type;     /* Tunnel type */
+    uint32 udp_dst_port;        /* UDP dst port for UDP packets. */
+    bcm_ip6_t dip6;             /* DIP for tunnel header match (IPv6). */
+    bcm_ip6_t dip6_mask;        /* Destination IP mask (IPv6). */
+    bcm_vrf_t vrf;              /* Virtual router instance. */
+} dnx_tunnel_term_ipv6_tcam_table_key_t;
+
+typedef struct dnx_tunnel_term_ipv6_tcam_table_result_s
+{
+    uint32 dip_idx_data_or_local_inlif; /* depending on dip_idx_type (see result_dbal_field), it indicates: - index, to
+                                         * be used for next lookup - index or default inlif if next lookup is not found
+                                         */
+    dbal_fields_e result_dbal_field;    /* dip_idx_type is encoded in the dbal field prefix. See field type:
+                                         * IRPP_CROSS_STAGE_VAR_2 */
+} dnx_tunnel_term_ipv6_tcam_table_result_t;
+
+typedef struct dnx_tunnel_term_range_s
+{
+    uint32 start_range;
+    uint32 end_range;
+} dnx_tunnel_term_range_t;
 
 /** mask indicating that exact match is requested by the user */
 #define DNX_TUNNEL_TERM_EM_IP_MASK 0xFFFFFFFF
@@ -75,8 +118,7 @@ typedef enum
  BCM_TUNNEL_TERM_WLAN_REMOTE_TERMINATE |     BCM_TUNNEL_TERM_WLAN_SET_ROAM   | \
  BCM_TUNNEL_INIT_IPV4_SET_DF           |     BCM_TUNNEL_INIT_IPV6_SET_DF | \
  BCM_TUNNEL_INIT_IP4_ID_SET_FIXED      |   \
- BCM_TUNNEL_INIT_WLAN_MTU             |     BCM_TUNNEL_INIT_WLAN_FRAG_ENABLE | \
- BCM_TUNNEL_INIT_WLAN_VLAN_TAGGED     |     BCM_TUNNEL_INIT_WLAN_TUNNEL_WITH_ID | \
+ BCM_TUNNEL_INIT_WLAN_TUNNEL_WITH_ID   | \
  BCM_TUNNEL_TERM_USE_OUTER_DSCP | BCM_TUNNEL_TERM_USE_OUTER_TTL | \
  BCM_TUNNEL_TERM_KEEP_INNER_DSCP)
 #define DNX_TUNNEL_TERM_EM_L2TPV2_UDP_DST_PORT 1701
@@ -88,6 +130,27 @@ typedef enum
 
 #define DNX_TUNNEL_TERM_TYPE_IS_VXLAN_GPE(_tunnel_type) ((_tunnel_type == bcmTunnelTypeVxlanGpe) || (_tunnel_type == bcmTunnelTypeVxlan6Gpe))
 
+#define DNX_TUNNEL_TERM_IS_SRV6_WITH_96_LOCATOR(_info)  (_SHR_IS_FLAG_SET(_info->flags, BCM_TUNNEL_TERM_UP_TO_96_LOCATOR_SEGMENT_ID))
+#define DNX_TUNNEL_TERM_IS_SRV6_WITH_64_LOCATOR(_info)  (_SHR_IS_FLAG_SET(_info->flags, BCM_TUNNEL_TERM_UP_TO_64_LOCATOR_SEGMENT_ID))
+#define DNX_TUNNEL_TERM_IS_SRV6_WITH_GENERALIZED_SEGMENT_ID(_info)  (_SHR_IS_FLAG_SET(_info->flags, BCM_TUNNEL_TERM_GENERALIZED_SEGMENT_ID))
+#define DNX_TUNNEL_TERM_IS_SRV6_WITH_MICRO_SEGMENT_ID(_info)  (_SHR_IS_FLAG_SET(_info->flags, BCM_TUNNEL_TERM_MICRO_SEGMENT_ID))
+
+#define DNX_TUNNEL_TERM_IS_SRV6_WITH_LOCATOR(_info) (DNX_TUNNEL_TERM_IS_SRV6_WITH_96_LOCATOR(_info) \
+                                                  || DNX_TUNNEL_TERM_IS_SRV6_WITH_64_LOCATOR(_info) \
+                                                  || DNX_TUNNEL_TERM_IS_SRV6_WITH_GENERALIZED_SEGMENT_ID(_info) \
+                                                  || DNX_TUNNEL_TERM_IS_SRV6_WITH_MICRO_SEGMENT_ID(_info))
+
+#define DNX_TUNNEL_TERM_IS_CASCADED_TYPE(_tunnel_type) (_tunnel_type == bcmTunnelTypeCascadedFunct)
+
+#define DNX_TUNNEL_TERM_IS_SRV6_WITH_FUNCT(_info)  (_info->type == bcmTunnelTypeCascadedFunct)
+
+#define DNX_TUNNEL_TERM_SRV6_SID_LOCATOR_END_BIT                      (UTILEX_PP_IPV6_ADDRESS_NOF_BITS - 1)
+#define DNX_TUNNEL_TERM_SRV6_SID_LOCATOR_START_BIT(_locator_nof_bits) (DNX_TUNNEL_TERM_SRV6_SID_LOCATOR_END_BIT - _locator_nof_bits + 1)
+#define DNX_TUNNEL_TERM_SRV6_SID_FUNCT_END_BIT(_locator_nof_bits)     (DNX_TUNNEL_TERM_SRV6_SID_LOCATOR_START_BIT(_locator_nof_bits) - 1)
+#define DNX_TUNNEL_TERM_SRV6_SID_FUNCT_START_BIT(_locator_nof_bits, _funct_nof_bits) (DNX_TUNNEL_TERM_SRV6_SID_FUNCT_END_BIT(_locator_nof_bits) - _funct_nof_bits + 1)
+#define DNX_TUNNEL_TERM_SRV6_SID_ARG_END_BIT(_locator_nof_bits, _funct_nof_bits) (DNX_TUNNEL_TERM_SRV6_SID_FUNCT_START_BIT(_locator_nof_bits, _funct_nof_bits) - 1)
+#define DNX_TUNNEL_TERM_SRV6_SID_ARG_START_BIT                        (0)
+
 /*
  * End of MACROs
  * }
@@ -97,42 +160,6 @@ typedef enum
  * Verify functions
  * {
  */
-
-/*
- * return the TT lookup type
- */
-static tunnel_term_lookup_type_e
-dnx_tunnel_terminator_lookup_type_get(
-    bcm_tunnel_type_t tunnel_type,
-    uint32 udp_dst_port)
-{
-    switch (tunnel_type)
-    {
-        case bcmTunnelTypeIpAnyIn6:
-        case bcmTunnelTypeGreAnyIn6:
-        case bcmTunnelTypeVxlan6:
-        case bcmTunnelTypeVxlan6Gpe:
-        case bcmTunnelTypeSR6:
-        case bcmTunnelTypeEthSR6:
-        case bcmTunnelTypeEthIn6:
-            return TUNNEL_TERM_LOOKUP_TYPE_IPV6;
-        case bcmTunnelTypeEsp:
-        case bcmTunnelTypeEsp6:
-            return TUNNEL_TERM_LOOKUP_TYPE_TXSCI;
-        case bcmTunnelTypeUdp6:
-        {
-            return (udp_dst_port ==
-                    DNX_TUNNEL_TERM_ESP_UDP_DST_PORT) ? TUNNEL_TERM_LOOKUP_TYPE_TXSCI : TUNNEL_TERM_LOOKUP_TYPE_IPV6;
-        }
-        case bcmTunnelTypeUdp:
-        {
-            return (udp_dst_port ==
-                    DNX_TUNNEL_TERM_ESP_UDP_DST_PORT) ? TUNNEL_TERM_LOOKUP_TYPE_TXSCI : TUNNEL_TERM_LOOKUP_TYPE_IPV4;
-        }
-        default:
-            return TUNNEL_TERM_LOOKUP_TYPE_IPV4;
-    }
-}
 
 static void
 dnx_tunnel_terminator_type_is_supported_with_usid(
@@ -167,6 +194,7 @@ dnx_tunnel_terminator_type_is_supported_with_extended_termination_and_cross_conn
         case bcmTunnelTypeSR6:
         case bcmTunnelTypeEthSR6:
         case bcmTunnelTypeEthIn6:
+        case bcmTunnelTypeCascadedFunct:
             *is_supported_with_extended_term_and_cross_connect = TRUE;
             break;
         default:
@@ -174,6 +202,100 @@ dnx_tunnel_terminator_type_is_supported_with_extended_termination_and_cross_conn
             break;
     }
 }
+
+static uint8
+dnx_tunnel_terminator_tunnel_type_is_ipv6(
+    bcm_tunnel_type_t tunnel_type)
+{
+    switch (tunnel_type)
+    {
+        case bcmTunnelTypeIpAnyIn6:
+        case bcmTunnelTypeGreAnyIn6:
+        case bcmTunnelTypeVxlan6:
+        case bcmTunnelTypeVxlan6Gpe:
+        case bcmTunnelTypeUdp6:
+        case bcmTunnelTypeSR6:
+        case bcmTunnelTypeEthSR6:
+        case bcmTunnelTypeEthIn6:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+static uint8
+dnx_tunnel_terminator_tunnel_type_is_ipv4(
+    bcm_tunnel_type_t tunnel_type)
+{
+    switch (tunnel_type)
+    {
+        case bcmTunnelTypeGreAnyIn4:
+        case bcmTunnelTypeIpAnyIn4:
+        case bcmTunnelTypeUdp:
+        case bcmTunnelTypeVxlan:
+        case bcmTunnelTypeVxlanGpe:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+static uint8
+dnx_tunnel_terminator_tunnel_type_is_txsci(
+    bcm_tunnel_type_t tunnel_type)
+{
+    switch (tunnel_type)
+    {
+        case bcmTunnelTypeEsp:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+static uint8
+dnx_tunnel_terminator_tunnel_type_is_cascaded(
+    bcm_tunnel_type_t tunnel_type)
+{
+    switch (tunnel_type)
+    {
+        case bcmTunnelTypeCascadedFunct:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+/*
+ * return the TT lookup type
+ */
+static tunnel_term_lookup_type_e
+dnx_tunnel_terminator_lookup_type_get(
+    bcm_tunnel_type_t tunnel_type)
+{
+    if (dnx_tunnel_terminator_tunnel_type_is_ipv6(tunnel_type))
+    {
+        return TUNNEL_TERM_LOOKUP_TYPE_IPV6;
+    }
+    else if (dnx_tunnel_terminator_tunnel_type_is_ipv4(tunnel_type))
+    {
+        return TUNNEL_TERM_LOOKUP_TYPE_IPV4;
+    }
+    else if (dnx_tunnel_terminator_tunnel_type_is_txsci(tunnel_type))
+    {
+        return TUNNEL_TERM_LOOKUP_TYPE_TXSCI;
+    }
+    else if (dnx_tunnel_terminator_tunnel_type_is_cascaded(tunnel_type))
+    {
+        return TUNNEL_TERM_LOOKUP_TYPE_CASCADED;
+    }
+    else
+    {
+        return TUNNEL_TERM_LOOKUP_TYPE_UNSUPPORTED;
+
+    }
+}
+
 /**
  * \brief
  * Used by bcm_dnx_tunnel_terminator_create_verify and bcm_dnx_tunnel_terminator_get_verify functions
@@ -184,56 +306,12 @@ dnx_tunnel_terminator_tunnel_type_verify(
     int unit,
     bcm_tunnel_type_t tunnel_type)
 {
+    tunnel_term_lookup_type_e tunnel_term_lookup_type = dnx_tunnel_terminator_lookup_type_get(tunnel_type);
     SHR_FUNC_INIT_VARS(unit);
-
-    /*
-     * verify that tunnel type is supported
-     */
-    switch (tunnel_type)
+    if (tunnel_term_lookup_type == TUNNEL_TERM_LOOKUP_TYPE_UNSUPPORTED)
     {
-            /*
-             * This is the list of all supported tunnel types
-             */
-            /*
-             * IPv6 supported tunnel types
-             */
-        case bcmTunnelTypeIpAnyIn6:
-        case bcmTunnelTypeGreAnyIn6:
-        case bcmTunnelTypeVxlan6:
-        case bcmTunnelTypeVxlan6Gpe:
-        case bcmTunnelTypeUdp6:
-        case bcmTunnelTypeEsp6:
-        case bcmTunnelTypeEthSR6:
-        case bcmTunnelTypeEthIn6:
-            break;
-            /*
-             * IPv4 supported tunnel types
-             */
-        case bcmTunnelTypeGreAnyIn4:
-        case bcmTunnelTypeIpAnyIn4:
-        case bcmTunnelTypeEsp:
-        case bcmTunnelTypeUdp:
-        case bcmTunnelTypeVxlan:
-        case bcmTunnelTypeVxlanGpe:
-        case bcmTunnelTypeSR6:
-            break;
-            
-
-        case bcmTunnelTypeNone:
-        {
-            /*
-             * for tunnel termination, tunnelType is mandatory
-             */
-            SHR_ERR_EXIT(_SHR_E_PARAM, "Tunnel termination type value (%d) is invalid, type is a required field",
-                         tunnel_type);
-            break;
-        }
-        default:
-        {
-            SHR_ERR_EXIT(_SHR_E_PARAM, "Tunnel termination type value (%d) is not supported", tunnel_type);
-        }
+        SHR_ERR_EXIT(_SHR_E_PARAM, "Tunnel termination type value (%d) is not supported", tunnel_type);
     }
-
 exit:
     SHR_FUNC_EXIT;
 }
@@ -277,6 +355,29 @@ dnx_tunnel_terminator_srv6_l2vpn_type_get(
         {
             *tunnel_type = bcmTunnelTypeIpAnyIn6;
         }
+    }
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_ipv6_tcam_table_id_get(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dbal_tables_e * table_id)
+{
+    SHR_FUNC_INIT_VARS(unit);
+
+    SHR_NULL_CHECK(info, _SHR_E_PARAM, "info");
+    SHR_NULL_CHECK(table_id, _SHR_E_PARAM, "table_id");
+
+    if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_BUD))
+    {
+        *table_id = DBAL_TABLE_IPV6_MP_TT_TCAM_2ND_PASS;
+    }
+    else
+    {
+        *table_id = DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC;
     }
 exit:
     SHR_FUNC_EXIT;
@@ -358,7 +459,7 @@ dnx_tunnel_terminator_config_key_verify(
     SHR_NULL_CHECK(config_key, _SHR_E_PARAM, "config_key");
 
     /** Verify that tunnel type is IPv6 */
-    lookup_type = dnx_tunnel_terminator_lookup_type_get(config_key->type, config_key->udp_dst_port);
+    lookup_type = dnx_tunnel_terminator_lookup_type_get(config_key->type);
 
     if (lookup_type != TUNNEL_TERM_LOOKUP_TYPE_IPV6)
     {
@@ -366,9 +467,6 @@ dnx_tunnel_terminator_config_key_verify(
                      "tunnel_termintor_config APIs support only IPv6 P2P tunnels! Given config_key->type is %d",
                      config_key->type);
     }
-
-    /** Verify that tunnel type is supported */
-    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_tunnel_type_verify(unit, config_key->type));
 
     /** Verify VRF */
     if ((config_key->vrf < 0) || (config_key->vrf >= dnx_data_l3.vrf.nof_vrf_get(unit)))
@@ -393,6 +491,7 @@ exit:
  *   \retval Zero if no error was detected
  *   \retval Negative if error was detected. See \ref shr_error_e
  * \see
+ *  *
  */
 static shr_error_e
 dnx_tunnel_terminator_traverse_verify(
@@ -492,7 +591,7 @@ exit:
     SHR_FUNC_EXIT;
 }
 
-/** 
+/**
  * \brief
  *  ensure default_vrf is used only for vxlan-gpe cases
  */
@@ -518,6 +617,446 @@ exit:
     SHR_FUNC_EXIT;
 }
 
+static shr_error_e
+dnx_tunnel_terminator_sid_format_get(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dbal_enum_value_field_srv6_sid_formats_e * sid_format)
+{
+    SHR_FUNC_INIT_VARS(unit);
+
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_96_LOCATOR(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_96_BIT_LOCATOR;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_64_LOCATOR(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_64_BIT_LOCATOR;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_GENERALIZED_SEGMENT_ID(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_GENERALIZED_SEGMENT_ID;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_MICRO_SEGMENT_ID(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_MICRO_SEGMENT_ID;
+    }
+    else
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "Unsupported sid format");
+    }
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_gport_to_sid_format_add(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    uint32 entry_handle_id;
+    dbal_enum_value_field_srv6_sid_formats_e sid_format;
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_SRV6_SID_FORMATS_PER_TUNNEL_GPORT_SW, &entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_GPORT, info->tunnel_id);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_sid_format_get(unit, info, &sid_format));
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_SRV6_SID_FORMATS, INST_SINGLE, sid_format);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_gport_to_sid_format_get(
+    int unit,
+    bcm_gport_t gport,
+    dbal_enum_value_field_srv6_sid_formats_e * sid_format)
+{
+    uint32 entry_handle_id;
+    uint32 sid_format_uint32;
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_SRV6_SID_FORMATS_PER_TUNNEL_GPORT_SW, &entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_GPORT, gport);
+    SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_GET_ALL_FIELDS));
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field32_get
+                    (unit, entry_handle_id, DBAL_FIELD_SRV6_SID_FORMATS, INST_SINGLE, &sid_format_uint32));
+    *sid_format = sid_format_uint32;
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_gport_to_sid_format_delete(
+    int unit,
+    bcm_gport_t gport)
+{
+    uint32 entry_handle_id;
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_SRV6_SID_FORMATS_PER_TUNNEL_GPORT_SW, &entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_GPORT, gport);
+    SHR_IF_ERR_EXIT(dbal_entry_clear(unit, entry_handle_id, DBAL_COMMIT));
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_sid_format_to_locator_nof_bits(
+    int unit,
+    dbal_enum_value_field_srv6_sid_formats_e sid_format,
+    int *locator_nof_bits)
+{
+    SHR_FUNC_INIT_VARS(unit);
+
+    switch (sid_format)
+    {
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_96_BIT_LOCATOR:
+            *locator_nof_bits = 96;
+            break;
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_64_BIT_LOCATOR:
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_GENERALIZED_SEGMENT_ID:
+            *locator_nof_bits = 64;
+            break;
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_MICRO_SEGMENT_ID:
+            *locator_nof_bits = 48;
+            break;
+        default:
+            SHR_ERR_EXIT(_SHR_E_PARAM, "Locator nof bits is not supported for this sid format %d", sid_format);
+    }
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_sid_format_to_funct_nof_bits(
+    int unit,
+    dbal_enum_value_field_srv6_sid_formats_e sid_format,
+    int *funct_nof_bits)
+{
+    SHR_FUNC_INIT_VARS(unit);
+
+    switch (sid_format)
+    {
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_96_BIT_LOCATOR:
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_64_BIT_LOCATOR:
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_GENERALIZED_SEGMENT_ID:
+        case DBAL_ENUM_FVAL_SRV6_SID_FORMATS_MICRO_SEGMENT_ID:
+            *funct_nof_bits = 16;
+            break;
+        default:
+            SHR_ERR_EXIT(_SHR_E_PARAM, "Funct nof bits is not supported for this sid format %d", sid_format);
+    }
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_gport_to_locator_nof_bits(
+    int unit,
+    bcm_gport_t gport,
+    int *locator_nof_bits)
+{
+    dbal_enum_value_field_srv6_sid_formats_e sid_format;
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_gport_to_sid_format_get(unit, gport, &sid_format));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_sid_format_to_locator_nof_bits(unit, sid_format, locator_nof_bits));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_info_to_sid_format(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dbal_enum_value_field_srv6_sid_formats_e * sid_format)
+{
+    SHR_FUNC_INIT_VARS(unit);
+
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_96_LOCATOR(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_96_BIT_LOCATOR;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_64_LOCATOR(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_64_BIT_LOCATOR;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_GENERALIZED_SEGMENT_ID(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_GENERALIZED_SEGMENT_ID;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_MICRO_SEGMENT_ID(info))
+    {
+        *sid_format = DBAL_ENUM_FVAL_SRV6_SID_FORMATS_MICRO_SEGMENT_ID;
+    }
+    else
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "Sid format not supported for this flags %d", info->flags);
+    }
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_create_srv6_locator_nof_bits(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    int *locator_nof_bits)
+{
+    dbal_enum_value_field_srv6_sid_formats_e sid_format;
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_info_to_sid_format(unit, info, &sid_format));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_sid_format_to_locator_nof_bits(unit, sid_format, locator_nof_bits));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_create_srv6_locator_dip6_mask_expected_unmasked_range(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dnx_tunnel_term_range_t * expected_unmasked_range)
+{
+    int locator_nof_bits = 0;
+    SHR_FUNC_INIT_VARS(unit);
+    expected_unmasked_range->start_range = DNX_TUNNEL_TERM_SRV6_SID_ARG_START_BIT;
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_create_srv6_locator_nof_bits(unit, info, &locator_nof_bits));
+    expected_unmasked_range->end_range = DNX_TUNNEL_TERM_SRV6_SID_FUNCT_END_BIT(locator_nof_bits);
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_dip6_mask_is_unmasked_in_range(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dnx_tunnel_term_range_t * expected_unmasked_range,
+    uint8 *is_unmasked_in_range)
+{
+    uint32 dip6_mask_long[UTILEX_PP_IPV6_ADDRESS_NOF_UINT32S];
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(utilex_pp_ipv6_address_struct_to_long(info->dip6_mask, dip6_mask_long));
+    *is_unmasked_in_range =
+        (!utilex_bitstream_have_one_in_range
+         (dip6_mask_long, expected_unmasked_range->start_range, expected_unmasked_range->end_range));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_locator_dip6_mask_verify(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    dnx_tunnel_term_range_t expected_unmasked_range;
+    uint8 is_unmasked_in_range = FALSE;
+    SHR_FUNC_INIT_VARS(unit);
+    sal_memset(&expected_unmasked_range, 0, sizeof(dnx_tunnel_term_range_t));
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_create_srv6_locator_dip6_mask_expected_unmasked_range
+                    (unit, info, &expected_unmasked_range));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_dip6_mask_is_unmasked_in_range
+                    (unit, info, &expected_unmasked_range, &is_unmasked_in_range));
+    if (!is_unmasked_in_range)
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "dip6 mask is not expected to have masked bit between %d and %d",
+                     expected_unmasked_range.start_range, expected_unmasked_range.end_range);
+    }
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_locator_verify(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_locator_dip6_mask_verify(unit, info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_nof_bits(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    int *funct_nof_bits)
+{
+    dbal_enum_value_field_srv6_sid_formats_e sid_format;
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_gport_to_sid_format_get(unit, info->default_tunnel_id, &sid_format));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_sid_format_to_funct_nof_bits(unit, sid_format, funct_nof_bits));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_unmasked_lsb_range(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dnx_tunnel_term_range_t * expected_unmasked_range)
+{
+    int locator_nof_bits = 0;
+    int funct_nof_bits = 0;
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_gport_to_locator_nof_bits
+                    (unit, info->default_tunnel_id, &locator_nof_bits));
+    expected_unmasked_range->start_range = DNX_TUNNEL_TERM_SRV6_SID_ARG_START_BIT;
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_nof_bits(unit, info, &funct_nof_bits));
+    expected_unmasked_range->end_range = DNX_TUNNEL_TERM_SRV6_SID_ARG_END_BIT(locator_nof_bits, funct_nof_bits);
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_unmasked_msb_range(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dnx_tunnel_term_range_t * expected_unmasked_range)
+{
+    int locator_nof_bits = 0;
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_gport_to_locator_nof_bits
+                    (unit, info->default_tunnel_id, &locator_nof_bits));
+    expected_unmasked_range->start_range = DNX_TUNNEL_TERM_SRV6_SID_LOCATOR_START_BIT(locator_nof_bits);
+    expected_unmasked_range->end_range = DNX_TUNNEL_TERM_SRV6_SID_LOCATOR_END_BIT;
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_unmask_verify(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    dnx_tunnel_term_range_t expected_unmasked_ranges[2];
+    uint8 is_unmasked_in_range = FALSE;
+    int expected_unmasked_range_index = 0;
+    SHR_FUNC_INIT_VARS(unit);
+    sal_memset(expected_unmasked_ranges, 0, sizeof(expected_unmasked_ranges));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_unmasked_lsb_range
+                    (unit, info, &expected_unmasked_ranges[0]));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_unmasked_msb_range
+                    (unit, info, &expected_unmasked_ranges[1]));
+
+    for (expected_unmasked_range_index = 0; expected_unmasked_range_index < 2; expected_unmasked_range_index++)
+    {
+        dnx_tunnel_term_range_t expected_unmasked_range = expected_unmasked_ranges[expected_unmasked_range_index];
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_dip6_mask_is_unmasked_in_range
+                        (unit, info, &expected_unmasked_range, &is_unmasked_in_range));
+        if (!is_unmasked_in_range)
+        {
+            SHR_ERR_EXIT(_SHR_E_PARAM, "dip6 mask is not expected to have masked bit between %d and %d",
+                         expected_unmasked_range.start_range, expected_unmasked_range.end_range);
+        }
+    }
+
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_mask_range(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dnx_tunnel_term_range_t * expected_mask_range)
+{
+    int locator_nof_bits = 0;
+    int funct_nof_bits = 0;
+
+    SHR_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_gport_to_locator_nof_bits
+                    (unit, info->default_tunnel_id, &locator_nof_bits));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_nof_bits(unit, info, &funct_nof_bits));
+    expected_mask_range->start_range = DNX_TUNNEL_TERM_SRV6_SID_FUNCT_START_BIT(locator_nof_bits, funct_nof_bits);
+    expected_mask_range->end_range = DNX_TUNNEL_TERM_SRV6_SID_FUNCT_END_BIT(locator_nof_bits);
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_dip6_mask_is_fully_masked_in_range(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    dnx_tunnel_term_range_t * expected_masked_range,
+    uint8 *is_fully_masked_in_range)
+{
+    uint32 dip6_mask_long[UTILEX_PP_IPV6_ADDRESS_NOF_UINT32S];
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(utilex_pp_ipv6_address_struct_to_long(info->dip6_mask, dip6_mask_long));
+    *is_fully_masked_in_range =
+        (!utilex_bitstream_have_zero_in_range
+         (dip6_mask_long, expected_masked_range->start_range, expected_masked_range->end_range));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_mask_verify(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    dnx_tunnel_term_range_t expected_mask_range;
+    uint8 is_fully_masked_in_range = FALSE;
+    SHR_FUNC_INIT_VARS(unit);
+    sal_memset(&expected_mask_range, 0, sizeof(dnx_tunnel_term_range_t));
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_mask_range(unit, info, &expected_mask_range));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_dip6_mask_is_fully_masked_in_range
+                    (unit, info, &expected_mask_range, &is_fully_masked_in_range));
+    if (!is_fully_masked_in_range)
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "dip6 mask is expected to be fully mased between %d and %d",
+                     expected_mask_range.start_range, expected_mask_range.end_range);
+    }
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_verify(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_unmask_verify(unit, info));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_dip6_mask_expected_mask_verify(unit, info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_cascaded_verify(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    uint8 is_cascaded = DNX_TUNNEL_TERM_IS_CASCADED_TYPE(info->type);
+    uint8 is_valid_default_tunnel_id = (info->default_tunnel_id != 0);
+
+    SHR_FUNC_INIT_VARS(unit);
+
+    if (!is_valid_default_tunnel_id && is_cascaded)
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "We expect to have a valid default tunnel id with cascaded types");
+    }
+
+    if (is_valid_default_tunnel_id && !is_cascaded)
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "default_tunnel_id field is supported with cascaded type only");
+    }
+
+exit:
+    SHR_FUNC_EXIT;
+}
 /**
  * \brief
  * Used by bcm_dnx_tunnel_terminator_create to verify info struct.
@@ -540,7 +1079,7 @@ dnx_tunnel_terminator_create_verify(
     /** Verify VRF */
     SHR_IF_ERR_EXIT(dnx_tunnel_terminator_create_vrf_verify(unit, info->vrf, "vrf"));
 
-    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type, info->udp_dst_port);
+    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type);
 
     /** check REPLACE flag, must be used with WITH_ID flag */
     if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_REPLACE) &&
@@ -563,7 +1102,7 @@ dnx_tunnel_terminator_create_verify(
     /** Verify P2P is used only for SRv6 tunnels or uSID where SRH may not be present */
     if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_CROSS_CONNECT)
         && !type_is_supported_with_extended_termination_and_cross_connect
-        && !_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_MICRO_SEGMENT_ID))
+        && !DNX_TUNNEL_TERM_IS_SRV6_WITH_MICRO_SEGMENT_ID(info))
     {
         SHR_ERR_EXIT(_SHR_E_PARAM,
                      "BCM_TUNNEL_TERM_CROSS_CONNECT is supported only with tunnel types bcmTunnelTypeSR6, bcmTunnelTypeIpAnyIn6, bcmTunnelTypeEthIn6 or bcmTunnelTypeEthSR6"
@@ -593,11 +1132,24 @@ dnx_tunnel_terminator_create_verify(
 
     /** Check if the USID flag is used with tunnel type, which supports it*/
     dnx_tunnel_terminator_type_is_supported_with_usid(unit, info->type, &type_is_supported_with_usid);
-    if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_MICRO_SEGMENT_ID) && !type_is_supported_with_usid)
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_MICRO_SEGMENT_ID(info) && !type_is_supported_with_usid)
     {
         SHR_ERR_EXIT(_SHR_E_PARAM,
                      "uSID is supported only with tunnel type bcmTunnelTypeIpAnyIn6, bcmTunnelTypeSR6 or bcmTunnelTypeUdp6");
     }
+
+    /** check if the SID is compatible with expected locator bits */
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_LOCATOR(info))
+    {
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_locator_verify(unit, info));
+    }
+
+    /** check if the SID is compatible with expected funct bits */
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_FUNCT(info))
+    {
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_verify(unit, info));
+    }
+
     /** Verify the udp source port are not supplied as API input*/
     if (info->udp_src_port != 0)
     {
@@ -712,6 +1264,8 @@ dnx_tunnel_terminator_create_verify(
 
     SHR_IF_ERR_EXIT(dnx_tunnel_terminator_create_default_vrf_verify(unit, info));
 
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_cascaded_verify(unit, info));
+
 exit:
     SHR_FUNC_EXIT;
 }
@@ -731,6 +1285,30 @@ dnx_tunnel_terminator_struct_verify(
 
     /** verify that tunnel type is supported */
     SHR_IF_ERR_EXIT(dnx_tunnel_terminator_tunnel_type_verify(unit, info->type));
+
+
+
+    /*
+     * Duplicated validation below with dnx_tunnel_terminator_create_verify
+     */
+
+    /** check if the SID is compatible with expected locator bits */
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_LOCATOR(info))
+    {
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_locator_verify(unit, info));
+    }
+
+    /** check if the SID is compatible with expected funct bits */
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_FUNCT(info))
+    {
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_verify(unit, info));
+    }
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_cascaded_verify(unit, info));
+
+    /*
+     * end of duplicated validation below with dnx_tunnel_terminator_create_verify
+     */
 
 exit:
     SHR_FUNC_EXIT;
@@ -942,7 +1520,6 @@ dnx_tunnel_terminator_type_to_next_layer_type(
         case bcmTunnelTypeVxlan6Gpe:
         case bcmTunnelTypeUdp6:
         case bcmTunnelTypeEsp:
-        case bcmTunnelTypeEsp6:
         
         case bcmTunnelTypeIp6In6:
         {
@@ -1014,16 +1591,6 @@ dnx_tunnel_terminator_type_to_ipv6_additional_headers(
              *              IPv6 second additional header = NONE
              */
             *first_additional_header = DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE;
-            *second_additional_header = DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE;
-            break;
-        }
-        case bcmTunnelTypeEsp6:
-        {
-            /*
-             * IPv6 tunnel: IPv6 first additional header = ESP
-             *              IPv6 second additional header = NONE
-             */
-            *first_additional_header = DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_ESP;
             *second_additional_header = DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE;
             break;
         }
@@ -1203,6 +1770,7 @@ exit:
  *  - dnx_tunnel_terminator_lookup_add_ipv4
  *  - dnx_tunnel_terminator_lookup_get_ipv4
  *  - dnx_tunnel_terminator_lookup_delete_ipv4
+ *
  */
 static shr_error_e
 dnx_tunnel_terminator_lookup_key_set_ipv4(
@@ -1284,7 +1852,7 @@ dnx_tunnel_terminator_lookup_key_tunnel_class_get(
 
     *tunnel_class = info->tunnel_class;
 
-    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type, info->udp_dst_port);
+    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type);
 
     if (lookup_type == TUNNEL_TERM_LOOKUP_TYPE_IPV6)
     {
@@ -1304,6 +1872,192 @@ dnx_tunnel_terminator_lookup_key_tunnel_class_get(
 
 exit:
     SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
+ * Set tunnel termination config lookup key to DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC
+ *
+ *   \param [in] unit - Relevant unit.
+ *   \param [in] entry_handle_id - DBAL entry handle id
+ *   \param [in] tcam_table_key - tunnel termination key struct
+ *
+ * Used for cascaded tunnel termination lookup configuration:
+ *   1) {DIP, VRF, Tunnel type} -> my-vtep-index (config_action.tunnel_class) - bcm_tunnel_terminator_config_add
+ *   2) {SIP, my-vtep-index, VRF} -> IP-Tunnel In-LIF                         - bcm_tunnel_terminator_create
+ *
+ * Shared by:
+ *  - bcm_dnx_tunnel_terminator_config_add
+ *  - bcm_dnx_tunnel_terminator_config_get
+ *  - bcm_dnx_tunnel_terminator_config_delete
+ *
+ */
+static shr_error_e
+dnx_tunnel_terminator_ipv6_tcam_table_key_set_internal(
+    int unit,
+    uint32 entry_handle_id,
+    dnx_tunnel_term_ipv6_tcam_table_key_t * tcam_table_key)
+{
+    uint32 first_additional_header = 0;
+    uint32 second_additional_header = 0;
+
+    SHR_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_type_to_ipv6_additional_headers
+                    (unit, tcam_table_key->type, tcam_table_key->udp_dst_port, &first_additional_header,
+                     &second_additional_header));
+
+    dbal_entry_key_field_arr8_masked_set(unit, entry_handle_id, DBAL_FIELD_IPV6_DIP, tcam_table_key->dip6,
+                                         tcam_table_key->dip6_mask);
+
+    if (first_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
+    {
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_1ST,
+                                   first_additional_header);
+    }
+
+    if (second_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
+    {
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_2ND,
+                                   second_additional_header);
+    }
+
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_VRF, tcam_table_key->vrf);
+
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static void
+dnx_tunnel_term_config_key_to_ipv6_tcam_table_key(
+    bcm_tunnel_terminator_config_key_t * config_key,
+    dnx_tunnel_term_ipv6_tcam_table_key_t * tcam_table_key)
+{
+    tcam_table_key->type = config_key->type;
+    tcam_table_key->udp_dst_port = config_key->udp_dst_port;
+    sal_memcpy(tcam_table_key->dip6, config_key->dip6, sizeof(bcm_ip6_t));
+    sal_memcpy(tcam_table_key->dip6_mask, config_key->dip6_mask, sizeof(bcm_ip6_t));
+    tcam_table_key->vrf = config_key->vrf;
+}
+
+static void
+dnx_tunnel_term_to_ipv6_tcam_table_key(
+    bcm_tunnel_terminator_t * tunnel_terminator,
+    dnx_tunnel_term_ipv6_tcam_table_key_t * tcam_table_key)
+{
+    tcam_table_key->type = tunnel_terminator->type;
+    tcam_table_key->udp_dst_port = tunnel_terminator->udp_dst_port;
+    sal_memcpy(tcam_table_key->dip6, tunnel_terminator->dip6, sizeof(bcm_ip6_t));
+    sal_memcpy(tcam_table_key->dip6_mask, tunnel_terminator->dip6_mask, sizeof(bcm_ip6_t));
+    tcam_table_key->vrf = tunnel_terminator->vrf;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_config_ipv6_tcam_table_key_set(
+    int unit,
+    uint32 entry_handle_id,
+    bcm_tunnel_terminator_config_key_t * config_key)
+{
+    dnx_tunnel_term_ipv6_tcam_table_key_t tcam_table_key;
+    SHR_FUNC_INIT_VARS(unit);
+    dnx_tunnel_term_config_key_to_ipv6_tcam_table_key(config_key, &tcam_table_key);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_key_set_internal(unit, entry_handle_id, &tcam_table_key));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_ipv6_tcam_table_key_set(
+    int unit,
+    uint32 entry_handle_id,
+    bcm_tunnel_terminator_t * info)
+{
+    dnx_tunnel_term_ipv6_tcam_table_key_t tcam_table_key;
+    SHR_FUNC_INIT_VARS(unit);
+    dnx_tunnel_term_to_ipv6_tcam_table_key(info, &tcam_table_key);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_key_set_internal(unit, entry_handle_id, &tcam_table_key));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static void
+dnx_tunnel_term_to_ipv6_tcam_table_result_dbal_field(
+    bcm_tunnel_terminator_t * info,
+    dbal_fields_e * result_dbal_field)
+{
+
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_96_LOCATOR(info))
+    {
+        *result_dbal_field = DBAL_FIELD_CLASSIC_SID_LOCATER96_FUNCTION_16;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_64_LOCATOR(info))
+    {
+        *result_dbal_field = DBAL_FIELD_CLASSIC_SID_LOCATER64_FUNCTION_16;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_GENERALIZED_SEGMENT_ID(info))
+    {
+        *result_dbal_field = DBAL_FIELD_GSID_PREFIX_48_GSID_16;
+    }
+    else if (DNX_TUNNEL_TERM_IS_SRV6_WITH_MICRO_SEGMENT_ID(info))
+    {
+        *result_dbal_field = DBAL_FIELD_USID_PREFIX_32_USID_16;
+    }
+    else
+    {
+        *result_dbal_field = DBAL_FIELD_IN_LIF;
+    }
+}
+
+static void
+dnx_tunnel_term_to_ipv6_tcam_table_result(
+    bcm_tunnel_terminator_t * info,
+    uint32 dip_idx_data_or_local_inlif,
+    dnx_tunnel_term_ipv6_tcam_table_result_t * tcam_table_result)
+{
+    tcam_table_result->dip_idx_data_or_local_inlif = dip_idx_data_or_local_inlif;
+    dnx_tunnel_term_to_ipv6_tcam_table_result_dbal_field(info, &tcam_table_result->result_dbal_field);
+}
+
+static void
+dnx_tunnel_term_ipv6_tcam_table_result_set_internal(
+    int unit,
+    uint32 entry_handle_id,
+    dnx_tunnel_term_ipv6_tcam_table_result_t * tcam_table_result)
+{
+    dbal_entry_value_field32_set(unit, entry_handle_id, tcam_table_result->result_dbal_field, INST_SINGLE,
+                                 tcam_table_result->dip_idx_data_or_local_inlif);
+}
+
+static void
+dnx_tunnel_terminator_ipv6_tcam_table_result_set(
+    int unit,
+    uint32 entry_handle_id,
+    bcm_tunnel_terminator_t * info,
+    uint32 local_inlif)
+{
+    dnx_tunnel_term_ipv6_tcam_table_result_t tcam_table_result;
+    dnx_tunnel_term_to_ipv6_tcam_table_result(info, local_inlif, &tcam_table_result);
+    dnx_tunnel_term_ipv6_tcam_table_result_set_internal(unit, entry_handle_id, &tcam_table_result);
+}
+
+static void
+dnx_tunnel_term_config_key_to_ipv6_tcam_table_result(
+    uint32 tunnel_class,
+    dnx_tunnel_term_ipv6_tcam_table_result_t * tcam_table_result)
+{
+    tcam_table_result->result_dbal_field = DBAL_FIELD_DIP_IDX_INTERMIDIATE;
+    tcam_table_result->dip_idx_data_or_local_inlif = tunnel_class;
+}
+
+static void
+dnx_tunnel_terminator_config_ipv6_tcam_table_result_set(
+    int unit,
+    uint32 entry_handle_id,
+    uint32 tunnel_class)
+{
+    dnx_tunnel_term_ipv6_tcam_table_result_t tcam_table_result;
+    dnx_tunnel_term_config_key_to_ipv6_tcam_table_result(tunnel_class, &tcam_table_result);
+    dnx_tunnel_term_ipv6_tcam_table_result_set_internal(unit, entry_handle_id, &tcam_table_result);
 }
 
 /**
@@ -1501,53 +2255,19 @@ dnx_tunnel_terminator_lookup_add_ipv6_mp(
 {
     uint32 entry_access_id;
     uint32 entry_handle_id;
-    uint32 first_additional_header = 0;
-    uint32 second_additional_header = 0;
+
     int core = DBAL_CORE_ALL;
+    dbal_tables_e tcam_table_id;
 
     SHR_FUNC_INIT_VARS(unit);
     DBAL_FUNC_INIT_VARS(unit);
 
-    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_type_to_ipv6_additional_headers
-                    (unit, info->type, info->udp_dst_port, &first_additional_header, &second_additional_header));
-    if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_BUD))
-    {
-        SHR_IF_ERR_EXIT(dnx_field_entry_access_id_create
-                        (unit, core, DBAL_TABLE_IPV6_MP_TT_TCAM_2ND_PASS, info->priority, &entry_access_id));
-        SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_2ND_PASS, &entry_handle_id));
-    }
-    else
-    {
-        SHR_IF_ERR_EXIT(dnx_field_entry_access_id_create
-                        (unit, core, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC, info->priority, &entry_access_id));
-        SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC, &entry_handle_id));
-    }
-
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_id_get(unit, info, &tcam_table_id));
+    SHR_IF_ERR_EXIT(dnx_field_entry_access_id_create(unit, core, tcam_table_id, info->priority, &entry_access_id));
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, tcam_table_id, &entry_handle_id));
     SHR_IF_ERR_EXIT(dbal_entry_handle_access_id_set(unit, entry_handle_id, entry_access_id));
-
-    dbal_entry_key_field_arr8_masked_set(unit, entry_handle_id, DBAL_FIELD_IPV6_DIP, info->dip6, info->dip6_mask);
-
-    /** add additional header only when additional header exist.
-     *  Ex: parser recognize additional header hop-by-hop,
-     *  tunnel lookup DIP, SIP, VRF, tunnel_type: ipanyin6 should
-     *  hit.
-     */
-    if (first_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_1ST,
-                                   first_additional_header);
-    }
-
-    if (second_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_2ND,
-                                   second_additional_header);
-    }
-
-    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_VRF, info->vrf);
-
-    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_IN_LIF, INST_SINGLE, local_inlif);
-
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_key_set(unit, entry_handle_id, info));
+    dnx_tunnel_terminator_ipv6_tcam_table_result_set(unit, entry_handle_id, info, local_inlif);
     SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
 
 exit:
@@ -1574,52 +2294,136 @@ dnx_tunnel_terminator_lookup_get_ipv6_mp(
     uint32 *local_inlif)
 {
     uint32 entry_access_id;
-    uint32 entry_handle_id, table_id, tcam_handler_id;
-    uint32 first_additional_header = 0;
-    uint32 second_additional_header = 0;
+    uint32 entry_handle_id, tcam_handler_id;
+    dbal_tables_e table_id;
+    dbal_fields_e result_dbal_field;
 
     SHR_FUNC_INIT_VARS(unit);
     DBAL_FUNC_INIT_VARS(unit);
 
-    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_type_to_ipv6_additional_headers
-                    (unit, info->type, info->udp_dst_port, &first_additional_header, &second_additional_header));
-    /** If  BCM_TUNNEL_TERM_BUD flag is set - read from 2nd pass termination  table.*/
-    if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_BUD))
-    {
-        table_id = DBAL_TABLE_IPV6_MP_TT_TCAM_2ND_PASS;
-    }
-    else
-    {
-        table_id = DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC;
-    }
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_id_get(unit, info, &table_id));
+
     SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, table_id, &entry_handle_id));
-    dbal_entry_key_field_arr8_masked_set(unit, entry_handle_id, DBAL_FIELD_IPV6_DIP, info->dip6, info->dip6_mask);
 
-    if (first_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_1ST,
-                                   first_additional_header);
-    }
-
-    if (second_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_2ND,
-                                   second_additional_header);
-    }
-
-    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_VRF, info->vrf);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_key_set(unit, entry_handle_id, info));
 
     SHR_IF_ERR_EXIT(dbal_tables_tcam_handler_id_get(unit, table_id, &tcam_handler_id));
     SHR_IF_ERR_EXIT_NO_MSG(dbal_entry_access_id_by_key_get(unit, entry_handle_id, &entry_access_id, DBAL_COMMIT));
     SHR_IF_ERR_EXIT(dbal_entry_handle_access_id_set(unit, entry_handle_id, entry_access_id));
     SHR_IF_ERR_EXIT(dnx_field_tcam_handler_entry_priority_get
                     (unit, tcam_handler_id, entry_access_id, (uint32 *) &(info->priority)));
-
     /** Set pointer to receive field - {in LIF} */
-    dbal_value_field32_request(unit, entry_handle_id, DBAL_FIELD_IN_LIF, INST_SINGLE, local_inlif);
-
+    dnx_tunnel_term_to_ipv6_tcam_table_result_dbal_field(info, &result_dbal_field);
+    dbal_value_field32_request(unit, entry_handle_id, result_dbal_field, INST_SINGLE, local_inlif);
     SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_COMMIT));
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
 
+static shr_error_e
+dnx_tunnel_terminator_srv6_funct_value_get(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    uint32 *funct)
+{
+    int locator_nof_bits = 0;
+    int funct_nof_bits = 0;
+    uint32 start_bit;
+    uint32 dip6_long[UTILEX_PP_IPV6_ADDRESS_NOF_UINT32S];
+
+    SHR_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_gport_to_locator_nof_bits
+                    (unit, info->default_tunnel_id, &locator_nof_bits));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_nof_bits(unit, info, &funct_nof_bits));
+    start_bit = UTILEX_PP_IPV6_ADDRESS_NOF_BITS - locator_nof_bits - funct_nof_bits;
+    SHR_IF_ERR_EXIT(utilex_pp_ipv6_address_struct_to_long(info->dip6, dip6_long));
+    SHR_IF_ERR_EXIT(utilex_bitstream_get_field(dip6_long, start_bit, funct_nof_bits, funct));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_srv6_dip_idx_data_get(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    uint32 *dip_idx_data)
+{
+    uint32 lif_flags;
+    dnx_algo_gpm_gport_hw_resources_t tunnel_term_gport_hw_resources;
+
+    SHR_FUNC_INIT_VARS(unit);
+
+    sal_memset(&tunnel_term_gport_hw_resources, 0, sizeof(dnx_algo_gpm_gport_hw_resources_t));
+    lif_flags = DNX_ALGO_GPM_GPORT_HW_RESOURCES_LOCAL_LIF_INGRESS;
+    SHR_IF_ERR_EXIT(dnx_algo_gpm_gport_to_hw_resources
+                    (unit, info->default_tunnel_id, lif_flags, &tunnel_term_gport_hw_resources));
+    *dip_idx_data = tunnel_term_gport_hw_resources.local_in_lif;
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_lookup_ipv6_cascaded_funct_key_set(
+    int unit,
+    uint32 entry_handle_id,
+    bcm_tunnel_terminator_t * info)
+{
+    uint32 funct = 0, dip_idx_data = 0;
+
+    SHR_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_funct_value_get(unit, info, &funct));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_ADDRESS_16, funct);
+
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_srv6_dip_idx_data_get(unit, info, &dip_idx_data));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_MP_TUNNEL_IDX, dip_idx_data);
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_lookup_add_or_delete_ipv6_cascaded_funct_key_set(
+    int unit,
+    uint32 entry_handle_id,
+    bcm_tunnel_terminator_t * info)
+{
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_ipv6_cascaded_funct_key_set(unit, entry_handle_id, info));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_CORE_ID, DBAL_CORE_ALL);
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_lookup_get_ipv6_cascaded_funct_key_set(
+    int unit,
+    uint32 entry_handle_id,
+    bcm_tunnel_terminator_t * info)
+{
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_ipv6_cascaded_funct_key_set(unit, entry_handle_id, info));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_CORE_ID, DBAL_CORE_DEFAULT);
+exit:
+    SHR_FUNC_EXIT;
+}
+
+static shr_error_e
+dnx_tunnel_terminator_lookup_add_ipv6_cascaded_funct(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    uint32 local_inlif)
+{
+    uint32 entry_handle_id;
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_TT_MP_EM_16, &entry_handle_id));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_add_or_delete_ipv6_cascaded_funct_key_set
+                    (unit, entry_handle_id, info));
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_IN_LIF, INST_SINGLE, local_inlif);
+    /** Write to HW */
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
 exit:
     DBAL_FUNC_FREE_VARS;
     SHR_FUNC_EXIT;
@@ -1634,6 +2438,7 @@ exit:
  *     information for the IPv4/IPv6 tunnel terminator entry.
  *   \param [in] local_inlif -
  *     Allocated Local-In-LIF.
+ *
  */
 static shr_error_e
 dnx_tunnel_terminator_lookup_add(
@@ -1647,7 +2452,7 @@ dnx_tunnel_terminator_lookup_add(
 
     SHR_NULL_CHECK(info, _SHR_E_PARAM, "info");
 
-    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type, info->udp_dst_port);
+    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type);
 
     if (lookup_type == TUNNEL_TERM_LOOKUP_TYPE_TXSCI)
     {
@@ -1663,6 +2468,11 @@ dnx_tunnel_terminator_lookup_add(
         {
             SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_add_ipv6_mp(unit, info, local_inlif));
         }
+    }
+    else if (lookup_type == TUNNEL_TERM_LOOKUP_TYPE_CASCADED)
+    {
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_add_ipv6_cascaded_funct(unit, info, local_inlif));
+
     }
     else
     {
@@ -1684,6 +2494,7 @@ exit:
  *     Allocated/Given Global-In-LIF.
  *   \param [in] local_inlif -
  *     Allocated Local-In-LIF.
+ *
  */
 static shr_error_e
 dnx_tunnel_terminator_global_lif_reclassify_add(
@@ -1916,6 +2727,26 @@ exit:
     SHR_FUNC_EXIT;
 }
 
+static shr_error_e
+dnx_tunnel_terminator_lookup_get_ipv6_cascaded_funct(
+    int unit,
+    bcm_tunnel_terminator_t * info,
+    uint32 *local_inlif)
+{
+    uint32 entry_handle_id;
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_TT_MP_EM_16, &entry_handle_id));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_get_ipv6_cascaded_funct_key_set(unit, entry_handle_id, info));
+    /** Set pointer to receive field - {in LIF} */
+    dbal_value_field32_request(unit, entry_handle_id, DBAL_FIELD_IN_LIF, INST_SINGLE, local_inlif);
+    /** Read from DBAL - check the returned value in calling function */
+    SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_COMMIT));
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
 /**
  * \brief
  * Get tunnel termination VTT lookup from HW (SEM or TCAM).
@@ -1945,7 +2776,7 @@ dnx_tunnel_terminator_lookup_get(
 
     SHR_NULL_CHECK(info, _SHR_E_PARAM, "info");
 
-    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type, info->udp_dst_port);
+    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type);
 
     if (lookup_type == TUNNEL_TERM_LOOKUP_TYPE_TXSCI)
     {
@@ -1961,6 +2792,10 @@ dnx_tunnel_terminator_lookup_get(
         {
             SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_get_ipv6_mp(unit, info, local_inlif));
         }
+    }
+    else if (lookup_type == TUNNEL_TERM_LOOKUP_TYPE_CASCADED)
+    {
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_get_ipv6_cascaded_funct(unit, info, local_inlif));
     }
     else
     {
@@ -2046,39 +2881,15 @@ dnx_tunnel_terminator_lookup_delete_ipv6_mp(
 {
     uint32 entry_access_id;
     uint32 entry_handle_id;
-    uint32 first_additional_header = 0;
-    uint32 second_additional_header = 0;
+    dbal_tables_e table_id;
 
     SHR_FUNC_INIT_VARS(unit);
     DBAL_FUNC_INIT_VARS(unit);
 
-    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_type_to_ipv6_additional_headers
-                    (unit, info->type, info->udp_dst_port, &first_additional_header, &second_additional_header));
-    /** If  BCM_TUNNEL_TERM_BUD flag is present, access 2nd pass termination table*/
-    if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_BUD))
-    {
-        SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_2ND_PASS, &entry_handle_id));
-    }
-    else
-    {
-        SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC, &entry_handle_id));
-    }
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_id_get(unit, info, &table_id));
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, table_id, &entry_handle_id));
 
-    dbal_entry_key_field_arr8_masked_set(unit, entry_handle_id, DBAL_FIELD_IPV6_DIP, info->dip6, info->dip6_mask);
-
-    if (first_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_1ST,
-                                   first_additional_header);
-    }
-
-    if (second_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_2ND,
-                                   second_additional_header);
-    }
-
-    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_VRF, info->vrf);
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_ipv6_tcam_table_key_set(unit, entry_handle_id, info));
 
     SHR_IF_ERR_EXIT(dbal_entry_access_id_by_key_get(unit, entry_handle_id, &entry_access_id, DBAL_COMMIT));
 
@@ -2086,14 +2897,7 @@ dnx_tunnel_terminator_lookup_delete_ipv6_mp(
 
     SHR_IF_ERR_EXIT(dbal_entry_clear(unit, entry_handle_id, DBAL_COMMIT));
 
-    if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_BUD))
-    {
-        SHR_IF_ERR_EXIT(dnx_field_entry_access_id_destroy(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_2ND_PASS, entry_access_id));
-    }
-    else
-    {
-        SHR_IF_ERR_EXIT(dnx_field_entry_access_id_destroy(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC, entry_access_id));
-    }
+    SHR_IF_ERR_EXIT(dnx_field_entry_access_id_destroy(unit, table_id, entry_access_id));
 
 exit:
     DBAL_FUNC_FREE_VARS;
@@ -2157,6 +2961,23 @@ exit:
     SHR_FUNC_EXIT;
 }
 
+static shr_error_e
+dnx_tunnel_terminator_lookup_delete_ipv6_cascaded_funct(
+    int unit,
+    bcm_tunnel_terminator_t * info)
+{
+    uint32 entry_handle_id;
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_TT_MP_EM_16, &entry_handle_id));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_add_or_delete_ipv6_cascaded_funct_key_set
+                    (unit, entry_handle_id, info));
+    SHR_IF_ERR_EXIT(dbal_entry_clear(unit, entry_handle_id, DBAL_COMMIT));
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
 /**
  * \brief
  * Delete tunnel termination VTT lookup from HW (SEM or TCAM).
@@ -2180,7 +3001,7 @@ dnx_tunnel_terminator_lookup_delete(
 
     SHR_NULL_CHECK(info, _SHR_E_PARAM, "info");
 
-    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type, info->udp_dst_port);
+    lookup_type = dnx_tunnel_terminator_lookup_type_get(info->type);
 
     if (lookup_type == TUNNEL_TERM_LOOKUP_TYPE_TXSCI)
     {
@@ -2196,6 +3017,11 @@ dnx_tunnel_terminator_lookup_delete(
         {
             SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_delete_ipv6_mp(unit, info));
         }
+    }
+    else if (lookup_type == TUNNEL_TERM_LOOKUP_TYPE_CASCADED)
+    {
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_delete_ipv6_cascaded_funct(unit, info));
+
     }
     else
     {
@@ -2461,7 +3287,7 @@ exit:
  *   \param [in] ecn_mapping_profile - ECN mapping profile
  *   \param [in] vrf - vrf retrieved from lif entry. 
  *   \param [out] local_inlif - Allocated Local-In-LIF.
- */
+ *   */
 static shr_error_e
 dnx_tunnel_terminator_allocate_lif_and_in_lif_table_set(
     int unit,
@@ -2478,7 +3304,7 @@ dnx_tunnel_terminator_allocate_lif_and_in_lif_table_set(
     lif_table_mngr_inlif_info_t lif_table_mngr_inlif_info;
     uint8 is_replace;
     dbal_enum_value_field_vtt_lif_service_type_e vtt_lif_service_type = DBAL_ENUM_FVAL_VTT_LIF_SERVICE_TYPE_P2MP;
-    dbal_enum_value_field_service_per_flow_e service_per_flow = DBAL_ENUM_FVAL_SERVICE_PER_FLOW_SRV6_CLASSIC_GRE_NO_TNI;
+    dbal_enum_value_field_service_per_flow_e service_per_flow = DBAL_ENUM_FVAL_SERVICE_PER_FLOW_GRE_NO_TNI;
     uint32 service_type = 0;
     uint8 set_service_type = FALSE;
 
@@ -2524,12 +3350,6 @@ dnx_tunnel_terminator_allocate_lif_and_in_lif_table_set(
         dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_DESTINATION, INST_SINGLE, 0);
     }
 
-    if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_MICRO_SEGMENT_ID))
-    {
-        set_service_type = TRUE;
-        service_per_flow = DBAL_ENUM_FVAL_SERVICE_PER_FLOW_SRV6_MICRO_SID_GRE_TNI_FODO;
-    }
-
     if (set_service_type)
     {
         SHR_IF_ERR_EXIT(dbal_fields_struct_field_encode
@@ -2555,7 +3375,7 @@ dnx_tunnel_terminator_allocate_lif_and_in_lif_table_set(
 
     /** NEXT_LAYER_NETWORK_DOMAIN determine by different API and is a key for choosing GTPV1U LIF.
      * Therefore, it must exist in the IP LIF
- */
+     * */
     if ((info->type == bcmTunnelTypeUdp) && (info->udp_dst_port == DNX_TUNNEL_TERM_GPTV1U_UDP_DST_PORT))
     {
         dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_NEXT_LAYER_NETWORK_DOMAIN, INST_SINGLE, 0);
@@ -2594,6 +3414,7 @@ exit:
  *   \param [out] flags - stat enable flag
  *   \param [out] fodo - forwarding domain 
  *   \param [out] vrf - vrf
+ *
  */
 static shr_error_e
 dnx_tunnel_terminator_in_lif_table_get(
@@ -2673,7 +3494,7 @@ dnx_tunnel_terminator_in_lif_table_get(
 
             SHR_IF_ERR_EXIT(dbal_fields_struct_field_decode
                             (unit, DBAL_FIELD_SERVICE_TYPE, DBAL_FIELD_PER_FLOW, &service_per_flow, dbal_field));
-            if (service_per_flow == DBAL_ENUM_FVAL_SERVICE_PER_FLOW_SRV6_MICRO_SID_GRE_TNI_FODO)
+            if (service_per_flow == DBAL_ENUM_FVAL_SERVICE_PER_FLOW_GRE_TNI_FODO)
             {
                 *flags |= BCM_TUNNEL_TERM_MICRO_SEGMENT_ID;
             }
@@ -2686,59 +3507,6 @@ dnx_tunnel_terminator_in_lif_table_get(
     }
 exit:
     DBAL_FUNC_FREE_VARS;
-    SHR_FUNC_EXIT;
-}
-
-/**
- * \brief
- * Set tunnel termination config lookup key to DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC
- *
- *   \param [in] unit - Relevant unit.
- *   \param [in] entry_handle_id - DBAL entry handle id
- *   \param [in] config_key - tunnel termination konfig key struct
- *
- * Used for cascaded tunnel termination lookup configuration:
- *   1) {DIP, VRF, Tunnel type} -> my-vtep-index (config_action.tunnel_class) - bcm_tunnel_terminator_config_add
- *   2) {SIP, my-vtep-index, VRF} -> IP-Tunnel In-LIF                         - bcm_tunnel_terminator_create
- *
- * Shared by:
- *  - bcm_dnx_tunnel_terminator_config_add
- *  - bcm_dnx_tunnel_terminator_config_get
- *  - bcm_dnx_tunnel_terminator_config_delete
- */
-static shr_error_e
-dnx_tunnel_terminator_config_lookup_key_set(
-    int unit,
-    uint32 entry_handle_id,
-    bcm_tunnel_terminator_config_key_t * config_key)
-{
-    uint32 first_additional_header = 0;
-    uint32 second_additional_header = 0;
-
-    SHR_FUNC_INIT_VARS(unit);
-
-    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_type_to_ipv6_additional_headers
-                    (unit, config_key->type, config_key->udp_dst_port, &first_additional_header,
-                     &second_additional_header));
-
-    dbal_entry_key_field_arr8_masked_set(unit, entry_handle_id, DBAL_FIELD_IPV6_DIP, config_key->dip6,
-                                         config_key->dip6_mask);
-
-    if (first_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_1ST,
-                                   first_additional_header);
-    }
-
-    if (second_additional_header != DBAL_ENUM_FVAL_IPV6_ADDITIONAL_HEADER_NOT_AVAILABLE)
-    {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IPV6_QUALIFIER_ADDITIONAL_HEADER_2ND,
-                                   second_additional_header);
-    }
-
-    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_VRF, config_key->vrf);
-
-exit:
     SHR_FUNC_EXIT;
 }
 
@@ -2797,19 +3565,12 @@ bcm_dnx_tunnel_terminator_config_add(
 
     /** VERIFICATION of input parameters */
     SHR_INVOKE_VERIFY_DNX(dnx_tunnel_terminator_config_verify(unit, config_key, config_action));
-
     SHR_IF_ERR_EXIT(dnx_field_entry_access_id_create(unit, core, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC,
                                                      _shr_ip6_mask_length(config_key->dip6_mask), &entry_access_id));
-
     SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC, &entry_handle_id));
-
-    dnx_tunnel_terminator_config_lookup_key_set(unit, entry_handle_id, config_key);
-
     SHR_IF_ERR_EXIT(dbal_entry_handle_access_id_set(unit, entry_handle_id, entry_access_id));
-
-    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_DIP_IDX_INTERMIDIATE, INST_SINGLE,
-                                 config_action->tunnel_class);
-
+    dnx_tunnel_terminator_config_ipv6_tcam_table_key_set(unit, entry_handle_id, config_key);
+    dnx_tunnel_terminator_config_ipv6_tcam_table_result_set(unit, entry_handle_id, config_action->tunnel_class);
     SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
 
 exit:
@@ -2861,7 +3622,7 @@ bcm_dnx_tunnel_terminator_config_get(
 
     SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC, &entry_handle_id));
 
-    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_config_lookup_key_set(unit, entry_handle_id, config_key));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_config_ipv6_tcam_table_key_set(unit, entry_handle_id, config_key));
 
     SHR_IF_ERR_EXIT(dbal_entry_access_id_by_key_get(unit, entry_handle_id, &entry_access_id, DBAL_COMMIT));
 
@@ -2913,7 +3674,7 @@ bcm_dnx_tunnel_terminator_config_delete(
 
     SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IPV6_MP_TT_TCAM_BASIC, &entry_handle_id));
 
-    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_config_lookup_key_set(unit, entry_handle_id, config_key));
+    SHR_IF_ERR_EXIT(dnx_tunnel_terminator_config_ipv6_tcam_table_key_set(unit, entry_handle_id, config_key));
 
     SHR_IF_ERR_EXIT(dbal_entry_access_id_by_key_get(unit, entry_handle_id, &entry_access_id, DBAL_COMMIT));
 
@@ -3141,6 +3902,11 @@ bcm_dnx_tunnel_terminator_create(
         if (_SHR_IS_FLAG_SET(info->flags, BCM_TUNNEL_TERM_EXTENDED_TERMINATION))
         {
             SHR_IF_ERR_EXIT(dnx_tunnel_terminator_global_lif_reclassify_add(unit, global_lif, local_inlif));
+        }
+
+        if (DNX_TUNNEL_TERM_IS_SRV6_WITH_LOCATOR(info))
+        {
+            SHR_IF_ERR_EXIT(dnx_tunnel_terminator_gport_to_sid_format_add(unit, info));
         }
     }
     /** Update allocated LIF properties */
@@ -3412,7 +4178,6 @@ bcm_dnx_tunnel_terminator_delete(
         global_inlif = BCM_GPORT_TUNNEL_ID_GET(gport);
     }
 
-    SHR_IF_ERR_EXIT(dnx_in_lif_profile_dealloc(unit, in_lif_profile, &new_in_lif_profile, LIF));
     /** Delete lookup entry from ISEM */
     SHR_IF_ERR_EXIT(dnx_tunnel_terminator_lookup_delete(unit, info));
 
@@ -3437,6 +4202,15 @@ bcm_dnx_tunnel_terminator_delete(
     /** Delete global in LIF */
     dnx_algo_global_lif_allocation_free(unit, DNX_ALGO_LIF_INGRESS, global_inlif);
 
+    SHR_IF_ERR_EXIT(dnx_in_lif_profile_dealloc(unit, in_lif_profile, &new_in_lif_profile, LIF));
+
+    if (DNX_TUNNEL_TERM_IS_SRV6_WITH_LOCATOR(info))
+    {
+        bcm_gport_t tunnel_gport;
+        BCM_GPORT_TUNNEL_ID_SET(tunnel_gport, global_inlif);
+        SHR_IF_ERR_EXIT(dnx_tunnel_terminator_gport_to_sid_format_delete(unit, tunnel_gport));
+    }
+
 exit:
     DNX_ERR_RECOVERY_END(unit);
     SHR_FUNC_EXIT;
@@ -3454,6 +4228,7 @@ exit:
  *   \retval Zero if no error was detected
  *   \retval Negative if error was detected. See \ref shr_error_e
  * \see
+ *  *
  */
 shr_error_e
 bcm_dnx_tunnel_terminator_traverse(
@@ -3681,6 +4456,7 @@ exit:
  *   \retval Zero if no error was detected
  *   \retval Negative if error was detected. See \ref shr_error_e
  * \see
+ *  *
  */
 
 shr_error_e

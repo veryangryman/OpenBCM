@@ -3687,6 +3687,10 @@ void	bcm_instru_ifa_encap_create_async(int unit, bcm_instru_ifa_info_t * ifa_inf
 void	bcm_instru_ifa_encap_delete_async(int unit, bcm_instru_ifa_info_t * ifa_info, bcm_async_cb_t async_callback, void *async_cookie);
 void	bcm_instru_ifa_encap_get_async(int unit, bcm_instru_ifa_info_t * ifa_info, bcm_async_cb_t async_callback, void *async_cookie);
 void	bcm_instru_ifa_encap_traverse_async(int unit, bcm_instru_ifa_encap_traverse_cb cb, void * user_data, bcm_async_cb_t async_callback, void *async_cookie);
+void	bcm_instru_ifit_encap_create_async(int unit, bcm_instru_ifit_encap_info_t * ifit_encap_info, bcm_async_cb_t async_callback, void *async_cookie);
+void	bcm_instru_ifit_encap_delete_async(int unit, bcm_instru_ifit_encap_info_t * ifit_encap_info, bcm_async_cb_t async_callback, void *async_cookie);
+void	bcm_instru_ifit_encap_get_async(int unit, bcm_instru_ifit_encap_info_t * ifit_encap_info, bcm_async_cb_t async_callback, void *async_cookie);
+void	bcm_instru_ifit_encap_traverse_async(int unit, bcm_instru_ifit_encap_traverse_cb cb, void * user_data, bcm_async_cb_t async_callback, void *async_cookie);
 void	bcm_instru_ipt_profile_get_async(int unit, uint32 flags, int ipt_profile, bcm_instru_ipt_t * config, bcm_async_cb_t async_callback, void *async_cookie);
 void	bcm_instru_ipt_profile_set_async(int unit, uint32 flags, int ipt_profile, bcm_instru_ipt_t * config, bcm_async_cb_t async_callback, void *async_cookie);
 void	bcm_instru_sflow_encap_create_async(int unit, bcm_instru_sflow_encap_info_t * sflow_encap_info, bcm_async_cb_t async_callback, void *async_cookie);

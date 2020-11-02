@@ -24092,6 +24092,27 @@ bcm_async_run(bcm_async_req_t *req)
 			req->args.instru_ifa_encap_traverse.cb,
 			req->args.instru_ifa_encap_traverse.user_data);
 		break;
+	case BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_CREATE:
+		rv = bcm_instru_ifit_encap_create(
+			req->args.instru_ifit_encap_create.unit,
+			req->args.instru_ifit_encap_create.ifit_encap_info);
+		break;
+	case BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_DELETE:
+		rv = bcm_instru_ifit_encap_delete(
+			req->args.instru_ifit_encap_delete.unit,
+			req->args.instru_ifit_encap_delete.ifit_encap_info);
+		break;
+	case BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_GET:
+		rv = bcm_instru_ifit_encap_get(
+			req->args.instru_ifit_encap_get.unit,
+			req->args.instru_ifit_encap_get.ifit_encap_info);
+		break;
+	case BCM_ASYNC_ENTRY_INSTRU_IFIT_ENCAP_TRAVERSE:
+		rv = bcm_instru_ifit_encap_traverse(
+			req->args.instru_ifit_encap_traverse.unit,
+			req->args.instru_ifit_encap_traverse.cb,
+			req->args.instru_ifit_encap_traverse.user_data);
+		break;
 	case BCM_ASYNC_ENTRY_INSTRU_IPT_PROFILE_GET:
 		rv = bcm_instru_ipt_profile_get(
 			req->args.instru_ipt_profile_get.unit,

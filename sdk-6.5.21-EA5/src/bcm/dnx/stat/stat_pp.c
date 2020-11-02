@@ -652,7 +652,7 @@ exit:
  *   Negative in case of an error. See \ref shr_error_e
  */
 static shr_error_e
-dnx_stat_pp_egress_header_types_to_dbal_convert(
+dnx_stat_pp_ingress_header_types_to_dbal_convert(
     int unit,
     bcm_stat_pp_metadata_header_type_t header_type,
     dbal_enum_value_field_layer_types_e dbal_layer_type_a[STAT_PP_MAX_CONVERT_ARRAY_SIZE],
@@ -726,6 +726,101 @@ dnx_stat_pp_egress_header_types_to_dbal_convert(
             dbal_layer_type_a[13] = DBAL_ENUM_FVAL_LAYER_TYPES_Y_1731;
             dbal_layer_type_a[14] = DBAL_ENUM_FVAL_LAYER_TYPES_BIER_TI;
             dbal_layer_type_a[15] = DBAL_ENUM_FVAL_LAYER_TYPES_BIER_MPLS;
+            *size = 16;
+            break;
+        default:
+            SHR_ERR_EXIT(_SHR_E_PARAM, "Unsupported header type %d", header_type);
+            break;
+    }
+
+exit:
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief - Output dbal current protocol types array as a function of general header type
+ *
+ * \param [in] unit - relevant unit
+ * \param [in] header_type - Header type to be converted
+ * \param [out] dbal_current_protocol_type_a - Array to be filled with relevant dbal current protocol types
+ * \param [out] size - how many elements filled in the array
+ *
+ * \return
+ *   Negative in case of an error. See \ref shr_error_e
+ */
+static shr_error_e
+dnx_stat_pp_egress_header_types_to_dbal_convert(
+    int unit,
+    bcm_stat_pp_metadata_header_type_t header_type,
+    dbal_enum_value_field_current_protocol_type_e dbal_current_protocol_type_a[STAT_PP_MAX_CONVERT_ARRAY_SIZE],
+    int *size)
+{
+    SHR_FUNC_INIT_VARS(unit);
+
+    switch (header_type)
+    {
+        case bcmStatPpMetadataHeaderTypeEth:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_ETHERNET;
+            *size = 1;
+            break;
+        case bcmStatPpMetadataHeaderTypeIpv4:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_IPV4_UC;
+            dbal_current_protocol_type_a[1] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_IPV4_MC;
+            *size = 2;
+            break;
+        case bcmStatPpMetadataHeaderTypeIpv6:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_IPV6_UC;
+            dbal_current_protocol_type_a[1] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_IPV6_MC;
+            *size = 2;
+            break;
+        case bcmStatPpMetadataHeaderTypeArp:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_ARP;
+            *size = 1;
+            break;
+        case bcmStatPpMetadataHeaderTypeTcp:
+            SHR_ERR_EXIT(_SHR_E_PARAM, "Unsupported header_type bcmStatPpMetadataHeaderTypeTcp");
+            break;
+        case bcmStatPpMetadataHeaderTypeUdp:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_UDP;
+            *size = 1;
+            break;
+        case bcmStatPpMetadataHeaderTypeBfd:
+            SHR_ERR_EXIT(_SHR_E_PARAM, "Unsupported header_type bcmStatPpMetadataHeaderTypeBfd");
+            break;
+        case bcmStatPpMetadataHeaderTypeMpls:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_MPLS;
+            dbal_current_protocol_type_a[1] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_MPLS_UA;
+            *size = 2;
+            break;
+        case bcmStatPpMetadataHeaderTypeSrv6:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_SRV6_ENDPOINT;
+            dbal_current_protocol_type_a[1] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_SRV6_SRH_ONLY;
+            *size = 2;
+            break;
+        case bcmStatPpMetadataHeaderTypeFcoe:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_FCOE;
+            *size = 1;
+            break;
+        case bcmStatPpMetadataHeaderTypeIcmp:
+            SHR_ERR_EXIT(_SHR_E_PARAM, "Unsupported header_type bcmStatPpMetadataHeaderTypeIcmp");
+            break;
+        case bcmStatPpMetadataHeaderTypeOthers:
+            dbal_current_protocol_type_a[0] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_NONE;
+            dbal_current_protocol_type_a[1] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_FCOE;
+            dbal_current_protocol_type_a[2] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_SFLOW;
+            dbal_current_protocol_type_a[3] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_PPPOE_SESSION;
+            dbal_current_protocol_type_a[4] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_INGRESS_SCTP_EGRESS_FTMH;
+            dbal_current_protocol_type_a[5] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_GTP;
+            dbal_current_protocol_type_a[6] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_ERSPANV2;
+            dbal_current_protocol_type_a[7] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_ERSPANV3;
+            dbal_current_protocol_type_a[8] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_GRE;
+            dbal_current_protocol_type_a[9] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_VXLAN;
+            dbal_current_protocol_type_a[10] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_VXLAN_GPE;
+            dbal_current_protocol_type_a[11] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_L2TP;
+            dbal_current_protocol_type_a[12] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_PTP;
+            dbal_current_protocol_type_a[13] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_GENEVE;
+            dbal_current_protocol_type_a[14] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_BIER_TI;
+            dbal_current_protocol_type_a[15] = DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_BIER_MPLS;
             *size = 16;
             break;
         default:
@@ -932,7 +1027,7 @@ dnx_stat_pp_tunnel_metadata_set(
     bcm_stat_pp_metadata_info_t * metadata_info)
 {
     uint32 entry_handle_id;
-    dbal_enum_value_field_layer_types_e dbal_layer_types_a[STAT_PP_MAX_CONVERT_ARRAY_SIZE];
+    dbal_enum_value_field_current_protocol_type_e dbal_current_protocol_type_a[STAT_PP_MAX_CONVERT_ARRAY_SIZE];
     int size = STAT_PP_MAX_CONVERT_ARRAY_SIZE;
     int ii;
 
@@ -943,13 +1038,14 @@ dnx_stat_pp_tunnel_metadata_set(
                                       &entry_handle_id));
 
     SHR_IF_ERR_EXIT(dnx_stat_pp_egress_header_types_to_dbal_convert
-                    (unit, metadata_info->header_type, dbal_layer_types_a, &size));
+                    (unit, metadata_info->header_type, dbal_current_protocol_type_a, &size));
 
     for (ii = 0; ii < size; ++ii)
     {
-        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_LAYER_TYPE, dbal_layer_types_a[ii]);
-        dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_STAT_METADATA_VAL,
-                                     INST_SINGLE, metadata_info->metadata);
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_CURRENT_PROTOCOL_TYPE,
+                                   dbal_current_protocol_type_a[ii]);
+        dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_STAT_METADATA_VAL, INST_SINGLE,
+                                     metadata_info->metadata);
         SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
     }
 
@@ -967,7 +1063,7 @@ dnx_stat_pp_tunnel_metadata_get(
     bcm_stat_pp_metadata_info_t * metadata_info)
 {
     uint32 entry_handle_id;
-    dbal_enum_value_field_layer_types_e dbal_layer_types_a[STAT_PP_MAX_CONVERT_ARRAY_SIZE];
+    dbal_enum_value_field_current_protocol_type_e dbal_current_protocol_type_a[STAT_PP_MAX_CONVERT_ARRAY_SIZE];
     int size = STAT_PP_MAX_CONVERT_ARRAY_SIZE;
 
     SHR_FUNC_INIT_VARS(unit);
@@ -977,9 +1073,10 @@ dnx_stat_pp_tunnel_metadata_get(
                                       &entry_handle_id));
 
     SHR_IF_ERR_EXIT(dnx_stat_pp_egress_header_types_to_dbal_convert
-                    (unit, metadata_info->header_type, dbal_layer_types_a, &size));
+                    (unit, metadata_info->header_type, dbal_current_protocol_type_a, &size));
 
-    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_LAYER_TYPE, dbal_layer_types_a[0]);
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_CURRENT_PROTOCOL_TYPE,
+                               dbal_current_protocol_type_a[0]);
     SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_GET_ALL_FIELDS));
     SHR_IF_ERR_EXIT(dbal_entry_handle_value_field32_get
                     (unit, entry_handle_id, DBAL_FIELD_STAT_METADATA_VAL, INST_SINGLE, &metadata_info->metadata));
@@ -1064,7 +1161,7 @@ dnx_stat_pp_ingress_header_metadata_set(
         SHR_ERR_EXIT(_SHR_E_PARAM, "Unsupported flags %d", metadata_info->flags);
     }
 
-    SHR_IF_ERR_EXIT(dnx_stat_pp_egress_header_types_to_dbal_convert
+    SHR_IF_ERR_EXIT(dnx_stat_pp_ingress_header_types_to_dbal_convert
                     (unit, metadata_info->header_type, dbal_layer_types_a, &size));
 
     if ((metadata_info->header_type == bcmStatPpMetadataHeaderTypeEth) ||
@@ -1092,8 +1189,8 @@ dnx_stat_pp_ingress_header_metadata_set(
             for (ii = 0; ii < size; ++ii)
             {
                 dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_LAYER_TYPE, dbal_layer_types_a[ii]);
-                dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_STAT_METADATA_VAL,
-                                             INST_SINGLE, metadata_info->metadata);
+                dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_STAT_METADATA_VAL, INST_SINGLE,
+                                             metadata_info->metadata);
                 SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
             }
         }
@@ -1135,7 +1232,7 @@ dnx_stat_pp_ingress_header_metadata_get(
         SHR_ERR_EXIT(_SHR_E_PARAM, "Unsupported flags %d", metadata_info->flags);
     }
 
-    SHR_IF_ERR_EXIT(dnx_stat_pp_egress_header_types_to_dbal_convert
+    SHR_IF_ERR_EXIT(dnx_stat_pp_ingress_header_types_to_dbal_convert
                     (unit, metadata_info->header_type, dbal_layer_types_a, &size));
 
     dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IS_MC,

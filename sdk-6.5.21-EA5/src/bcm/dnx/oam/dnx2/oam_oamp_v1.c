@@ -11,7 +11,6 @@
 #define BSL_LOG_MODULE BSL_LS_BCMDNX_OAM
 #ifdef BCM_DNX2_SUPPORT
 
- 
 #include <shared/shrextend/shrextend_debug.h>
 #include <soc/memory.h>
 #include <soc/feature.h>
@@ -101,7 +100,6 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
 
     SHR_FUNC_INIT_VARS(unit);
 
-    
     bcm_vlan_port_t_init(&vlan_port);
 
     SHR_ALLOC_SET_ZERO(tx_gport_data, sizeof(dnx_algo_gpm_gport_phy_info_t),
@@ -110,15 +108,13 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
     system_headers_mode = dnx_data_headers.system_headers.system_headers_mode_get(unit);
     SHR_IF_ERR_EXIT(oamp_pe_udh_header_size_get(unit, (uint32 *) &udh_header_size));
 
-    
     mep_db_entry->server_destination = 0;
     if (!DNX_OAM_DISSECT_IS_ENDPOINT_UPMEP(endpoint_info))
     {
-        
-        
+
         itmh_priority.tc = (endpoint_info->int_pri & 0x1F) >> 2;
         itmh_priority.dp = (endpoint_info->int_pri & 0x3);
-        
+
         SHR_IF_ERR_EXIT(algo_oam_db.oam_itmh_priority_profile.allocate_single
                         (unit, 0, &itmh_priority, NULL, &profile_id, &first_reference));
         mep_db_entry->itmh_tc_dp_profile = profile_id;
@@ -133,11 +129,10 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
 
         if (mep_db_entry->mep_type == DBAL_ENUM_FVAL_OAMP_MEP_TYPE_ETH_OAM)
         {
-            
+
             SHR_IF_ERR_EXIT(dnx_oam_system_port_profile_sw_update(unit, endpoint_info, mep_hw_profiles_write_data));
             mep_db_entry->unified_port_access.port_profile = mep_hw_profiles_write_data->pp_port_profile;
 
-            
             if ((system_headers_mode == DBAL_ENUM_FVAL_SYSTEM_HEADERS_MODE_JERICHO_MODE) && udh_header_size != 0)
             {
                 if (DNX_OAM_GROUP_MAID_IS_EXTRA_DATA(group_info->flags))
@@ -155,8 +150,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
         }
         else
         {
-            
-            
+
             if (BCM_L3_ITF_TYPE_IS_FEC(endpoint_info->intf_id))
             {
                 mep_db_entry->flags |= DNX_OAMP_OAM_CCM_MEP_DESTINATION_IS_FEC;
@@ -165,7 +159,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
             }
             else
             {
-                
+
                 if (BCM_L3_ITF_TYPE_IS_LIF(endpoint_info->intf_id))
                 {
                     mep_db_entry->fec_id_or_glob_out_lif.glob_out_lif = BCM_L3_ITF_VAL_GET(endpoint_info->intf_id);
@@ -180,12 +174,12 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
                     SHR_ERR_EXIT(_SHR_E_PARAM, "Error: provided interface is not a valid FEC nor an out-LIF.\n");
                 }
             }
-            
+
             if ((dnx_data_oam.property.oam_injected_over_lsp_cnt_get(unit) == 1)
                 && (endpoint_info->type == bcmOAMEndpointTypeBHHMPLS)
                 && (endpoint_info->mpls_out_gport == endpoint_info->intf_id))
             {
-                
+
                 mep_db_entry->mep_type = DBAL_ENUM_FVAL_OAMP_MEP_TYPE_Y1731_PWE;
 
                 if (endpoint_info->mpls_out_gport != BCM_GPORT_INVALID)
@@ -200,7 +194,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
     }
     else
     {
-        
+
         if (IS_OAM_SERVER(endpoint_info))
         {
             mep_db_entry->unified_port_access.ccm_eth_up_mep_port.pp_port = endpoint_info->gport;
@@ -208,7 +202,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
             if (endpoint_info->tx_gport != BCM_GPORT_INVALID)
             {
                 sys_port = BCM_GPORT_SYSTEM_PORT_ID_GET(endpoint_info->tx_gport);
-                
+
                 if (system_headers_mode == DBAL_ENUM_FVAL_SYSTEM_HEADERS_MODE_JERICHO_MODE)
                 {
                     SHR_IF_ERR_EXIT(dbal_fields_parent_field32_value_set(unit, DBAL_FIELD_DESTINATION_JR1,
@@ -225,16 +219,14 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
         }
         else
         {
-            
+
             vlan_port.vlan_port_id = endpoint_info->gport;
             SHR_IF_ERR_EXIT(bcm_vlan_port_find(unit, &vlan_port));
 
-            
             SHR_IF_ERR_EXIT(dnx_algo_gpm_gport_phy_info_get(unit, vlan_port.port,
                                                             DNX_ALGO_GPM_GPORT_TO_PHY_OP_PP_PORT_IS_MANDATORY,
                                                             &gport_info));
 
-            
             mep_db_entry->unified_port_access.ccm_eth_up_mep_port.pp_port = gport_info.internal_port_pp_info.pp_port[0];
             mep_db_entry->unified_port_access.ccm_eth_up_mep_port.port_core =
                 gport_info.internal_port_pp_info.core_id[0];
@@ -242,14 +234,13 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1(
 
     }
 
-    
     if ((!DNX_OAM_DISSECT_IS_ENDPOINT_UPMEP(endpoint_info)) && !slm_enabled)
     {
 
         if (!((_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN)) &&
               (system_headers_mode == DBAL_ENUM_FVAL_SYSTEM_HEADERS_MODE_JERICHO2_MODE)))
         {
-            
+
             mep_db_entry->counter_interface = endpoint_info->lm_counter_if + 1;
             mep_db_entry->counter_ptr = endpoint_info->lm_counter_base_id;
         }
@@ -303,7 +294,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_network_headers_v1(
     {
         if (_SHR_IS_FLAG_SET(endpoint_info->flags, BCM_OAM_ENDPOINT_REPLACE))
         {
-            
+
             SHR_IF_ERR_EXIT(dnx_oam_oamp_ccm_interval_to_ccm_period
                             (unit, mep_db_entry->ccm_interval, &prev_ccm_period));
 
@@ -316,33 +307,31 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_network_headers_v1(
 
         if (!ccm_rx_without_tx)
         {
-            
+
             SHR_IF_ERR_EXIT(dnx_oam_oamp_ccm_period_to_ccm_interval
                             (unit, endpoint_info->ccm_period, &mep_db_entry->ccm_interval));
         }
 
-        
         DNX_OAM_SET_RDI_GEN_METHOD_FIELD_ON_MEP_PROFILE(mep_profile->rdi_gen_method,
                                                         (endpoint_info->flags2 &
                                                          BCM_OAM_ENDPOINT_FLAGS2_RDI_FROM_RX_DISABLE),
                                                         (endpoint_info->flags2 &
                                                          BCM_OAM_ENDPOINT_FLAGS2_RDI_FROM_LOC_DISABLE));
     }
-    
 
     mep_profile->opcode_bit_map = 0xff;
-    
+
     if ((_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_TX_STATISTICS))
         || (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_RX_STATISTICS)))
     {
         dnx_oam_oamp_statistics_enable(unit, endpoint_info->flags2, mep_profile);
     }
-    
+
     if (DNX_OAM_GROUP_MAID_IS_EXTRA_DATA(group_info->flags))
     {
         mep_profile->maid_check_dis = TRUE;
     }
-    
+
     SHR_IF_ERR_EXIT(algo_oam_db.mpls_tp_mdl_ignore.get(unit, &mpls_tp_mdl_ignore));
     if (mpls_tp_mdl_ignore)
     {
@@ -352,31 +341,31 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_network_headers_v1(
             mep_profile->mdl_check_dis = TRUE;
         }
     }
-    
+
     mep_profile->lmm_offset =
-        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 0  , 0  ,
+        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 0, 0,
                                  (endpoint_info->type == bcmOAMEndpointTypeMplsLmDmLsp),
                                  _SHR_IS_FLAG_SET(endpoint_info->flags2,
                                                   BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN));
     mep_profile->lmr_offset =
-        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 0  , 1  ,
+        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 0, 1,
                                  (endpoint_info->type == bcmOAMEndpointTypeMplsLmDmLsp),
                                  _SHR_IS_FLAG_SET(endpoint_info->flags2,
                                                   BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN));
     mep_profile->dmm_offset =
-        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 1  , 0  ,
+        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 1, 0,
                                  (endpoint_info->type == bcmOAMEndpointTypeMplsLmDmLsp),
                                  _SHR_IS_FLAG_SET(endpoint_info->flags2,
                                                   BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN));
     mep_profile->dmr_offset =
-        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 1  , 1  ,
+        dnx_oam_lm_dm_set_offset(unit, mep_db_entry, is_dual_ended_lm, 1, 1,
                                  (endpoint_info->type == bcmOAMEndpointTypeMplsLmDmLsp),
                                  _SHR_IS_FLAG_SET(endpoint_info->flags2,
                                                   BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN));
 
     if (!DNX_OAM_IS_ENDPOINT_RFC6374(endpoint_info))
     {
-        
+
         SHR_IF_ERR_EXIT(dnx_oam_oamp_scan_count_calc(unit,
                                                      endpoint_info->id, 0,
                                                      (endpoint_info->endpoint_memory_type ==
@@ -385,7 +374,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_network_headers_v1(
     }
     else
     {
-        
+
         if (is_mpls_lm_dm_without_bfd_endpoint)
         {
             mep_profile->ccm_count = DNX_OAM_OAMP_ETH1731_MEP_PROFILE_MAX_CCM_CNT;
@@ -394,7 +383,6 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_network_headers_v1(
         mep_profile->dmm_count = DNX_OAM_OAMP_ETH1731_MEP_PROFILE_MAX_CCM_CNT;
     }
 
-    
     mep_profile->cluster_id = 0xFF;
 
     SHR_IF_ERR_EXIT(algo_oam_db.oam_mep_profile.allocate_single
@@ -449,37 +437,33 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
 
     if (!DNX_OAM_IS_ENDPOINT_RFC6374(endpoint_info))
     {
-        
+
         mep_db_entry->mdl = endpoint_info->level;
-        
+
         mep_db_entry->mep_id = endpoint_info->name;
 
         if (!_SHR_IS_FLAG_SET(endpoint_info->flags, BCM_OAM_ENDPOINT_REPLACE) &&
             !DNX_OAM_GROUP_MAID_IS_EXTRA_DATA(group_info->flags))
         {
-            
+
             SHR_IF_ERR_EXIT(dnx_oam_update_accelarated_endpoint_info_with_group_config
                             (unit, group_info->name, mep_db_entry));
         }
 
-        
         if (endpoint_info->port_state != 0)
         {
-            
+
             mep_db_entry->flags |= DNX_OAMP_OAM_CCM_MEP_PORT_TLV_EN;
-            
+
             mep_db_entry->flags |=
                 ((endpoint_info->port_state) == BCM_OAM_PORT_TLV_UP) ? DNX_OAMP_OAM_CCM_MEP_PORT_TLV_VAL : 0;
         }
 
-        
         mep_db_entry->interface_status_tlv_code = endpoint_info->interface_state;
 
-        
-        
         if (DNX_OAM_GROUP_MAID_IS_EXTRA_DATA(group_info->flags))
         {
-            
+
             if (!((system_headers_mode == DBAL_ENUM_FVAL_SYSTEM_HEADERS_MODE_JERICHO_MODE) &&
                   (DNX_OAM_DISSECT_IS_ENDPOINT_UPMEP(endpoint_info)) && (udh_header_size != 0)))
             {
@@ -503,7 +487,6 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
                                  "entries must not be in the same bank as the main endpoint entry.\n");
                 }
 
-                
                 mep_db_entry->extra_data_header = OAM_ID_TO_MEP_DB_ENTRY(group_info->group_name_index);
 
                 if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN))
@@ -533,7 +516,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
                                          &mep_pe_profile));
                         if (DNX_OAM_LMDM_FLEXIBLE_DA_IS_SET_TO_ENABLE(endpoint_info, sw_endpoint_info))
                         {
-                            
+
                             mep_db_entry->extra_data.flags = DNX_OAMP_CCM_ENDPOINT_EXTRA_DATA_DMAC;
                             mep_db_entry->extra_data.opcodes_to_prepend =
                                 DNX_OAMP_EXTRA_DATA_TO_PREPEND_CCM | DNX_OAMP_EXTRA_DATA_TO_PREPEND_LMM |
@@ -550,17 +533,48 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
                 }
                 else if (DNX_OAM_LMDM_FLEXIBLE_DA_IS_SET_TO_DISABLE(endpoint_info, sw_endpoint_info))
                 {
-                    
+
                     mep_db_entry->extra_data.index = OAM_ID_TO_MEP_DB_ENTRY(sw_endpoint_info->extra_data_index);
                     mep_db_entry->extra_data.flags = 0;
                     mep_db_entry->extra_data.length = sw_endpoint_info->extra_data_length;
                 }
-
-                if (is_1dm_enabled)
+                if (is_1dm_enabled &&
+                    _SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL))
                 {
                     
                     SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                                    (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_1DM_MAID48,
+                                     &mep_pe_profile));
+                    mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
+                }
+                else if (is_1dm_enabled)
+                {
+
+                    SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                                     (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_1DM_MAID_48, &mep_pe_profile));
+                    mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
+                }
+                else if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL))
+                {
+
+                    SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                                    (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_MAID48,
+                                     &mep_pe_profile));
+                    mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
+                }
+
+                if (sw_endpoint_info->sw_state_flags & DBAL_DEFINE_OAM_ENDPOINT_SW_STATE_FLAGS_JUMBO_DM_TLV)
+                {
+
+                    SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                                    (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_DM_JUMBO_TLV_MAID_48, &mep_pe_profile));
+                    if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL))
+                    {
+                        SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                                        (unit,
+                                         DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_MAID48,
+                                         &mep_pe_profile));
+                    }
                     mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
                 }
             }
@@ -570,15 +584,22 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
             }
             if (IS_OAM_SERVER(endpoint_info) && DNX_OAM_DISSECT_IS_ENDPOINT_UPMEP(endpoint_info))
             {
-                
+
                 SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                                 (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_UP_MEP_SERVER_MAID_48, &mep_pe_profile));
                 mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
             }
         }
-        
+
         else
         {
+            if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL))
+            {
+                SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                                (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL, &mep_pe_profile));
+                mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
+            }
+
             if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN))
             {
                 SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
@@ -588,7 +609,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
 
             if (IS_OAM_SERVER(endpoint_info) && DNX_OAM_DISSECT_IS_ENDPOINT_UPMEP(endpoint_info))
             {
-                
+
                 SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                                 (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_UP_MEP_SERVER, &mep_pe_profile));
                 mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
@@ -597,7 +618,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
             {
                 if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_SIGNAL))
                 {
-                    
+
                     SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                                     (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_SIGNAL_DETECT, &mep_pe_profile));
                     if (_SHR_IS_FLAG_SET(endpoint_info->flags, BCM_OAM_ENDPOINT_REPLACE))
@@ -611,12 +632,12 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
                 }
                 else
                 {
-                    
+
                     SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                                     (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_LMDM_FLEXIBLE_DA, &mep_pe_profile));
                     if (DNX_OAM_LMDM_FLEXIBLE_DA_IS_SET_TO_ENABLE(endpoint_info, sw_endpoint_info))
                     {
-                        
+
                         mep_db_entry->extra_data.flags = DNX_OAMP_CCM_ENDPOINT_EXTRA_DATA_DMAC;
                         mep_db_entry->extra_data.opcodes_to_prepend =
                             DNX_OAMP_EXTRA_DATA_TO_PREPEND_LMM | DNX_OAMP_EXTRA_DATA_TO_PREPEND_DMM;
@@ -633,7 +654,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
                                 (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_DEFAULT, &mep_pe_profile));
                 mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
                 mep_db_entry->extra_data_header = endpoint_info->extra_data_index;
-                
+
                 mep_db_entry->extra_data.index = OAM_ID_TO_MEP_DB_ENTRY(sw_endpoint_info->extra_data_index);
                 mep_db_entry->extra_data.flags = 0;
                 mep_db_entry->extra_data.length = sw_endpoint_info->extra_data_length;
@@ -641,14 +662,20 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(
 
             if (is_1dm_enabled)
             {
-                
+
                 SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                                 (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_1DM, &mep_pe_profile));
+                if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL))
+                {
+                    SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                                    (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_1DM,
+                                     &mep_pe_profile));
+                }
                 mep_db_entry->mep_pe_profile = (uint8) mep_pe_profile;
             }
         }
     }
-    
+
     tcam_data.trap_code = BCM_GPORT_TRAP_GET_ID(endpoint_info->remote_gport);
 
     if (IS_OAM_SERVER(endpoint_info) &&
@@ -700,42 +727,34 @@ dnx_oam_oamp_mep_db_create_prepare_for_ccm_endpoint_replace(
 
     SHR_FUNC_INIT_VARS(unit);
 
-    
-
     if (DNX_OAM_IS_ENDPOINT_RFC6374(endpoint_info))
     {
         mep_db_entry->mep_type = DBAL_ENUM_FVAL_OAMP_MEP_TYPE_RFC_6374;
     }
     else
     {
-        
+
         mep_db_entry->mep_type = 0;
     }
-    
+
     SHR_IF_ERR_EXIT(dnx_oamp_mep_db_ccm_endpoint_get(unit, (uint16) endpoint_info->id,
                                                      DNX_OAM_DISSECT_IS_DOWN_MEP_EGRESS_INJECTION(endpoint_info),
                                                      mep_db_entry));
 
-    
     SHR_IF_ERR_EXIT(algo_oam_db.oam_mep_profile.profile_data_get(unit, mep_db_entry->mep_profile, &counter,
                                                                  mep_profile));
 
-    
     *slm_enabled = mep_profile->slm_lm;
 
-    
     *is_dual_ended_lm = mep_profile->piggy_back_lm;
 
-    
     if (mep_profile->dm_measurement_type == DBAL_ENUM_FVAL_DM_ONE_WAY_TIMESTAMP_ENCODING_ENCODING_1_WAY_FORMAT4)
     {
         *is_1dm_enabled = TRUE;
     }
 
-    
     SHR_IF_ERR_EXIT(dnx_oam_oamp_ccm_endpoint_mep_db_profiles_free(unit, mep_db_entry, mep_hw_profiles_delete_data));
 
-    
     mep_db_entry->flags = DNX_OAMP_OAM_CCM_MEP_UPDATE;
 
     SHR_EXIT();
@@ -769,7 +788,6 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
 
     SHR_IF_ERR_EXIT(oamp_pe_udh_header_size_get(unit, (uint32 *) &udh_header_size));
 
-    
     sal_memset(&mep_profile, 0, sizeof(dnx_oam_mep_profile_t));
 
     if (DNX_OAM_IS_ENDPOINT_RFC6374(endpoint_info))
@@ -780,7 +798,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
 
     if (DNX_OAM_IS_ENDPOINT_RFC6374(endpoint_info) && !is_mpls_lm_dm_without_bfd_endpoint)
     {
-        
+
         SHR_ALLOC_SET_ZERO(bfd_entry_values, sizeof(dnx_bfd_oamp_v1_only_endpoint_t),
                            "Structure for reading data about BFD EP", "%s%s%s\r\n", EMPTY, EMPTY, EMPTY);
 
@@ -788,11 +806,10 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
 
         if (!_SHR_IS_FLAG_SET(endpoint_info->flags, BCM_OAM_ENDPOINT_REPLACE))
         {
-            
+
             SHR_IF_ERR_EXIT(algo_oam_db.oam_mep_profile.profile_data_get(unit, bfd_entry_values->mep_profile, &counter,
                                                                          &mep_profile));
 
-            
             SHR_IF_ERR_EXIT(algo_oam_db.
                             oam_mep_profile.free_single(unit, (int) bfd_entry_values->mep_profile, &last_reference));
         }
@@ -805,7 +822,6 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
                          mep_hw_profiles_delete_data, &mep_profile));
     }
 
-   
     mep_db_entry->flags |= ((endpoint_info->endpoint_memory_type == bcmOamEndpointMemoryTypeLmDmOffloadedEntry) ?
                             DNX_OAMP_OAM_CCM_MEP_LM_DM_OFFLOADED :
                             ((endpoint_info->endpoint_memory_type == bcmOamEndpointMemoryTypeShortEntry) ?
@@ -813,20 +829,17 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
 
     mep_db_entry->flags |= (endpoint_info->flags & BCM_OAM_ENDPOINT_RDI_TX) ? DNX_OAMP_OAM_CCM_MEP_RDI_FROM_PACKET : 0;
 
-    
     if (DNX_OAM_GROUP_MAID_IS_EXTRA_DATA(group_info->flags))
     {
         mep_db_entry->flags |= DNX_OAMP_OAM_CCM_MEP_48B_MAID;
     }
 
-    
     if (_SHR_IS_FLAG_SET(endpoint_info->flags2, BCM_OAM_ENDPOINT_FLAGS2_EGRESS_INJECTION_DOWN))
     {
         mep_db_entry->flags |= DNX_OAMP_OAM_CCM_MEP_DOWN_MEP_EGRESS_INJECTION;
         mep_db_entry->vsi = endpoint_info->vpn;
     }
 
-    
     if (DNX_OAM_DISSECT_IS_EXTRA_DATA_PER_ENDPOINT(endpoint_info))
     {
         if (!DNX_OAM_IS_ENDPOINT_RFC6374(endpoint_info))
@@ -843,7 +856,6 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
         }
     }
 
-   
     SHR_IF_ERR_EXIT(dnx_oam_oamp_endpoint_bcm_mep_type_to_mep_db_mep_type
                     (unit, endpoint_info->type, &mep_db_entry->mep_type));
 
@@ -857,7 +869,7 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
         {
             mep_db_entry->ach_sel = bfd_entry_values->ach_sel;
         }
-        
+
         if (endpoint_info->type == bcmOAMEndpointTypeMplsLmDmLsp)
         {
             mep_db_entry->flags |= DNX_OAMP_OAM_RF6374_GAL;
@@ -866,17 +878,14 @@ dnx_oam_oamp_ccm_endpoint_mep_db_create_v1(
         mep_db_entry->flex_lm_dm_entry = OAM_ID_TO_MEP_DB_ENTRY(endpoint_info->extra_data_index);
     }
 
-    
     SHR_IF_ERR_EXIT(dnx_oam_oamp_ccm_endpoint_mep_db_create_system_headers_v1
                     (unit, endpoint_info, group_info, gport_hw_resources, mep_hw_profiles_write_data, mep_db_entry,
                      slm_enabled));
 
-    
     SHR_IF_ERR_EXIT(dnx_oam_oamp_ccm_endpoint_mep_db_create_network_headers_v1
                     (unit, endpoint_info, group_info, mep_hw_profiles_write_data, mep_db_entry, is_dual_ended_lm,
                      is_mpls_lm_dm_without_bfd_endpoint, &mep_profile));
 
-    
     SHR_IF_ERR_EXIT(dnx_oam_oamp_ccm_endpoint_mep_db_create_oam_pdu_v1(unit,
                                                                        endpoint_info,
                                                                        group_info,
@@ -890,5 +899,4 @@ exit:
     SHR_FUNC_EXIT;
 }
 
-
-#endif 
+#endif

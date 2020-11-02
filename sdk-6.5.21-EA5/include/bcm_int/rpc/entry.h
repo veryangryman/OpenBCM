@@ -21,7 +21,7 @@
 #define	BCM_RPC_HLEN		28
 #define	BCM_RPC_VERSION		3
 #define	BCM_RPC_LOOKUP_KEYLEN	5
-#define	BCM_RPC_LOOKUP_COUNT	6533
+#define	BCM_RPC_LOOKUP_COUNT	6536
 
 #endif	/* BCM_RPC_SUPPORT */
 #endif	/* !_BCM_INT_RPC_ENTRY_H */

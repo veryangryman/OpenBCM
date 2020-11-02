@@ -381,6 +381,9 @@
                                                           Y1731oPWE(CCM) */
 #define BCM_OAM_ENDPOINT_FLAGS2_MPLS_LM_DM_ILM 0x800000   /* Inferred Loss
                                                           Measurement endpoint */
+#define BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL 0x1000000  /* The additional GAL
+                                                          value is used on this
+                                                          MEP */
 
 /* OAM loss measurment flags */
 #define BCM_OAM_LM_PCP          0x0001     /* Use different counters for

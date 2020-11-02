@@ -3552,7 +3552,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    sal_memset(cur_field_type_param->define, 0x0, 12 * sizeof(dbal_db_defines_info_struct_t));
+    sal_memset(cur_field_type_param->define, 0x0, 13 * sizeof(dbal_db_defines_info_struct_t));
     sal_strncpy(cur_field_type_param->define[0].define_name, "UP_FACING", sizeof(cur_field_type_param->define[0].define_name));
     cur_field_type_param->define[0].define_value = 1;
     sal_strncpy(cur_field_type_param->define[1].define_name, "INTERMEDIATE", sizeof(cur_field_type_param->define[1].define_name));
@@ -3577,7 +3577,9 @@ dbal_field_types_basic_info_t ** field_types_info)
     cur_field_type_param->define[10].define_value = 1024;
     sal_strncpy(cur_field_type_param->define[11].define_name, "JUMBO_DM_TLV", sizeof(cur_field_type_param->define[11].define_name));
     cur_field_type_param->define[11].define_value = 2048;
-    cur_field_type_param->nof_defined_vals = 12;
+    sal_strncpy(cur_field_type_param->define[12].define_name, "ADDITIONAL_GAL_SPECIAL_LABEL", sizeof(cur_field_type_param->define[12].define_name));
+    cur_field_type_param->define[12].define_value = 4096;
+    cur_field_type_param->nof_defined_vals = 13;
     
     
     

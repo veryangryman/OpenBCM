@@ -27,6 +27,7 @@
 #include <bcm/types.h>
 #include "oam_internal.h"
 #include "oam_counter.h"
+#include "bcm_int/dnx/mpls/mpls.h"
 #include "bcm_int/dnx/oam/oam_init.h"
 #include <soc/dnx/swstate/auto_generated/access/oam_access.h>
 #include <soc/dnx/dnx_data/auto_generated/dnx_data_device.h>
@@ -40,6 +41,7 @@
 #include <bcm_int/dnx/algo/lif_mngr/lif_mngr.h>
 #include <bcm_int/dnx/field/field_entry.h>
 #include <src/bcm/dnx/init/init_pp.h>
+#include <src/bcm/dnx/oam/oamp_pe_infra.h>
 /*
  * }
  */
@@ -4535,5 +4537,223 @@ bcm_dnx_oam_mpls_tp_channel_type_tx_delete(
     }
 
 exit:
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
+ *   Set the label profile for the additional GAL special label.
+ *
+ * \param [in] unit - Number of hardware unit used.
+ * \param [in] gal - The additional GAL special label.
+ *
+ * \return
+ *   \retval Zero if no error was detected
+ *   \retval Negative if error was detected. See \ref
+ *           shr_error_e
+ * \remark
+ *   * None
+ * \see
+ */
+shr_error_e
+dnx_oam_additional_gal_special_label_profile_set(
+    int unit,
+    uint32 gal)
+{
+    uint32 entry_handle_id;
+    uint32 cur_additional_gal, normal_label_profile;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    /** get the additional GAL special label and its normal label profile*/
+    SHR_IF_ERR_EXIT(dnx_oam_sw_db_additional_gal_special_label_get(unit, &cur_additional_gal, &normal_label_profile));
+
+    /** recover to its normal label profile for the current user defined GAL*/
+    if (cur_additional_gal != MPLS_LABEL_GAL)
+    {
+        SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_MPLS_SPECIAL_LABEL_PROFILE_MAP, &entry_handle_id));
+
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_LABEL_NIBBLE, cur_additional_gal);
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_BOS, 0);
+        dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_SPECIAL_LABEL_PROFILE,
+                                     INST_SINGLE, normal_label_profile);
+        SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+        SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_MPLS_SPECIAL_LABEL_PROFILE_MAP, entry_handle_id));
+
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_LABEL_NIBBLE, cur_additional_gal);
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_BOS, 1);
+        dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_SPECIAL_LABEL_PROFILE,
+                                     INST_SINGLE, normal_label_profile);
+        SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+    }
+
+    if (gal != MPLS_LABEL_GAL)
+    {
+        /** get the normal label profile for the user defined GAL*/
+        SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_MPLS_SPECIAL_LABEL_PROFILE_MAP, &entry_handle_id));
+
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_LABEL_NIBBLE, gal);
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_BOS, 0);
+        dbal_value_field32_request(unit, entry_handle_id, DBAL_FIELD_MPLS_SPECIAL_LABEL_PROFILE, INST_SINGLE,
+                                   &normal_label_profile);
+
+        SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_COMMIT));
+
+        /** set the user defined GAL and its normal label profile into software DB*/
+        SHR_IF_ERR_EXIT(dnx_oam_sw_db_additional_gal_special_label_set(unit, gal, normal_label_profile));
+
+        /** set label profile to profile "GAL" for the user defined GAL*/
+        SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_MPLS_SPECIAL_LABEL_PROFILE_MAP, &entry_handle_id));
+
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_LABEL_NIBBLE, gal);
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_BOS, 0);
+        dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_SPECIAL_LABEL_PROFILE,
+                                     INST_SINGLE, DBAL_ENUM_FVAL_VTT_MPLS_SPECIAL_LABEL_PROFILE_GAL);
+        SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+        SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_MPLS_SPECIAL_LABEL_PROFILE_MAP, entry_handle_id));
+
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_LABEL_NIBBLE, gal);
+        dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_BOS, 1);
+        dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_MPLS_SPECIAL_LABEL_PROFILE,
+                                     INST_SINGLE, DBAL_ENUM_FVAL_VTT_MPLS_SPECIAL_LABEL_PROFILE_GAL);
+        SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+    }
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
+ *   Set the additional GAL into program variable
+ *   which is used to edit field GAL in the injected
+ *   packet by the related OAMP-PE programs.
+ *
+ * \param [in] unit - Number of hardware unit used.
+ * \param [in] gal - The additional GAL special label.
+ *
+ * \return
+ *   \retval Zero if no error was detected
+ *   \retval Negative if error was detected. See \ref
+ *           shr_error_e
+ * \remark
+ *   * None
+ * \see
+ */
+shr_error_e
+dnx_oam_additional_gal_special_label_program_variable_set(
+    int unit,
+    uint32 gal)
+{
+    uint32 tmp_gal;
+    uint32 entry_handle_id;
+    uint32 const_value;
+    uint32 prog_hw_index;
+    dbal_enum_value_field_oamp_pe_program_enum_e prog_enum;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    /*
+     * For program PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL,
+     * PROGRAM_ENUM_1DM, PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV,
+     * PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_RSP.
+     * the format of program variable is,
+     *    1, bit 0-15: 0xfffc used to figure out 10 bits MSB of PDU-offset;
+     *    2, bit 16-19: 0;
+     *    3, bit 20-23: 4 bits LSB of additional GAL special label;
+     *    4, bit 24-31: 0;
+     */
+    /** set program variable for program PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL */
+    prog_enum = DBAL_ENUM_FVAL_OAMP_PE_PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL;
+    SHR_IF_ERR_EXIT(dnx_oamp_pe_program_sw_enum2hw_get(unit, prog_enum, &prog_hw_index));
+    tmp_gal = gal & 0xf;
+    tmp_gal = tmp_gal << 20;
+    const_value = 0xfffc | tmp_gal;
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_OAMP_PE_PROGRAMS_PROPERTIES, &entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OAMP_PE_PROGRAM_INDEX, prog_hw_index);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_CONST_VALUE, INST_SINGLE, const_value);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+    /** set program variable for program PROGRAM_ENUM_1DM */
+    prog_enum = DBAL_ENUM_FVAL_OAMP_PE_PROGRAM_ENUM_1DM;
+    SHR_IF_ERR_EXIT(dnx_oamp_pe_program_sw_enum2hw_get(unit, prog_enum, &prog_hw_index));
+    const_value = 0xfffc | tmp_gal;
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_OAMP_PE_PROGRAMS_PROPERTIES, entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OAMP_PE_PROGRAM_INDEX, prog_hw_index);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_CONST_VALUE, INST_SINGLE, const_value);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+    /** set program variable for program PROGRAM_ENUM_DM_JUMBO_TLV */
+    prog_enum = DBAL_ENUM_FVAL_OAMP_PE_PROGRAM_ENUM_DM_JUMBO_TLV;
+    SHR_IF_ERR_EXIT(dnx_oamp_pe_program_sw_enum2hw_get(unit, prog_enum, &prog_hw_index));
+    const_value = 0xfffc | tmp_gal;
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_OAMP_PE_PROGRAMS_PROPERTIES, entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OAMP_PE_PROGRAM_INDEX, prog_hw_index);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_CONST_VALUE, INST_SINGLE, const_value);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+    /** set program variable for program PROGRAM_ENUM_DM_JUMBO_TLV_RSP */
+    prog_enum = DBAL_ENUM_FVAL_OAMP_PE_PROGRAM_ENUM_DM_JUMBO_TLV_RSP;
+    SHR_IF_ERR_EXIT(dnx_oamp_pe_program_sw_enum2hw_get(unit, prog_enum, &prog_hw_index));
+    const_value = 0xfffc | tmp_gal;
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_OAMP_PE_PROGRAMS_PROPERTIES, entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OAMP_PE_PROGRAM_INDEX, prog_hw_index);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_CONST_VALUE, INST_SINGLE, const_value);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+    /*
+     * For program PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL_MAID48,
+     * the format of program variable is,
+     *    1, bit 0-15: 0xfffc used to figure out 10 bits MSB of PDU-offset;
+     *    2, bit 16-23: TTL in normal GAL;
+     *    2, bit 24-27: EXP and BOS in normal GAL;
+     *    3, bit 28-31: 4 bits LSB of additional GAL special label;
+     */
+    /** get normal GAL including label, BOS, EXP and TTL */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_OAMP_INIT_Y1731_GENERAL_CFG, entry_handle_id));
+    dbal_value_field32_request(unit, entry_handle_id, DBAL_FIELD_Y1731_MPLSTP_GAL, INST_SINGLE, &tmp_gal);
+    SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_COMMIT));
+
+    /** set program variable for program PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL_MAID48 */
+    prog_enum = DBAL_ENUM_FVAL_OAMP_PE_PROGRAM_ENUM_ADDITIONAL_GAL_SPECIAL_LABEL_MAID48;
+    SHR_IF_ERR_EXIT(dnx_oamp_pe_program_sw_enum2hw_get(unit, prog_enum, &prog_hw_index));
+    tmp_gal &= 0xfff;
+    tmp_gal |= (gal << 12);
+    tmp_gal = tmp_gal << 16;
+    const_value = 0xfffc | tmp_gal;
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_OAMP_PE_PROGRAMS_PROPERTIES, entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OAMP_PE_PROGRAM_INDEX, prog_hw_index);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_CONST_VALUE, INST_SINGLE, const_value);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/*
+ * See .h file
+ */
+shr_error_e
+dnx_oam_additional_gal_special_label_set(
+    int unit,
+    uint32 gal)
+{
+    SHR_FUNC_INIT_VARS(unit);
+    DNX_ERR_RECOVERY_START(unit);
+
+    /** set label profile for the additional GAL special label */
+    SHR_IF_ERR_EXIT(dnx_oam_additional_gal_special_label_profile_set(unit, gal));
+
+    /** set the additional GAL special label into OAMP-PE program varialbe*/
+    SHR_IF_ERR_EXIT(dnx_oam_additional_gal_special_label_program_variable_set(unit, gal));
+
+exit:
+    DNX_ERR_RECOVERY_END(unit);
     SHR_FUNC_EXIT;
 }

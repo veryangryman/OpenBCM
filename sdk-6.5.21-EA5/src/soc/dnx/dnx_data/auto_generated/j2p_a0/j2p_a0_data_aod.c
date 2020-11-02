@@ -2563,7 +2563,7 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Egress_FWD_Code_valid = 1;
         data->Acceptable_Frame_Type_Enable = 0;
         data->Acceptable_Frame_Type_Enable_valid = 1;
-        data->FWD_Context_is_PP_Enable = 0;
+        data->FWD_Context_is_PP_Enable = 1;
         data->FWD_Context_is_PP_Enable_valid = 1;
         data->Forward_Code_IPv4_or_IPv6 = 0;
         data->Forward_Code_IPv4_or_IPv6_valid = 1;
@@ -2593,6 +2593,42 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
     if (15 < table->keys[0].size && 1 < table->keys[1].size)
     {
         data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 15, 1);
+        data->valid = 1;
+        data->Egress_FWD_Code = "SRv6_Endpoint_PSP_Extended_cut";
+        data->Egress_FWD_Code_mask = 0;
+        data->Egress_FWD_Code_valid = 1;
+        data->Acceptable_Frame_Type_Enable = 0;
+        data->Acceptable_Frame_Type_Enable_valid = 1;
+        data->FWD_Context_is_PP_Enable = 1;
+        data->FWD_Context_is_PP_Enable_valid = 1;
+        data->Forward_Code_IPv4_or_IPv6 = 0;
+        data->Forward_Code_IPv4_or_IPv6_valid = 1;
+        data->Learn_Enable = 0;
+        data->Learn_Enable_valid = 1;
+        data->Protocol_Ethernet_Enable = 0;
+        data->Protocol_Ethernet_Enable_valid = 1;
+        data->Protocol_IPv4_MC_Enable = 0;
+        data->Protocol_IPv4_MC_Enable_valid = 1;
+        data->Protocol_IPv4_UC_Enable = 0;
+        data->Protocol_IPv4_UC_Enable_valid = 1;
+        data->Protocol_IPv6_MC_Enable = 0;
+        data->Protocol_IPv6_MC_Enable_valid = 1;
+        data->Protocol_IPv6_UC_Enable = 0;
+        data->Protocol_IPv6_UC_Enable_valid = 1;
+        data->Protocol_MPLS_Enable = 0;
+        data->Protocol_MPLS_Enable_valid = 1;
+        data->STP_Enable = 0;
+        data->STP_Enable_valid = 1;
+        data->Split_Horizon_Enable = 0;
+        data->Split_Horizon_Enable_valid = 1;
+        data->Termination_Enable = 1;
+        data->Termination_Enable_valid = 1;
+        data->Vlan_Membership_Enable = 0;
+        data->Vlan_Membership_Enable_valid = 1;
+    }
+    if (16 < table->keys[0].size && 1 < table->keys[1].size)
+    {
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 16, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "TM";
         data->Egress_FWD_Code_mask = 0;
@@ -2626,9 +2662,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (16 < table->keys[0].size && 1 < table->keys[1].size)
+    if (17 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 16, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 17, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "MPLS_INJECTED_FROM_OAMP";
         data->Egress_FWD_Code_mask = 0;
@@ -2662,9 +2698,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (17 < table->keys[0].size && 1 < table->keys[1].size)
+    if (18 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 17, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 18, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "DO_NOT_EDIT";
         data->Egress_FWD_Code_mask = 0;
@@ -2698,9 +2734,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (18 < table->keys[0].size && 1 < table->keys[1].size)
+    if (19 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 18, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 19, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "MPLS";
         data->Egress_FWD_Code_mask = 0;
@@ -2734,9 +2770,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (19 < table->keys[0].size && 1 < table->keys[1].size)
+    if (20 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 19, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 20, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "PPP";
         data->Egress_FWD_Code_mask = 0;
@@ -2770,9 +2806,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (20 < table->keys[0].size && 1 < table->keys[1].size)
+    if (21 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 20, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 21, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "IPv4_UC_R1";
         data->Egress_FWD_Code_mask = 0;
@@ -2806,9 +2842,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (21 < table->keys[0].size && 1 < table->keys[1].size)
+    if (22 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 21, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 22, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "IPv4_MC_R1";
         data->Egress_FWD_Code_mask = 0;
@@ -2842,9 +2878,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (22 < table->keys[0].size && 1 < table->keys[1].size)
+    if (23 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 22, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 23, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "IPv6_UC_R1";
         data->Egress_FWD_Code_mask = 0;
@@ -2878,9 +2914,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (23 < table->keys[0].size && 1 < table->keys[1].size)
+    if (24 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 23, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 24, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "IPv6_MC_R1";
         data->Egress_FWD_Code_mask = 0;
@@ -2914,9 +2950,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (24 < table->keys[0].size && 1 < table->keys[1].size)
+    if (25 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 24, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 25, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "EXT_ENCAP_DO_NOTHING";
         data->Egress_FWD_Code_mask = 0;
@@ -2950,9 +2986,9 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_set(
         data->Vlan_Membership_Enable = 0;
         data->Vlan_Membership_Enable_valid = 1;
     }
-    if (25 < table->keys[0].size && 1 < table->keys[1].size)
+    if (26 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 25, 1);
+        data = (dnx_data_aod_tables_EGRESS_PER_FORWARD_CODE_t *) dnxc_data_mgmt_table_data_get(unit, table, 26, 1);
         data->valid = 1;
         data->Egress_FWD_Code = "FWD_CODE_BUG_CODE";
         data->Egress_FWD_Code_mask = 0;
@@ -4817,7 +4853,38 @@ j2p_a0_dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_set(
         data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 27, 1);
         data->valid = 1;
         data->FAI = 0;
-        data->FAI_mask = 1;
+        data->FAI_mask = 15;
+        data->FAI_valid = 1;
+        data->FWD_Layer_Qualifier = 0;
+        data->FWD_Layer_Qualifier_mask = 65535;
+        data->FWD_Layer_Qualifier_valid = 1;
+        data->FWD_Layer_Type = "SRV6_RCH_USP_PSP_AND_PSP_EXT";
+        data->FWD_Layer_Type_mask = 0;
+        data->FWD_Layer_Type_valid = 1;
+        data->FWD_code_port_profile = "Normal";
+        data->FWD_code_port_profile_mask = 0;
+        data->FWD_code_port_profile_valid = 1;
+        data->TM_Action_Type = 0;
+        data->TM_Action_Type_mask = 3;
+        data->TM_Action_Type_valid = 1;
+        data->ingress_trapped = 0;
+        data->ingress_trapped_mask = 1;
+        data->ingress_trapped_valid = 1;
+        data->is_Applet = 0;
+        data->is_Applet_mask = 1;
+        data->is_Applet_valid = 1;
+        data->is_TDM = 0;
+        data->is_TDM_mask = 1;
+        data->is_TDM_valid = 1;
+        data->Egress_FWD_Code = "SRv6_Endpoint_PSP_Extended_cut";
+        data->Egress_FWD_Code_valid = 1;
+    }
+    if (28 < table->keys[0].size && 1 < table->keys[1].size)
+    {
+        data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 28, 1);
+        data->valid = 1;
+        data->FAI = 0;
+        data->FAI_mask = 15;
         data->FAI_valid = 1;
         data->FWD_Layer_Qualifier = 0;
         data->FWD_Layer_Qualifier_mask = 65534;
@@ -4843,12 +4910,12 @@ j2p_a0_dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_set(
         data->Egress_FWD_Code = "SRv6_Endpoint";
         data->Egress_FWD_Code_valid = 1;
     }
-    if (28 < table->keys[0].size && 1 < table->keys[1].size)
+    if (29 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 28, 1);
+        data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 29, 1);
         data->valid = 1;
         data->FAI = 0;
-        data->FAI_mask = 1;
+        data->FAI_mask = 15;
         data->FAI_valid = 1;
         data->FWD_Layer_Qualifier = 1;
         data->FWD_Layer_Qualifier_mask = 65534;
@@ -4874,9 +4941,9 @@ j2p_a0_dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_set(
         data->Egress_FWD_Code = "SRv6_Endpoint_PSP";
         data->Egress_FWD_Code_valid = 1;
     }
-    if (29 < table->keys[0].size && 1 < table->keys[1].size)
+    if (30 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 29, 1);
+        data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 30, 1);
         data->valid = 1;
         data->FAI = 0;
         data->FAI_mask = 15;
@@ -4905,9 +4972,9 @@ j2p_a0_dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_set(
         data->Egress_FWD_Code = "TM";
         data->Egress_FWD_Code_valid = 1;
     }
-    if (30 < table->keys[0].size && 1 < table->keys[1].size)
+    if (31 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 30, 1);
+        data = (dnx_data_aod_tables_ERPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 31, 1);
         data->valid = 1;
         data->FAI = 0;
         data->FAI_mask = 15;
@@ -6422,7 +6489,41 @@ j2p_a0_dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_set(
         data->ACE_Value_mask = 3;
         data->ACE_Value_valid = 1;
         data->FAI = 0;
-        data->FAI_mask = 1;
+        data->FAI_mask = 15;
+        data->FAI_valid = 1;
+        data->FWD_Layer_Qualifier = 0;
+        data->FWD_Layer_Qualifier_mask = 65535;
+        data->FWD_Layer_Qualifier_valid = 1;
+        data->FWD_Layer_Type = "SRV6_RCH_USP_PSP_AND_PSP_EXT";
+        data->FWD_Layer_Type_mask = 0;
+        data->FWD_Layer_Type_valid = 1;
+        data->FWD_code_port_profile = "Normal";
+        data->FWD_code_port_profile_mask = 0;
+        data->FWD_code_port_profile_valid = 1;
+        data->TM_Action_Type = 0;
+        data->TM_Action_Type_mask = 3;
+        data->TM_Action_Type_valid = 1;
+        data->ingress_trapped = 0;
+        data->ingress_trapped_mask = 1;
+        data->ingress_trapped_valid = 1;
+        data->is_Applet = 0;
+        data->is_Applet_mask = 1;
+        data->is_Applet_valid = 1;
+        data->is_TDM = 0;
+        data->is_TDM_mask = 1;
+        data->is_TDM_valid = 1;
+        data->Egress_FWD_Code = "SRv6_Endpoint_PSP_Extended_cut";
+        data->Egress_FWD_Code_valid = 1;
+    }
+    if (28 < table->keys[0].size && 1 < table->keys[1].size)
+    {
+        data = (dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 28, 1);
+        data->valid = 1;
+        data->ACE_Value = "0";
+        data->ACE_Value_mask = 3;
+        data->ACE_Value_valid = 1;
+        data->FAI = 0;
+        data->FAI_mask = 15;
         data->FAI_valid = 1;
         data->FWD_Layer_Qualifier = 0;
         data->FWD_Layer_Qualifier_mask = 65534;
@@ -6448,15 +6549,15 @@ j2p_a0_dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_set(
         data->Egress_FWD_Code = "SRv6_Endpoint";
         data->Egress_FWD_Code_valid = 1;
     }
-    if (28 < table->keys[0].size && 1 < table->keys[1].size)
+    if (29 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 28, 1);
+        data = (dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 29, 1);
         data->valid = 1;
         data->ACE_Value = "0";
         data->ACE_Value_mask = 3;
         data->ACE_Value_valid = 1;
         data->FAI = 0;
-        data->FAI_mask = 1;
+        data->FAI_mask = 15;
         data->FAI_valid = 1;
         data->FWD_Layer_Qualifier = 1;
         data->FWD_Layer_Qualifier_mask = 65534;
@@ -6482,9 +6583,9 @@ j2p_a0_dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_set(
         data->Egress_FWD_Code = "SRv6_Endpoint_PSP";
         data->Egress_FWD_Code_valid = 1;
     }
-    if (29 < table->keys[0].size && 1 < table->keys[1].size)
+    if (30 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 29, 1);
+        data = (dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 30, 1);
         data->valid = 1;
         data->ACE_Value = "0";
         data->ACE_Value_mask = 3;
@@ -6516,9 +6617,9 @@ j2p_a0_dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_set(
         data->Egress_FWD_Code = "TM";
         data->Egress_FWD_Code_valid = 1;
     }
-    if (30 < table->keys[0].size && 1 < table->keys[1].size)
+    if (31 < table->keys[0].size && 1 < table->keys[1].size)
     {
-        data = (dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 30, 1);
+        data = (dnx_data_aod_tables_ETPP_FORWARD_CODE_SELECTION_t *) dnxc_data_mgmt_table_data_get(unit, table, 31, 1);
         data->valid = 1;
         data->ACE_Value = "0";
         data->ACE_Value_mask = 3;
@@ -7283,6 +7384,16 @@ j2p_a0_dnx_data_aod_tables_EGRESS_PARSING_START_TYPE_CONTEXT_set(
         data->Parsing_Start_Type_mask = 0;
         data->Parsing_Start_Type_valid = 1;
         data->ERPP_1st_Parser_Parser_Context = "RCH_EXTENDED_ENCAP";
+        data->ERPP_1st_Parser_Parser_Context_valid = 1;
+    }
+    if (15 < table->keys[0].size && 1 < table->keys[1].size)
+    {
+        data = (dnx_data_aod_tables_EGRESS_PARSING_START_TYPE_CONTEXT_t *) dnxc_data_mgmt_table_data_get(unit, table, 15, 1);
+        data->valid = 1;
+        data->Parsing_Start_Type = "SRV6_RCH_USP_PSP_AND_PSP_EXT";
+        data->Parsing_Start_Type_mask = 0;
+        data->Parsing_Start_Type_valid = 1;
+        data->ERPP_1st_Parser_Parser_Context = "SRv6_PSP_EXTENDED_TERMINATION";
         data->ERPP_1st_Parser_Parser_Context_valid = 1;
     }
 

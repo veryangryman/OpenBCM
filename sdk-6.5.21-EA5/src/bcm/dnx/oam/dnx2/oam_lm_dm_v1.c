@@ -4154,10 +4154,23 @@ dnx_oam_delay_info_to_dm_mep_db_hw_write_info(
 
     if (hw_write_data->is_1dm)
     {
-        if (ccm_mep_db_entry->flags & DNX_OAMP_OAM_CCM_MEP_48B_MAID)
+        if ((ccm_mep_db_entry->flags & DNX_OAMP_OAM_CCM_MEP_48B_MAID) &&
+            (ccm_mep_db_entry->flags & DNX_OAMP_OAM_MEP_ADDITIONAL_GAL_LABEL))
+        {
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_1DM_MAID48,
+                             &mep_pe_profile_dm));
+        }
+        else if (ccm_mep_db_entry->flags & DNX_OAMP_OAM_CCM_MEP_48B_MAID)
         {
             SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                             (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_1DM_MAID_48, &mep_pe_profile_dm));
+        }
+        else if (ccm_mep_db_entry->flags & DNX_OAMP_OAM_MEP_ADDITIONAL_GAL_LABEL)
+        {
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_1DM,
+                             &mep_pe_profile_dm));
         }
         else
         {
@@ -4169,10 +4182,22 @@ dnx_oam_delay_info_to_dm_mep_db_hw_write_info(
     }
     else if (hw_write_data->is_jumbo_dm)
     {
-        if (hw_write_data->is_48b_group)
+        if (hw_write_data->is_48b_group && (ccm_mep_db_entry->flags & DNX_OAMP_OAM_MEP_ADDITIONAL_GAL_LABEL))
+        {
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_MAID48,
+                             &mep_pe_profile_dm));
+        }
+        else if (hw_write_data->is_48b_group)
         {
             SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                             (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_DM_JUMBO_TLV_MAID_48, &mep_pe_profile_dm));
+        }
+        else if (ccm_mep_db_entry->flags & DNX_OAMP_OAM_MEP_ADDITIONAL_GAL_LABEL)
+        {
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV,
+                             &mep_pe_profile_dm));
         }
         else
         {
@@ -4293,6 +4318,7 @@ dnx_oam_oamp_v1_onlys_delay_add(
     uint8 old_oamp_da_lsb_prof = 0;
     uint8 offloaded = 0, dm_exists = 0, rfc_6374_exists = 0;
     uint32 mep_pe_profile = 0, mep_pe_profile_maid_48 = 0;
+    uint32 mep_pe_profile_additional_gal = 0, mep_pe_profile_additional_gal_maid48 = 0;
     SHR_FUNC_INIT_VARS(unit);
     DNX_ERR_RECOVERY_START(unit);
     DNX_ERR_RECOVERY_REGRESSION_RESTORE_IN_OUT_VAR_PTR(unit, sizeof(bcm_oam_delay_t), delay_ptr);
@@ -4351,6 +4377,12 @@ dnx_oam_oamp_v1_onlys_delay_add(
                             (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_1DM, &mep_pe_profile));
             SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                             (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_1DM_MAID_48, &mep_pe_profile_maid_48));
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_1DM,
+                             &mep_pe_profile_additional_gal));
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_1DM_MAID48,
+                             &mep_pe_profile_additional_gal_maid48));
         }
         else
         {
@@ -4358,10 +4390,18 @@ dnx_oam_oamp_v1_onlys_delay_add(
                             (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_DEFAULT, &mep_pe_profile));
             SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
                             (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_MAID_48, &mep_pe_profile_maid_48));
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL,
+                             &mep_pe_profile_additional_gal));
+            SHR_IF_ERR_EXIT(dnx_oamp_pe_mep_pe_profile_sw_get
+                            (unit, DBAL_ENUM_FVAL_MEP_PE_PROFILE_SW_ADDITIONAL_GAL_SPECIAL_LABEL_MAID48,
+                             &mep_pe_profile_additional_gal_maid48));
         }
 
         if ((ccm_mep_db_entry->mep_pe_profile != ((uint8) mep_pe_profile)) &&
-            (ccm_mep_db_entry->mep_pe_profile != ((uint8) mep_pe_profile_maid_48)))
+            (ccm_mep_db_entry->mep_pe_profile != ((uint8) mep_pe_profile_maid_48)) &&
+            (ccm_mep_db_entry->mep_pe_profile != ((uint8) mep_pe_profile_additional_gal)) &&
+            (ccm_mep_db_entry->mep_pe_profile != ((uint8) mep_pe_profile_additional_gal_maid48)))
         {
             SHR_ERR_EXIT(_SHR_E_PARAM, "Error: One-way delay is not supported for this endpoint.\n");
         }
@@ -4381,6 +4421,15 @@ dnx_oam_oamp_v1_onlys_delay_add(
     if (!DNX_OAM_IS_ENDPOINT_RFC6374(&endpoint_info))
     {
         flexibe_da_enabled = (sw_endpoint_info.extra_data_index == DNX_OAM_EXTRA_DATA_HEADER_INVALID) ? 0 : 1;
+    }
+
+    /*
+     * Set additional GAL label flag
+     */
+    if (_SHR_IS_FLAG_SET
+        (sw_endpoint_info.sw_state_flags, DBAL_DEFINE_OAM_ENDPOINT_SW_STATE_FLAGS_ADDITIONAL_GAL_SPECIAL_LABEL))
+    {
+        ccm_mep_db_entry->flags |= DNX_OAMP_OAM_MEP_ADDITIONAL_GAL_LABEL;
     }
 
     if ((delay_ptr->pkt_pri_bitmap != 0xff) && (delay_ptr->pkt_pri_bitmap != 0))

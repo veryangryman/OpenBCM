@@ -191,7 +191,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 52;
+    cur_field_type_param->nof_enum_vals = 53;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -257,6 +257,9 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info->is_invalid_value_from_mapping = !(dnx_data_headers.system_headers.system_headers_mode_get(unit));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "GENERAL___OAM", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6___PSP_EXTENDED_CUT", sizeof(enum_info->name_from_interface));
+        enum_info->is_invalid_value_from_mapping = !(dnx_data_headers.system_headers.system_headers_mode_get(unit));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "GENERAL___INT", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -482,6 +485,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 47;
             enum_info++;
             
+            enum_info->value_from_mapping = 48;
+            enum_info++;
+
             enum_info->value_from_mapping = 28;
             enum_info++;
             
@@ -655,6 +661,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 47;
             enum_info++;
             
+            enum_info->value_from_mapping = 48;
+            enum_info++;
+
             enum_info->value_from_mapping = 28;
             enum_info++;
             
@@ -828,6 +837,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 47;
             enum_info++;
             
+            enum_info->value_from_mapping = 48;
+            enum_info++;
+
             enum_info->is_invalid_value_from_mapping = TRUE;
             enum_info++;
             
@@ -1001,6 +1013,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 47;
             enum_info++;
             
+            enum_info->value_from_mapping = 48;
+            enum_info++;
+
             enum_info->value_from_mapping = 28;
             enum_info++;
             
@@ -1174,6 +1189,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 47;
             enum_info++;
             
+            enum_info->value_from_mapping = 48;
+            enum_info++;
+
             enum_info->value_from_mapping = 28;
             enum_info++;
             
@@ -1205,7 +1223,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 61;
+    cur_field_type_param->nof_enum_vals = 62;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -1265,6 +1283,9 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "GENERAL___IPT_IFA2_0_INTERMEDIATE_NO_MD", sizeof(enum_info->name_from_interface));
         enum_info->is_invalid_value_from_mapping = !(dnx_data_headers.system_headers.system_headers_mode_get(unit));
         enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6___PSP_EXTENDED_CUT", sizeof(enum_info->name_from_interface));
+        enum_info->is_invalid_value_from_mapping = !(dnx_data_headers.system_headers.system_headers_mode_get(unit));
+        enum_info++;
         sal_strncpy(enum_info->name_from_interface, "GENERAL___IPT_TAIL_AM", sizeof(enum_info->name_from_interface));
         enum_info->is_invalid_value_from_mapping = !(dnx_data_headers.system_headers.system_headers_mode_get(unit));
         enum_info++;
@@ -1275,11 +1296,11 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "GENERAL___NOP_AND_POP_2", sizeof(enum_info->name_from_interface));
         enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "GENERAL___NOP_AND_POP", sizeof(enum_info->name_from_interface));
-        enum_info++;
         sal_strncpy(enum_info->name_from_interface, "IPV4___FORWARDING", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "IPV6___FORWARDING", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "GENERAL___NOP_AND_POP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "IPV4___ETPP_FORWARDING_WO_ETPS_POP", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -1460,7 +1481,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 29;
             enum_info++;
             
-            enum_info->value_from_mapping = 31;
+            enum_info->value_from_mapping = 30;
             enum_info++;
             
             enum_info->value_from_mapping = 32;
@@ -1469,7 +1490,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 33;
             enum_info++;
             
-            enum_info->value_from_mapping = 35;
+            enum_info->value_from_mapping = 34;
             enum_info++;
             
             enum_info->value_from_mapping = 36;
@@ -1535,13 +1556,16 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 56;
             enum_info++;
             
+            enum_info->value_from_mapping = 57;
+            enum_info++;
+
             enum_info->value_from_mapping = 20;
             enum_info++;
             
-            enum_info->value_from_mapping = 30;
+            enum_info->value_from_mapping = 31;
             enum_info++;
             
-            enum_info->value_from_mapping = 34;
+            enum_info->value_from_mapping = 35;
             enum_info++;
             
             enum_info->is_invalid_value_from_mapping = TRUE;
@@ -1660,7 +1684,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 29;
             enum_info++;
             
-            enum_info->value_from_mapping = 31;
+            enum_info->value_from_mapping = 30;
             enum_info++;
             
             enum_info->value_from_mapping = 32;
@@ -1669,7 +1693,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 33;
             enum_info++;
             
-            enum_info->value_from_mapping = 35;
+            enum_info->value_from_mapping = 34;
             enum_info++;
             
             enum_info->value_from_mapping = 36;
@@ -1735,13 +1759,16 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 56;
             enum_info++;
             
+            enum_info->value_from_mapping = 57;
+            enum_info++;
+
             enum_info->value_from_mapping = 20;
             enum_info++;
             
-            enum_info->value_from_mapping = 30;
+            enum_info->value_from_mapping = 31;
             enum_info++;
             
-            enum_info->value_from_mapping = 34;
+            enum_info->value_from_mapping = 35;
             enum_info++;
             
             enum_info->is_invalid_value_from_mapping = TRUE;
@@ -1860,7 +1887,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 29;
             enum_info++;
             
-            enum_info->value_from_mapping = 31;
+            enum_info->value_from_mapping = 30;
             enum_info++;
             
             enum_info->value_from_mapping = 32;
@@ -1869,7 +1896,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 33;
             enum_info++;
             
-            enum_info->value_from_mapping = 35;
+            enum_info->value_from_mapping = 34;
             enum_info++;
             
             enum_info->value_from_mapping = 36;
@@ -1935,6 +1962,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 56;
             enum_info++;
             
+            enum_info->value_from_mapping = 57;
+            enum_info++;
+
             enum_info->is_invalid_value_from_mapping = TRUE;
             enum_info++;
             
@@ -2060,7 +2090,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 29;
             enum_info++;
             
-            enum_info->value_from_mapping = 31;
+            enum_info->value_from_mapping = 30;
             enum_info++;
             
             enum_info->value_from_mapping = 32;
@@ -2069,7 +2099,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 33;
             enum_info++;
             
-            enum_info->value_from_mapping = 35;
+            enum_info->value_from_mapping = 34;
             enum_info++;
             
             enum_info->value_from_mapping = 36;
@@ -2135,13 +2165,16 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 56;
             enum_info++;
             
+            enum_info->value_from_mapping = 57;
+            enum_info++;
+
             enum_info->value_from_mapping = 20;
             enum_info++;
             
-            enum_info->value_from_mapping = 30;
+            enum_info->value_from_mapping = 31;
             enum_info++;
             
-            enum_info->value_from_mapping = 34;
+            enum_info->value_from_mapping = 35;
             enum_info++;
             
             enum_info->is_invalid_value_from_mapping = TRUE;
@@ -2260,7 +2293,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 29;
             enum_info++;
             
-            enum_info->value_from_mapping = 31;
+            enum_info->value_from_mapping = 30;
             enum_info++;
             
             enum_info->value_from_mapping = 32;
@@ -2269,7 +2302,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 33;
             enum_info++;
             
-            enum_info->value_from_mapping = 35;
+            enum_info->value_from_mapping = 34;
             enum_info++;
             
             enum_info->value_from_mapping = 36;
@@ -2335,13 +2368,16 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 56;
             enum_info++;
             
+            enum_info->value_from_mapping = 57;
+            enum_info++;
+
             enum_info->value_from_mapping = 20;
             enum_info++;
             
-            enum_info->value_from_mapping = 30;
+            enum_info->value_from_mapping = 31;
             enum_info++;
             
-            enum_info->value_from_mapping = 34;
+            enum_info->value_from_mapping = 35;
             enum_info++;
             
             enum_info->value_from_mapping = 13;
@@ -2375,7 +2411,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 59;
+    cur_field_type_param->nof_enum_vals = 58;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -2461,10 +2497,6 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "MPLS___EVPN_NO_ESI", sizeof(enum_info->name_from_interface));
         enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "MPLS___IFIT_MPLS", sizeof(enum_info->name_from_interface));
-        enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "MPLS___IFIT_MPLS_RFC8321", sizeof(enum_info->name_from_interface));
-        enum_info++;
         sal_strncpy(enum_info->name_from_interface, "PPPOE___WO_PPP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "PPPOE___W_PPP", sizeof(enum_info->name_from_interface));
@@ -2485,6 +2517,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "TELEMETRY___INT_P4_TBD", sizeof(enum_info->name_from_interface));
         enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "TELEMETRY___INT_FB_TBD", sizeof(enum_info->name_from_interface));
+        enum_info++;
         sal_strncpy(enum_info->name_from_interface, "SRV6___ENCAP_SEGMENT_MAIN_PASS", sizeof(enum_info->name_from_interface));
         enum_info->is_invalid_value_from_mapping = !(dnx_data_headers.system_headers.system_headers_mode_get(unit));
         enum_info++;
@@ -2497,8 +2531,6 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "SRV6___ENCAP_T_INSERT_ENCAP_SID_REDUCED", sizeof(enum_info->name_from_interface));
         enum_info->is_invalid_value_from_mapping = !(dnx_data_headers.system_headers.system_headers_mode_get(unit));
         enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "TELEMETRY___INT_FB_TBD", sizeof(enum_info->name_from_interface));
-        enum_info++;
         sal_strncpy(enum_info->name_from_interface, "MPLS___MPLS_2PLUS1_BOS_LABEL_USED_IN_FWD_AS_SWAP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "MPLS___MPLS_2PLUS2_BOS_LABEL_USED_IN_FWD_AS_SWAP", sizeof(enum_info->name_from_interface));
@@ -2506,6 +2538,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "IPV4___NAT_BUILD_IP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "MPLS___MPLS_2_BOS_LABEL_USED_IN_FWD_AS_SWAP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "MPLS___IFIT_MPLS", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "BRIDGE___ETH_COMPATIBLE_MC_BASIC_SVTAG", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -2638,9 +2672,6 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 36;
             enum_info++;
             
-            enum_info->value_from_mapping = 37;
-            enum_info++;
-            
             enum_info->value_from_mapping = 38;
             enum_info++;
             
@@ -2683,9 +2714,6 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 51;
             enum_info++;
             
-            enum_info->value_from_mapping = 52;
-            enum_info++;
-            
             enum_info->is_invalid_value_from_mapping = TRUE;
             enum_info++;
             
@@ -2698,6 +2726,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 27;
             enum_info++;
             
+            enum_info->value_from_mapping = 37;
+            enum_info++;
+
             enum_info->value_from_mapping = 1;
             enum_info++;
             
@@ -2832,9 +2863,6 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 36;
             enum_info++;
             
-            enum_info->value_from_mapping = 37;
-            enum_info++;
-            
             enum_info->value_from_mapping = 38;
             enum_info++;
             
@@ -2877,7 +2905,7 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 51;
             enum_info++;
             
-            enum_info->value_from_mapping = 52;
+            enum_info->is_invalid_value_from_mapping = TRUE;
             enum_info++;
             
             enum_info->is_invalid_value_from_mapping = TRUE;
@@ -3026,9 +3054,6 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 36;
             enum_info++;
             
-            enum_info->value_from_mapping = 37;
-            enum_info++;
-            
             enum_info->value_from_mapping = 38;
             enum_info++;
             
@@ -3071,9 +3096,6 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 51;
             enum_info++;
             
-            enum_info->value_from_mapping = 52;
-            enum_info++;
-            
             enum_info->value_from_mapping = 1;
             enum_info++;
             
@@ -3086,6 +3108,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 27;
             enum_info++;
             
+            enum_info->value_from_mapping = 37;
+            enum_info++;
+
             enum_info->is_invalid_value_from_mapping = TRUE;
             enum_info++;
             
@@ -4478,7 +4503,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 54;
+    cur_field_type_param->nof_enum_vals = 55;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -4539,7 +4564,7 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "TM___JR1_COMP_MACT_LEARNING_JR2_TO_JR1", sizeof(enum_info->name_from_interface));
         enum_info->is_invalid_value_from_mapping = !(!dnx_data_headers.system_headers.system_headers_mode_get(unit));
         enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "GENERAL___RCH_JMODE_VRF", sizeof(enum_info->name_from_interface));
+        sal_strncpy(enum_info->name_from_interface, "GENERAL___RCH_VRF_REDIRECT", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "OAM___OAM_DM_TO_OAMP", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -4566,6 +4591,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "OAM___OAM_REFLECTOR", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "OAM___BFDV6_CHECKSUM_ERROR", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6___RCH_SRV6_USP_PSP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "TELEMETRY___IFA_EGRESS_PORT", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -4771,6 +4798,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             
             enum_info->value_from_mapping = 52;
             enum_info++;
+
+            enum_info->value_from_mapping = 53;
+            enum_info++;
         }
     }
     else if (DBAL_IS_JR2_A0 || DBAL_IS_JR2_B0 || DBAL_IS_J2P_A0)
@@ -4921,6 +4951,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 42;
             enum_info++;
             
+            enum_info->value_from_mapping = 43;
+            enum_info++;
+
             enum_info->is_invalid_value_from_mapping = TRUE;
             enum_info++;
             

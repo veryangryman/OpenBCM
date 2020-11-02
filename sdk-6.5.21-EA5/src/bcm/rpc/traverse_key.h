@@ -19,7 +19,7 @@
 #ifdef	BCM_RPC_SUPPORT
 
 #define	BCM_TRAVERSE_LOOKUP_KEYLEN	5
-#define	BCM_TRAVERSE_LOOKUP_COUNT	176
+#define	BCM_TRAVERSE_LOOKUP_COUNT	177
 
 typedef int (*_bcm_traverse_handler_t)(bcm_rlink_traverse_data_t **);
 typedef struct _bcm_traverse_lookup_s {

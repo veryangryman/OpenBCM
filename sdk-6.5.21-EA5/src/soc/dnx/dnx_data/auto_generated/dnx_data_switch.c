@@ -711,6 +711,10 @@ dnx_data_switch_feature_init(
     submodule_data->features[dnx_data_switch_feature_excluded_header_bits_from_hash].doc = "The ETH.VID field does not participate in hashing; 4 MSBs of IPV6.Flow_label participate in hashing.";
     submodule_data->features[dnx_data_switch_feature_excluded_header_bits_from_hash].flags |= DNXC_DATA_F_FEATURE;
 
+    submodule_data->features[dnx_data_switch_feature_silent_dummy_lif_lookup].name = "silent_dummy_lif_lookup";
+    submodule_data->features[dnx_data_switch_feature_silent_dummy_lif_lookup].doc = "Pure Dummy LIF without any valid field";
+    submodule_data->features[dnx_data_switch_feature_silent_dummy_lif_lookup].flags |= DNXC_DATA_F_FEATURE;
+
     
     submodule_data->nof_defines = _dnx_data_switch_feature_define_nof;
     DNXC_DATA_ALLOC(submodule_data->defines, dnxc_data_define_t, submodule_data->nof_defines, "_dnxc_data switch feature defines");

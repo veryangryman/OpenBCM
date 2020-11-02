@@ -140,6 +140,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_UINT,
+
     DBAL_FIELD_TYPE_DEF_BOOL,
     
     DBAL_FIELD_TYPE_DEF_BOOL,
@@ -1414,6 +1416,10 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_CLASSIC_SID_LOCATER64_FUNCTION_16,
+
+    DBAL_FIELD_TYPE_DEF_CLASSIC_SID_LOCATER96_FUNCTION_16,
+
     DBAL_FIELD_TYPE_DEF_UINT,
     
     DBAL_FIELD_TYPE_DEF_UINT,
@@ -6860,6 +6866,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_UINT,
+
     DBAL_FIELD_TYPE_DEF_FWD2_CONTEXT_ID,
     
     DBAL_FIELD_TYPE_DEF_UINT,
@@ -6882,6 +6890,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_UINT,
+
     DBAL_FIELD_TYPE_DEF_INGRESS_TRAP_ID,
     
     DBAL_FIELD_TYPE_DEF_TRAP_QUALIFIER,
@@ -7278,6 +7288,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_GSID_PREFIX_48_GSID_16,
+
     DBAL_FIELD_TYPE_DEF_NIF_RESET_REVERSE_LOGIC,
     
     DBAL_FIELD_TYPE_DEF_UINT,
@@ -9912,6 +9924,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_IPV6_ADDITIONAL_HEADER,
     
+    DBAL_FIELD_TYPE_DEF_IPV6_ADDRESS_16,
+
     DBAL_FIELD_TYPE_DEF_IPV6_ADDRESS_MSBS_ID,
     
     DBAL_FIELD_TYPE_DEF_IPV6,
@@ -15824,6 +15838,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_UINT,
+
     DBAL_FIELD_TYPE_DEF_BOOL,
     
     DBAL_FIELD_TYPE_DEF_NON_AUTH_8021X_TRAP_HANDLING_PROFILE,
@@ -15848,6 +15864,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_UINT,
+
     DBAL_FIELD_TYPE_DEF_NO_ADDITIONAL_HEADER_SPECIFIC_INFORMATION,
     
     DBAL_FIELD_TYPE_DEF_BOOL,
@@ -21436,6 +21454,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_UINT,
     
+    DBAL_FIELD_TYPE_DEF_SRV6_SID_FORMATS,
+
     DBAL_FIELD_TYPE_DEF_BOOL,
     
     DBAL_FIELD_TYPE_DEF_SRV6_TERMINATION_TYPE,
@@ -24092,6 +24112,8 @@ dbal_field_types_defs_e dbal_field_id_to_type[DBAL_NOF_FIELDS] = {
     
     DBAL_FIELD_TYPE_DEF_USHORT,
     
+    DBAL_FIELD_TYPE_DEF_USID_PREFIX_32_USID_16,
+
     DBAL_FIELD_TYPE_DEF_L2_V4_MC_FWD_TYPE,
     
     DBAL_FIELD_TYPE_DEF_L2_V6_MC_FWD_TYPE,

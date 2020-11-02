@@ -254,6 +254,10 @@ typedef enum
 #define DNX_OAM_DISSECT_IS_SIGNAL_DETECT(p_endpoint_info) \
                           (((p_endpoint_info)->flags2 & BCM_OAM_ENDPOINT_FLAGS2_SIGNAL) == BCM_OAM_ENDPOINT_FLAGS2_SIGNAL)
 
+/* Is endpoint_info struct represents an down mep egress injection */
+#define DNX_OAM_DISSECT_IS_ENDPOINT_ENABLED_ADDITIONAL_GAL_SPECIAL_LABEL(p_endpoint_info) \
+                          (((p_endpoint_info)->flags2 & BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL) == BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL)
+
 /**
  * Indication of using Extra Data per endpoint
  * Currently used for
@@ -2264,6 +2268,44 @@ shr_error_e dnx_oam_remote_endpoint_destroy(
     int unit,
     int rmep_idx,
     bcm_oam_endpoint_info_t * endpoint_info);
+
+/**
+ * \brief - This function gets additional GAL special label in
+ *          sw_state,
+ *
+ * \param [in] unit - Number of hardware unit used.
+ * \param [out] gal - To store the additional GAL special label
+ * \param [out] label_profile - To store the normal profile
+ *
+ * \return
+ *   shr_error_e
+ *
+ * \see
+ *   * None
+ */
+shr_error_e dnx_oam_sw_db_additional_gal_special_label_get(
+    int unit,
+    uint32 *gal,
+    uint32 *label_profile);
+
+/**
+ * \brief - This function sets the additional GAL special label in
+ *          sw_state,
+ *
+ * \param [in] unit - Number of hardware unit used.
+ * \param [in] gal - The additional GAL special label
+ * \param [in] label_profile - Profile when this label is not defined as GAL
+ *
+ * \return
+ *   shr_error_e
+ *
+ * \see
+ *   * None
+ */
+shr_error_e dnx_oam_sw_db_additional_gal_special_label_set(
+    int unit,
+    uint32 gal,
+    uint32 label_profile);
 
 /**
  * \brief - This function sets an profile_is_slm indication in

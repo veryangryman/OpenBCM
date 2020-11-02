@@ -24,6 +24,7 @@
 #include <include/soc/dnx/dnx_data/auto_generated/dnx_data_oam.h>
 #include <include/soc/dnx/swstate/auto_generated/access/oam_access.h>
 #include <bcm_int/dnx/algo/oamp/algo_oamp.h>
+#include <bcm_int/dnx/mpls/mpls.h>
 /*
  *  }
  */
@@ -640,6 +641,91 @@ exit:
 
 /**
  * \brief
+ *   The function initializes OAM general information
+ *   software DB.
+ * \param [in] unit  -
+ *   Relevant unit.
+ * \return
+ *   \retval Zero if no error was detected
+ *   \retval Negative if error was detected.
+ * \remark
+ *   * None
+ * \see
+ *  * None
+*/
+shr_error_e
+dnx_oam_sw_db_general_info_init(
+    int unit)
+{
+    uint32 entry_handle_id;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_OAM_GENERAL_INFO_SW, &entry_handle_id));
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_ADDITIONAL_GAL_SPECIAL_LABEL,
+                                 INST_SINGLE, MPLS_LABEL_GAL);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_NORMAL_LABEL_PROFILE,
+                                 INST_SINGLE, DBAL_ENUM_FVAL_VTT_MPLS_SPECIAL_LABEL_PROFILE_GAL);
+
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/** See details in oam_internal.h */
+shr_error_e
+dnx_oam_sw_db_additional_gal_special_label_get(
+    int unit,
+    uint32 *gal,
+    uint32 *label_profile)
+{
+    uint32 entry_handle_id;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_OAM_GENERAL_INFO_SW, &entry_handle_id));
+
+    dbal_value_field32_request(unit, entry_handle_id, DBAL_FIELD_ADDITIONAL_GAL_SPECIAL_LABEL, INST_SINGLE, gal);
+    dbal_value_field32_request(unit, entry_handle_id, DBAL_FIELD_NORMAL_LABEL_PROFILE, INST_SINGLE, label_profile);
+
+    SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_COMMIT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/** See details in oam_internal.h */
+shr_error_e
+dnx_oam_sw_db_additional_gal_special_label_set(
+    int unit,
+    uint32 gal,
+    uint32 label_profile)
+{
+    uint32 entry_handle_id;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_OAM_GENERAL_INFO_SW, &entry_handle_id));
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_ADDITIONAL_GAL_SPECIAL_LABEL, INST_SINGLE, gal);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_NORMAL_LABEL_PROFILE, INST_SINGLE, label_profile);
+
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
  *  The function initializes sw db structures for oam
  * \param [in] unit  - 
  *   Relevant unit.
@@ -664,8 +750,12 @@ dnx_oam_sw_db_init(
     /** init the SW DB of OAM RMEPs linked to each OAM endpoint */
     SHR_IF_ERR_EXIT(dnx_oam_sw_db_lmep_to_rmep_create(unit));
 
-        /** Initialize profile_is_slm table */
+    /** Initialize profile_is_slm table */
     SHR_IF_ERR_EXIT(dnx_oam_sw_db_lif_mp_profile_init(unit));
+
+    /** Initialize general information table */
+    SHR_IF_ERR_EXIT(dnx_oam_sw_db_general_info_init(unit));
+
 exit:
     SHR_FUNC_EXIT;
 }

@@ -351,6 +351,40 @@ shr_error_e dnx_mpls_alternate_marking_special_label_get(
     uint32 *special_label_value);
 
 /**
+ * \brief - Set Flow Instruction Indicator  Label value. This is a global system configuration for both
+ * encapsulation (virtual PEMLA register and termination (special label map table).
+ *
+ * \param [in] unit - Relevant unit.
+ * \param [in] label_value - label value
+ * \return
+ *   Error indication according to shr_error_e enum
+ *
+ * \remark
+ *   None
+ * \see
+ *   * None
+ */
+shr_error_e dnx_mpls_flow_instrunction_indicator_label_set(
+    int unit,
+    uint32 label_value);
+/**
+ * \brief - Get value of Flow Instruction Indicator Label
+ *
+ * \param [in] unit - Relevant unit.
+ * \param [out] label_value - label value
+ * \return
+ *   Error indication according to shr_error_e enum
+ *
+ * \remark
+ *   None
+ * \see
+ *   * None
+ */
+shr_error_e dnx_mpls_flow_instrunction_indicator_label_get(
+    int unit,
+    uint32 *label_value);
+
+/**
 * \brief
 *  Set a special label to non special one.
 *   \param [in] unit         -  Relevant unit.

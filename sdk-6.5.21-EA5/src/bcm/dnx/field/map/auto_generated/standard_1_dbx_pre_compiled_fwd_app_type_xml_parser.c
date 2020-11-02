@@ -32,6 +32,7 @@ const char *jericho2_a0_auto_generated_standard_1_fwd_app_type_jr2_a0_0="<?xml v
         <FwdContext name=\"IPV4___NAT_UPSTREAM\"/>\n\
     </AppType>\n\
     <AppType name=\"SRV6_ENDPOINT_CLASSIC\">\n\
+        <FwdContext name=\"SRV6___CLASSIC_NOP_CTX\"/>\n\
         <FwdContext name=\"SRV6___PRIVATE_UC\"/>\n\
     </AppType>\n\
     <AppType name=\"MPLS\">\n\
@@ -92,6 +93,7 @@ const char *jericho2_b0_auto_generated_standard_1_fwd_app_type_jr2_b0_0="<?xml v
         <FwdContext name=\"IPV4___NAT_UPSTREAM\"/>\n\
     </AppType>\n\
     <AppType name=\"SRV6_ENDPOINT_CLASSIC\">\n\
+        <FwdContext name=\"SRV6___CLASSIC_NOP_CTX\"/>\n\
         <FwdContext name=\"SRV6___PRIVATE_UC\"/>\n\
     </AppType>\n\
     <AppType name=\"MPLS\">\n\
@@ -152,6 +154,7 @@ const char *jericho2c_a0_auto_generated_standard_1_fwd_app_type_j2c_a0_0="<?xml 
         <FwdContext name=\"IPV4___NAT_UPSTREAM\"/>\n\
     </AppType>\n\
     <AppType name=\"SRV6_ENDPOINT_CLASSIC\">\n\
+        <FwdContext name=\"SRV6___CLASSIC_NOP_CTX\"/>\n\
         <FwdContext name=\"SRV6___PRIVATE_UC\"/>\n\
     </AppType>\n\
     <AppType name=\"MPLS\">\n\
@@ -212,6 +215,7 @@ const char *qumran2a_a0_auto_generated_standard_1_fwd_app_type_q2a_a0_0="<?xml v
         <FwdContext name=\"IPV4___NAT_UPSTREAM\"/>\n\
     </AppType>\n\
     <AppType name=\"SRV6_ENDPOINT_CLASSIC\">\n\
+        <FwdContext name=\"SRV6___CLASSIC_NOP_CTX\"/>\n\
         <FwdContext name=\"SRV6___PRIVATE_UC\"/>\n\
     </AppType>\n\
     <AppType name=\"MPLS\">\n\
@@ -272,6 +276,7 @@ const char *qumran2a_b0_auto_generated_standard_1_fwd_app_type_q2a_b0_0="<?xml v
         <FwdContext name=\"IPV4___NAT_UPSTREAM\"/>\n\
     </AppType>\n\
     <AppType name=\"SRV6_ENDPOINT_CLASSIC\">\n\
+        <FwdContext name=\"SRV6___CLASSIC_NOP_CTX\"/>\n\
         <FwdContext name=\"SRV6___PRIVATE_UC\"/>\n\
     </AppType>\n\
     <AppType name=\"MPLS\">\n\
@@ -332,6 +337,7 @@ const char *jericho2p_a0_auto_generated_standard_1_fwd_app_type_j2p_a0_0="<?xml 
         <FwdContext name=\"IPV4___NAT_UPSTREAM\"/>\n\
     </AppType>\n\
     <AppType name=\"SRV6_ENDPOINT_CLASSIC\">\n\
+        <FwdContext name=\"SRV6___CLASSIC_NOP_CTX\"/>\n\
         <FwdContext name=\"SRV6___PRIVATE_UC\"/>\n\
     </AppType>\n\
     <AppType name=\"MPLS\">\n\

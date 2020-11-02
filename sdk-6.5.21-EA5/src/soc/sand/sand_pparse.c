@@ -499,6 +499,10 @@ pparse_pdb_cond_plugin_add(
     {
         cond->content.plugin.callback = packet_ptch1;
     }
+    if (!sal_strcasecmp(cb_name, "packet_rch_srv6_usp_psp"))
+    {
+        cond->content.plugin.callback = packet_rch_srv6_usp_psp;
+    }
     if (!sal_strcasecmp(cb_name, "packet_rch"))
     {
         cond->content.plugin.callback = packet_rch;
@@ -2142,6 +2146,37 @@ packet_rch(
 
 exit:
     sand_signal_output_free(ptc_sig);
+    SHR_FUNC_EXIT;
+}
+
+
+shr_error_e
+packet_rch_srv6_usp_psp(
+    int unit,
+    int core,
+    rhlist_t * args,
+    uint32 *enabled)
+{
+    signal_output_t *layer_protocol_0_sig = NULL;
+    uint32 layer_type_0_hw_val, layer_type_0_enum_val;
+
+    SHR_FUNC_INIT_VARS(unit);
+
+    SHR_NULL_CHECK(enabled, _SHR_E_PARAM, "enabled");
+
+    *enabled = 0;
+
+
+    SHR_IF_ERR_EXIT(sand_signal_output_find(unit, core, SIGNALS_MATCH_NO_FETCH_ALL, "IRPP", "VTT1", "VTT2" , "Layer_Protocols", &layer_protocol_0_sig));
+    layer_type_0_hw_val = layer_protocol_0_sig->value[0] & 0x1f;
+    SHR_IF_ERR_EXIT(dbal_fields_enum_value_get(unit, DBAL_FIELD_LAYER_TYPES, layer_type_0_hw_val, &layer_type_0_enum_val));
+    if (layer_type_0_enum_val == DBAL_ENUM_FVAL_LAYER_TYPES_SRV6_RCH_USP_PSP_AND_PSP_EXT)
+    {
+        *enabled = 1;
+    }
+
+exit:
+    sand_signal_output_free(layer_protocol_0_sig);
     SHR_FUNC_EXIT;
 }
 

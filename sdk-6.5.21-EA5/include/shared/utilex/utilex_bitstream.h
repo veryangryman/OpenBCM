@@ -451,6 +451,36 @@ int utilex_bitstream_have_one_in_range(
 
 /**
  * \brief
+ *  Test whether specified range contains '0' or all bits are '1'.
+ *  The range is [start_place -- end_place]
+ *  INCLUDING end_place.
+ *
+ * \par DIRECT INPUT
+ *   \param [in] bit_stream  -
+ *     Pointer to an array of uint32s, which functions as the bit stream
+ *   \param [in] start_place  -
+ *     The start bit number (counted in bits).
+ *     See 'place' in utilex_bitstream_set() on bit numbering. Note that
+ *     bit number must not exceed length of the whole bit stream.
+ *   \param [in] end_place    -
+ *     The end bit number (counted in bits)
+ *     This bit is also checked.
+ * \par INDIRECT INPUT
+ *   * None
+ * \par DIRECT OUTPUT:
+ *   TRUE if 0 was found within the bit range
+ * \par INDIRECT OUTPUT
+ *   * None
+ * \sa utilex_bitstream_test_bit
+ *     utilex_bitstream_have_one
+ */
+int utilex_bitstream_have_zero_in_range(
+    uint32 *bit_stream,
+    uint32 start_place,
+    uint32 end_place);
+
+/**
+ * \brief
  *  Test whether any bit is set in the whole bitstream.
  *  (work faster than utilex_bitstream_have_one_in_range())
  *

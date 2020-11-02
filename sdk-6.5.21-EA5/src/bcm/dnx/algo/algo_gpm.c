@@ -1974,6 +1974,7 @@ dnx_algo_gpm_gport_from_lif(
             }
             case DBAL_TABLE_EEDB_RCH:
             case DBAL_TABLE_EEDB_GTP:
+            case DBAL_TABLE_EEDB_MPLS_IFIT:
                 BCM_GPORT_TUNNEL_ID_SET(*gport, global_lif);
                 break;
             default:

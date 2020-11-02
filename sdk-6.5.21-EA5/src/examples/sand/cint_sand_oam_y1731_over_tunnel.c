@@ -144,6 +144,9 @@ int oam_is_dual_ended_lm = 0;
 /** Used for Signal Detect indication */
 int is_signal_detect=0;
 
+/** Used for additional GAL indication */
+int is_additional_gal=0;
+
 /* This is an example of using bcm_oam_event_register api.
  * A simple callback is created for CCM timeout event.
  * After a mep and rmep are created, the callback is called
@@ -963,7 +966,7 @@ int oam_example_over_tunnel(int unit,  bcm_oam_endpoint_type_t type, int use_mpl
     {
         /* Use ID 0x8000 (first entry, bank 4) so that SLM entry may be added on this MEP.*/
         mep_acc_info.flags |= BCM_OAM_ENDPOINT_WITH_ID;
-        mep_acc_info.id = is_mpls_pwe_jumbo_dm? 32704 : 0x8000;
+        mep_acc_info.id = is_mpls_pwe_jumbo_dm? 0x100 : 0x8000;
     }
 
 
@@ -973,6 +976,10 @@ int oam_example_over_tunnel(int unit,  bcm_oam_endpoint_type_t type, int use_mpl
         mep_acc_info.extra_data_index = 9600;
         mep_acc_info.rx_signal = 0;
         mep_acc_info.tx_signal = 0;
+    }
+    if (is_additional_gal)
+    {
+        mep_acc_info.flags2 |= BCM_OAM_ENDPOINT_FLAGS2_ADDITIONAL_GAL_SPECIAL_LABEL;
     }
     printf("bcm_oam_endpoint_create mep_acc_info\n");
     rv = bcm_oam_endpoint_create(unit, &mep_acc_info);

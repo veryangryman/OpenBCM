@@ -272,12 +272,14 @@ dnx_stat_pp_irpp_vis_gen_fwd_act_profile_stats(
                                                         DBAL_FIELD_STAT_OBJ_VALUE_0, INST_SINGLE, &stat_id));
 
     /** Get stat_metadata value before and after iPMF3 */
-    SHR_IF_ERR_EXIT_NO_MSG(dpp_dsig_read(unit, core, "IRPP", "FER", "IPMF3", "Stats_Meta_Data", &stat_metadata_prev, 1));
+    SHR_IF_ERR_EXIT_NO_MSG(dpp_dsig_read
+                           (unit, core, "IRPP", "FER", "IPMF3", "Stats_Meta_Data", &stat_metadata_prev, 1));
     SHR_IF_ERR_EXIT_NO_MSG(dpp_dsig_read(unit, core, "IRPP", "IPMF3", "LBP", "Stats_Meta_Data", &stat_metadata_cur, 1));
 
     if (stat_id != 0)
     {
-        SHR_IF_ERR_EXIT(dnx_stat_pp_print_vis_stat(unit, "trap fwd action profile", stat_id, 0, stat_metadata_cur, prt_ctr));
+        SHR_IF_ERR_EXIT(dnx_stat_pp_print_vis_stat
+                        (unit, "trap fwd action profile", stat_id, 0, stat_metadata_cur, prt_ctr));
     }
     else if (stat_metadata_prev != stat_metadata_cur)
     {
@@ -321,7 +323,8 @@ dnx_stat_pp_irpp_vis_gen_fer_stats(
                            (unit, core, 0, NULL, "FER", "IPMF3", "Fer_Stats_Obj_Atr", &stats_profiles));
 
     /** Get stat_metadata value before and after iPMF1 */
-    SHR_IF_ERR_EXIT_NO_MSG(dpp_dsig_read(unit, core, "IRPP", "FWD2", "IPMF1", "Stats_Meta_Data", &stat_metadata_prev, 1));
+    SHR_IF_ERR_EXIT_NO_MSG(dpp_dsig_read
+                           (unit, core, "IRPP", "FWD2", "IPMF1", "Stats_Meta_Data", &stat_metadata_prev, 1));
     SHR_IF_ERR_EXIT_NO_MSG(dpp_dsig_read(unit, core, "IRPP", "FER", "IPMF3", "Stats_Meta_Data", &stat_metadata_cur, 1));
 
     for (i = 0; i <= 2; i++)
@@ -332,7 +335,8 @@ dnx_stat_pp_irpp_vis_gen_fer_stats(
         {
             SHR_IF_ERR_EXIT(utilex_bitstream_get_any_field(stats_profiles->value, i * 5, 5, &stat_pp_profile));
             sal_snprintf(fec_object_type, RHNAME_MAX_SIZE, "Destination fec %d", (i + 1));
-            SHR_IF_ERR_EXIT(dnx_stat_pp_print_vis_stat(unit, fec_object_type, stat_id, stat_pp_profile, stat_metadata_cur, prt_ctr));
+            SHR_IF_ERR_EXIT(dnx_stat_pp_print_vis_stat
+                            (unit, fec_object_type, stat_id, stat_pp_profile, stat_metadata_cur, prt_ctr));
 
             stat_metadata_printed = 1;
         }
@@ -432,7 +436,7 @@ dnx_stat_pp_irpp_vis(
 {
     signal_output_t *stats_ids = NULL;
     signal_output_t *stats_profiles = NULL;
-    signal_output_t *stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF+1] = {NULL};
+    signal_output_t *stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF + 1] = { NULL };
     int ii;
 
     PRT_INIT_VARS;
@@ -448,53 +452,78 @@ dnx_stat_pp_irpp_vis(
     SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "FWD2", "IPMF1", "Stats_Objects", &stats_ids));
     SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "FWD2", "IPMF1", "Stats_Objects_Cmd",
                                                    &stats_profiles));
-    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "VTT1", "VTT2", "Stats_Meta_Data", &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF]));
-    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "VTT2", "VTT3", "Stats_Meta_Data", &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTB_LIF]));
-    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "VTT3", "VTT4", "Stats_Meta_Data", &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTC_LIF]));
-    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "VTT4", "VTT5", "Stats_Meta_Data", &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTD_LIF]));
-    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "VTT5", "FWD1", "Stats_Meta_Data", &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF]));
-    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "FWD1", "FWD2", "Stats_Meta_Data", &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO]));
-    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find(unit, core, 0, NULL, "FWD2", "IPMF1", "Stats_Meta_Data", &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO]));
+    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find
+                           (unit, core, 0, NULL, "VTT1", "VTT2", "Stats_Meta_Data",
+                            &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF]));
+    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find
+                           (unit, core, 0, NULL, "VTT2", "VTT3", "Stats_Meta_Data",
+                            &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTB_LIF]));
+    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find
+                           (unit, core, 0, NULL, "VTT3", "VTT4", "Stats_Meta_Data",
+                            &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTC_LIF]));
+    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find
+                           (unit, core, 0, NULL, "VTT4", "VTT5", "Stats_Meta_Data",
+                            &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTD_LIF]));
+    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find
+                           (unit, core, 0, NULL, "VTT5", "FWD1", "Stats_Meta_Data",
+                            &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF]));
+    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find
+                           (unit, core, 0, NULL, "FWD1", "FWD2", "Stats_Meta_Data",
+                            &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO]));
+    SHR_IF_ERR_EXIT_NO_MSG(sand_signal_output_find
+                           (unit, core, 0, NULL, "FWD2", "IPMF1", "Stats_Meta_Data",
+                            &stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO]));
 
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "VTA in-lif", STAT_PP_IRPP_OBJ_IDX_VTA_LIF, stats_ids, stats_profiles,
-                    NULL, stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF], prt_ctr));
-    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
-                    (unit, "VTB in-lif", STAT_PP_IRPP_OBJ_IDX_VTB_LIF, stats_ids, stats_profiles,
-                    stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTB_LIF], prt_ctr));
-    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
-                    (unit, "VTC in-lif", STAT_PP_IRPP_OBJ_IDX_VTC_LIF, stats_ids, stats_profiles,
-                    stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTB_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTC_LIF], prt_ctr));
-    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
-                    (unit, "VTD in-lif", STAT_PP_IRPP_OBJ_IDX_VTD_LIF, stats_ids, stats_profiles,
-                    stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTC_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTD_LIF], prt_ctr));
-    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
-                    (unit, "VTE in-lif", STAT_PP_IRPP_OBJ_IDX_VTE_LIF, stats_ids, stats_profiles,
-                    stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTD_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF], prt_ctr));
-    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
-                    (unit, "VTA terminated FODO", STAT_PP_IRPP_OBJ_IDX_VTA_TERM_FODO, stats_ids, stats_profiles,
                      NULL, stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF], prt_ctr));
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
+                    (unit, "VTB in-lif", STAT_PP_IRPP_OBJ_IDX_VTB_LIF, stats_ids, stats_profiles,
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTB_LIF],
+                     prt_ctr));
+    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
+                    (unit, "VTC in-lif", STAT_PP_IRPP_OBJ_IDX_VTC_LIF, stats_ids, stats_profiles,
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTB_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTC_LIF],
+                     prt_ctr));
+    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
+                    (unit, "VTD in-lif", STAT_PP_IRPP_OBJ_IDX_VTD_LIF, stats_ids, stats_profiles,
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTC_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTD_LIF],
+                     prt_ctr));
+    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
+                    (unit, "VTE in-lif", STAT_PP_IRPP_OBJ_IDX_VTE_LIF, stats_ids, stats_profiles,
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTD_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF],
+                     prt_ctr));
+    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
+                    (unit, "VTA terminated FODO", STAT_PP_IRPP_OBJ_IDX_VTA_TERM_FODO, stats_ids, stats_profiles, NULL,
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTA_LIF], prt_ctr));
+    SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "VTE terminated FODO", STAT_PP_IRPP_OBJ_IDX_VTE_TERM_FODO, stats_ids, stats_profiles,
-                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF], prt_ctr));
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF],
+                     prt_ctr));
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "FWD1 forward FODO", STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO, stats_ids, stats_profiles,
-                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], prt_ctr));
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_VTE_LIF], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO],
+                     prt_ctr));
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "FWD2 forward FODO", STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO, stats_ids, stats_profiles,
-                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], prt_ctr));
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO],
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], prt_ctr));
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "FWD1 source lookup", STAT_PP_IRPP_OBJ_IDX_FWD1_LOOKUP_SRC, stats_ids, stats_profiles,
-                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], prt_ctr));
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO],
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], prt_ctr));
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "FWD2 source lookup", STAT_PP_IRPP_OBJ_IDX_FWD2_LOOKUP_SRC, stats_ids, stats_profiles,
-                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], prt_ctr));
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO],
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], prt_ctr));
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "FWD1 destination lookup", STAT_PP_IRPP_OBJ_IDX_FWD1_LOOKUP_DST, stats_ids, stats_profiles,
-                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], prt_ctr));
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO],
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD1_FWD_FODO], prt_ctr));
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_stats
                     (unit, "FWD2 destination lookup", STAT_PP_IRPP_OBJ_IDX_FWD2_LOOKUP_DST, stats_ids, stats_profiles,
-                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], prt_ctr));
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO],
+                     stats_metadatas[STAT_PP_IRPP_OBJ_IDX_FWD2_FWD_FODO], prt_ctr));
 
     SHR_IF_ERR_EXIT(dnx_stat_pp_irpp_vis_gen_pp_port_stats(unit, core, prt_ctr));
 
@@ -510,7 +539,7 @@ exit:
     sand_signal_output_free(stats_ids);
     sand_signal_output_free(stats_profiles);
 
-    for (ii=0; ii<sizeof(stats_metadatas)/sizeof(stats_metadatas[0]); ++ii)
+    for (ii = 0; ii < sizeof(stats_metadatas) / sizeof(stats_metadatas[0]); ++ii)
     {
         if (stats_metadatas[ii] != NULL)
             sand_signal_output_free(stats_metadatas[ii]);
@@ -885,6 +914,12 @@ dnx_stat_pp_metadata_etpp_dump(
 
     for (header_type = bcmStatPpMetadataHeaderTypeEth; header_type < bcmStatPpMetadataHeaderTypeCount; ++header_type)
     {
+        if ((header_type == bcmStatPpMetadataHeaderTypeTcp) || (header_type == bcmStatPpMetadataHeaderTypeBfd)
+            || (header_type == bcmStatPpMetadataHeaderTypeIcmp))
+        {
+            continue;
+        }
+
         metadata_info.header_type = header_type;
         SHR_IF_ERR_EXIT(bcm_stat_pp_metadata_get(unit, &metadata_info));
 

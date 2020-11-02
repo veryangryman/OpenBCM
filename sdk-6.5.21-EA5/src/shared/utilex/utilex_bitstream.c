@@ -303,6 +303,30 @@ exit:
 }
 
 int
+utilex_bitstream_have_zero_in_range(
+    uint32 *bit_stream,
+    uint32 start_place,
+    uint32 end_place)
+{
+    uint32 bit_i;
+    int result;
+
+    result = FALSE;
+
+    for (bit_i = start_place; bit_i <= end_place; ++bit_i)
+    {
+        if (!utilex_bitstream_test_bit(bit_stream, bit_i))
+        {
+            result = TRUE;
+            goto exit;
+        }
+    }
+
+exit:
+    return result;
+}
+
+int
 utilex_bitstream_have_one(
     uint32 *bit_stream,
     uint32 size                 /* in uint32s */

@@ -687,11 +687,11 @@ int cint_field_alternate_marking_inter_or_egress_node_iPMF1_entry_add(int unit,b
         {
             ent_info.entry_qual[entry_idx].type = fg_info->qual_types[entry_idx];
             ent_info.entry_qual[entry_idx].mask[0] = 0x100;
-            ent_info.entry_qual[entry_idx].value[0] = 0;  /* BOS should be 0*/
+            ent_info.entry_qual[entry_idx].value[0] = ifit_enable?1:0;  /* BOS should be 0*/
         }
         ent_info.entry_qual[entry_idx].type = fg_info->qual_types[entry_idx];
         ent_info.entry_qual[entry_idx].mask[0] = 0xFFFFF000;
-        ent_info.entry_qual[entry_idx].value[0] = 0xa000; /* Search for the special label*/
+        ent_info.entry_qual[entry_idx].value[0] = ifit_enable?0xc000:0xa000; /* Search for the special label*/
 
 
         rv = bcm_field_entry_add(unit, 0, cint_field_am_i_o_e_iPMF1_fg_id, &ent_info, entry_handle);
@@ -835,7 +835,7 @@ int cint_field_alternate_marking_inter_or_egress_node_iPMF1(int unit, int is_int
         /* For intermediate PE node, the forward layer is Ip */
         p_data.nof_qualifiers = 2;
         p_data.qual_data[0].qual_type = bcmFieldQualifyForwardingType;
-        p_data.qual_data[0].qual_arg = -1;
+        p_data.qual_data[0].qual_arg = ifit_enable?-2:-1;
         p_data.qual_data[0].qual_value = bcmFieldLayerTypeForwardingMPLS;
         p_data.qual_data[0].qual_mask = 0x1F;
         p_data.qual_data[1].qual_type = bcmFieldQualifyForwardingType;

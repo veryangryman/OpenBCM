@@ -1487,6 +1487,21 @@ const char *jericho2c_a0_SignalStructures_j2c_a0_13="Values\" from=\"ITPP\" size
             <field name=\"Extension_size_in_Bytes\" bits=\"216:223\"/>\n\
             <field name=\"Eth_Type\" bits=\"224:239\"/>\n\
         </structure>\n\
+        <structure name=\"RCH_SRv6_USP_PSP\" size=\"144\" order=\"msb\">\n\
+            <field name=\"SSPA\" bits=\"00:15\"/>\n\
+            <field name=\"Ingress_TimeStamp\" bits=\"16:47\"/>\n\
+            <field name=\"Ctl_Lif\" bits=\"48:67\"/>\n\
+            <field name=\"Global_Inlif\" bits=\"68:89\"/>\n\
+            <field name=\"Forwarding_Domain\" bits=\"90:107\"/>\n\
+            <field name=\"RCH_Type\" bits=\"108:111\"/>\n\
+            <field name=\"NWK_QOS\" bits=\"112:119\"/>\n\
+            <field name=\"Traffic_Class\" bits=\"120:122\"/>\n\
+            <field name=\"CNI\" bits=\"123:123\"/>\n\
+            <field name=\"ECN\" bits=\"124:124\"/>\n\
+            <field name=\"DP\" bits=\"125:126\"/>\n\
+            <field name=\"Vis\" bits=\"127:127\"/>\n\
+            <field name=\"Eth_Type\" bits=\"128:143\"/>\n\
+        </structure>\n\
     </signal-structures>\n\
     <signal-params>\n\
         <signal name=\"NASID\" size=\"5\" dbal=\"NASID\"/>\n\
@@ -1502,7 +1517,9 @@ const char *jericho2c_a0_SignalStructures_j2c_a0_13="Values\" from=\"ITPP\" size
         <signal name=\"Forward_Code\" size=\"6\" dbal=\"EGRESS_FWD_CODE\"/>\n\
         <signal name=\"Forward_Code_JR1\" size=\"4\" dbal=\"JR_FWD_CODE\"/>\n\
         <signal name=\"Fwd_Code\" size=\"6\" dbal=\"EGRESS_FWD_CODE\"/>\n\
-        <signal name=\"OAM_Sub_Type\" size=\"4\" dbal=\"OAM_SUB_TYPE\"/>\n\
+        <signal name=\"OAM_Sub_Type\" size=\"4\" dbal=\"OAM_SUB_TYPE\"";
+
+const char *jericho2c_a0_SignalStructures_j2c_a0_14="/>\n\
         <!-- no NASID consideration so these context signals are handled with regular signal parse -->\n\
         <signal name=\"context\" size=\"6\" from=\"ETParser\" dbal=\"PRP2_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"PRP2\"     dbal=\"TERM_CONTEXT_ID\"/>\n\
@@ -1511,9 +1528,7 @@ const char *jericho2c_a0_SignalStructures_j2c_a0_13="Values\" from=\"ITPP\" size
         <signal name=\"context\" size=\"6\" from=\"Enc1\"     dbal=\"ENCAP_2_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"Enc2\"     dbal=\"ENCAP_3_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"Enc3\"     dbal=\"ENCAP_4_CONTEXT_ID\"/>\n\
-        <signal name=\"context\" size=\"6\" from=\"Enc4\"     dbal=\"ENCAP_5_CONTEXT_ID\"/>";
-
-const char *jericho2c_a0_SignalStructures_j2c_a0_14="\n\
+        <signal name=\"context\" size=\"6\" from=\"Enc4\"     dbal=\"ENCAP_5_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"Enc5\"     dbal=\"TRAP_CONTEXT_ID\"/>\n\
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->\n\
         <signal name=\"Next_Parser_Context\" size=\"5\" dbal=\"NEXT_PARSER_CONTEXT\"/>\n\
@@ -1959,6 +1974,9 @@ const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_1="               </conditi
             <extension name=\"PTCH_1\">\n\
                 <condition type=\"plugin\" mode=\"enable\" callback=\"packet_ptch1\"/>\n\
             </extension>\n\
+            <extension name=\"RCH_SRv6_USP_PSP\">\n\
+                <condition type=\"plugin\" mode=\"enable\" callback=\"packet_rch_srv6_usp_psp\"/>\n\
+            </extension>\n\
             <extension name=\"RCH\">\n\
                 <condition type=\"plugin\" mode=\"enable\" callback=\"packet_rch\"/>\n\
             </extension>\n\
@@ -1968,6 +1986,7 @@ const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_1="               </conditi
             <extension name=\"ETH\">\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_ptch2\"/>\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_ptch1\"/>\n\
+                <condition type=\"plugin\" mode=\"disable\" callback=\"packet_rch_srv6_usp_psp\"/>\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_rch\"/>\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_itmh\"/>\n\
             </extension>\n\
@@ -1987,15 +2006,15 @@ const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_1="               </conditi
             <extension name=\"ITMH_Base_J1\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"0\" mask=\"1\"/>\n\
-                    <field path=\"PTCH_2.Parser_Program_Control\"/>\n\
+                    <field path=\"PTC";
+
+const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_2="H_2.Parser_Program_Control\"/>\n\
                 </condition>\n\
                 <condition type=\"soc\" mode=\"enable\">\n\
                     <enable val=\"0\" />\n\
                     <soc_property name=\"system_headers_mode\" />\n\
                 </condition>\n\
-            <";
-
-const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_2="/extension>\n\
+            </extension>\n\
             <extension name=\"ETH\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"1\" mask=\"1\"/>\n\
@@ -2069,15 +2088,15 @@ const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_2="/extension>\n\
             <extension name=\"UDH_DATA_0\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"0x1\" mask=\"0x1\"/>\n\
-                    <field path=\"UDH_Base.UDH_Type_0\"/>\n\
+                    <fiel";
+
+const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_3="d path=\"UDH_Base.UDH_Type_0\"/>\n\
                 </condition>\n\
             </extension>\n\
             <extension name=\"UDH_DATA_0\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"0x2\" mask=\"0x3\"/>\n\
-                    <";
-
-const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_3="field path=\"UDH_Base.UDH_Type_0\"/>\n\
+                    <field path=\"UDH_Base.UDH_Type_0\"/>\n\
                 </condition>\n\
             </extension>\n\
             <extension name=\"UDH_DATA_1\">\n\
@@ -2154,15 +2173,18 @@ const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_3="field path=\"UDH_Base.UD
             <extension name=\"ETH\">\n\
                 <condition type=\"soc\" mode=\"enable\">\n\
                     <enable val=\"0\" />\n\
-                    <soc_property name=\"system_headers_mode\" />\n\
+          ";
+
+const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_4="          <soc_property name=\"system_headers_mode\" />\n\
                 </condition>\n\
             </extension>\n\
         </object>\n\
+        <object name=\"RCH_SRv6_USP_PSP\" size=\"144\">\n\
+            <next-header field=\"RCH_SRv6_USP_PSP.Eth_Type\" options=\"ETH_Next_Protocol\"/>\n\
+        </object>\n\
         <object name=\"RCH\" size=\"240\">\n\
             <next-header field=\"RCH.Eth_Type\" options=\"ETH_Next_Protocol\"/>\n\
-        </objec";
-
-const char *jericho2c_a0_SystemHeadersObjects_j2c_a0_4="t>\n\
+        </object>\n\
     </parsing-objects>\n\
 </top>\n\
 ";

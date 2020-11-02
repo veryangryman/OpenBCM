@@ -62,10 +62,22 @@
                                                           for IPv4 tunnel */
 #define BCM_TUNNEL_INIT_WLAN_MTU            0x00001000 /* Set MTU for outgoing
                                                           WLAN tunnel */
+#define BCM_TUNNEL_TERM_UP_TO_96_LOCATOR_SEGMENT_ID BCM_TUNNEL_INIT_WLAN_MTU /* Indicate that tunnel
+                                                          is a SRv6 tunnel where
+                                                          the locator part of
+                                                          SID is up to 96 bit
+                                                          length */
 #define BCM_TUNNEL_INIT_WLAN_FRAG_ENABLE    0x00002000 /* Enable Fragmentation
                                                           for WLAN Tunnel */
+#define BCM_TUNNEL_TERM_UP_TO_64_LOCATOR_SEGMENT_ID BCM_TUNNEL_INIT_WLAN_FRAG_ENABLE /* Indicate that tunnel
+                                                          is a SRv6 tunnel where
+                                                          the locator part of
+                                                          SID is up to 64 bit
+                                                          length */
 #define BCM_TUNNEL_INIT_WLAN_VLAN_TAGGED    0x00004000 /* Set outgoing WLAN
                                                           tunnel vlan */
+#define BCM_TUNNEL_TERM_GENERALIZED_SEGMENT_ID BCM_TUNNEL_INIT_WLAN_VLAN_TAGGED /* Indicate that tunnel
+                                                          is SRv6 GSID */
 #define BCM_TUNNEL_INIT_WLAN_TUNNEL_WITH_ID 0x00008000 /* Create outgoing tunnel
                                                           with ID */
 #define BCM_TUNNEL_REPLACE                  0x00010000 /* Update existing
@@ -201,9 +213,9 @@ typedef enum bcm_tunnel_type_e {
     bcmTunnelTypeSR6 = 45,              /* SRv6 Tunnel */
     bcmTunnelTypeRspanAdvanced = 46,    /* RSPAN Advanced Tunnel */
     bcmTunnelTypeEsp = 47,              /* ESP tunnel over IPv4 */
-    bcmTunnelTypeEsp6 = 48,             /* ESP tunnel over IPv6 */
-    bcmTunnelTypeEthSR6 = 49,           /* Ethernet over SRv6 tunnel */
-    bcmTunnelTypeEthIn6 = 50,           /* Ethernet over Ipv6 */
+    bcmTunnelTypeEthSR6 = 48,           /* Ethernet over SRv6 tunnel */
+    bcmTunnelTypeEthIn6 = 49,           /* Ethernet over Ipv6 */
+    bcmTunnelTypeCascadedFunct = 50,    /* Cascaded FUNCT */
     bcmTunnelTypeCount = 51             /* Must be last */
 } bcm_tunnel_type_t;
 
@@ -256,9 +268,9 @@ typedef enum bcm_tunnel_type_e {
     "SR6", \
     "RspanAdvanced", \
     "Esp", \
-    "Esp6", \
     "EthSR6", \
-    "EthIn6" 
+    "EthIn6", \
+    "CascadedFunct"
 
 /* L3 tunneling terminator. */
 typedef struct bcm_tunnel_terminator_s {
@@ -301,6 +313,7 @@ typedef struct bcm_tunnel_terminator_s {
     bcm_if_t egress_if;                 /* Tunnel egress interface */
     bcm_vrf_t default_vrf;              /* default virtual router instance. */
     uint32 sci;                         /* secure context index. */
+    bcm_gport_t default_tunnel_id;      /* Use default tunnel ID for cascaded */
 } bcm_tunnel_terminator_t;
 
 /* bcm_tunnel_pri_cfi_select_e */

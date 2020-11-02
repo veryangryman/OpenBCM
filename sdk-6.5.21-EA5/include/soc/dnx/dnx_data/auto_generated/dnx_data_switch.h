@@ -358,6 +358,8 @@ typedef enum
     
     dnx_data_switch_feature_excluded_header_bits_from_hash,
 
+    dnx_data_switch_feature_silent_dummy_lif_lookup,
+
     
     _dnx_data_switch_feature_feature_nof
 } dnx_data_switch_feature_feature_e;

@@ -35,4 +35,21 @@
  * }
  */
 
+/**
+ * \brief - Set the additional GAL special label for MPLS-TP OAM.
+ *
+ * \param [in] unit - Relevant unit
+ * \param [in] gal - any value from 0 to 15. '13' means no additional GAL.
+ *
+ * \return
+ *   shr_error_e
+ *
+ * \remark
+ *   * None
+ * \see
+ *   * None
+ */
+shr_error_e dnx_oam_additional_gal_special_label_set(
+    int unit,
+    uint32 gal);
 #endif /* OAM_H_INCLUDED__ */

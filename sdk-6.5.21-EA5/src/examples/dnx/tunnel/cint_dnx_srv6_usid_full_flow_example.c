@@ -330,6 +330,7 @@ srv6_tunnel_termination(
 {
 
     bcm_ip6_t ip6_mask = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+    bcm_ip6_t ip6_usid_prefix_mask = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
     bcm_ip6_t ip6_dip  = {0};
     bcm_ip6_t ip6_sip  = {0};
@@ -349,7 +350,7 @@ srv6_tunnel_termination(
         tunnel_term_set.flags = BCM_TUNNEL_TERM_MICRO_SEGMENT_ID;
     sal_memcpy(tunnel_term_set.dip6, ip6_dip, 16);
     sal_memcpy(tunnel_term_set.sip6, ip6_sip, 16);
-    sal_memcpy(tunnel_term_set.dip6_mask, ip6_mask, 16);
+    sal_memcpy(tunnel_term_set.dip6_mask, ip6_usid_prefix_mask, 16);
     sal_memcpy(tunnel_term_set.sip6_mask, ip6_mask, 16);
     tunnel_term_set.vrf = vrf;
 
@@ -467,27 +468,6 @@ dnx_srv6_update_fecs_id(
         printf("Error, get_first_fec_in_range_which_not_in_ecmp_range\n");
         return rv;
     }
-    return rv;
-}
-
-
-int add_usid_forward_entry(int unit, uint32 vrf, uint32 prefix, uint32 next_sid_0, uint32 next_sid_1, uint32 next_sid_2, uint32 next_sid_3, uint32 next_sid_4 ,uint32 fec)
-{
-    uint32 entry_handle_id;
-    int rv = 0;
-
-    dnx_dbal_entry_handle_take(unit, "SRV6_MICRO_SID_END_POINT_DB", &entry_handle_id);
-    dnx_dbal_entry_key_field_arr32_set(unit, entry_handle_id, "VRF", &vrf);
-    dnx_dbal_entry_key_field_arr32_set(unit, entry_handle_id, "USID_PREFIX", &prefix);
-    dnx_dbal_entry_key_field_arr32_set(unit, entry_handle_id, "NEXT_USID_0", &next_sid_0);
-    dnx_dbal_entry_key_field_arr32_set(unit, entry_handle_id, "NEXT_USID_1", &next_sid_1);
-    dnx_dbal_entry_key_field_arr32_set(unit, entry_handle_id, "NEXT_USID_2", &next_sid_2);
-    dnx_dbal_entry_key_field_arr32_set(unit, entry_handle_id, "NEXT_USID_3", &next_sid_3);
-    dnx_dbal_entry_key_field_arr32_set(unit, entry_handle_id, "NEXT_USID_4", &next_sid_4);
-    dnx_dbal_entry_value_field_arr32_set(unit, entry_handle_id, "FEC", 0, &fec);
-    dnx_dbal_entry_commit(unit, entry_handle_id, "DBAL_COMMIT");
-    dnx_dbal_entry_handle_free(unit,entry_handle_id);
-
     return rv;
 }
 

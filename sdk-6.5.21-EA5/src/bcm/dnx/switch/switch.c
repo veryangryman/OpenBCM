@@ -51,6 +51,7 @@
 #include <bcm_int/dnx/rx/rx_trap.h>
 #include <bcm_int/dnx/rx/rx_trap_map.h>
 #include <bcm_int/dnx/l3/l3_vrrp.h>
+#include <bcm_int/dnx/oam/oam.h>
 #include <bcm_int/dnx/port/port_pp.h>
 #include <bcm_int/dnx/port/port_sit.h>
 #include <bcm_int/dnx/port/port_flexe.h>
@@ -1074,6 +1075,7 @@ dnx_switch_header_type_set_verify(
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_MPLS_RAW)
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_0)
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_1)
+        && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP)
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_STACKING)
         && ((system_headers_mode != dnx_data_headers.system_headers.system_headers_mode_jericho_get(unit))
             && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_INJECTED_2_PP_JR1_MODE))
@@ -1097,6 +1099,7 @@ dnx_switch_header_type_set_verify(
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_TDM_ETH)
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_0)
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_1)
+        && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP)
         && (switch_header_type != BCM_SWITCH_PORT_HEADER_TYPE_STACKING))
     {
         SHR_ERR_EXIT(_SHR_E_PARAM,
@@ -3535,6 +3538,86 @@ exit:
 }
 
 /**
+* \brief
+*  Configures the value of next protocol ETH to be recognized by the parser.
+*  The default configuration is 143, which is configured with '1', otherwise it's 59, selected by 0.
+* \param [in] unit  -
+*   Relevant unit.
+* \param [in] arg  -
+*    enable or disable value.
+* \return
+*   \retval Zero if no error was detected
+*   \retval Negative if error was detected. See \ref shr_error_e
+*/
+static shr_error_e
+dnx_ip_next_protocol_eth_configure_set(
+    int unit,
+    int arg)
+{
+    uint32 entry_handle_id;
+    uint32 current_next_protocol;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    /** Configure the virtual register values for next protocol eth and no next protocol*/
+    current_next_protocol =
+        (arg ==
+         1) ? DBAL_DEFINE_CURRENT_NEXT_PROTOCOL_ETHERNET_OVER_IP :
+        DBAL_DEFINE_CURRENT_NEXT_PROTOCOL_NO_NEXT_PROTOCOL_OVER_IP;
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_PEMLA_PARSERETHSRV6, &entry_handle_id));
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_NEXTPROTOCOLETH, INST_SINGLE, arg);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_NONEXTPROTOCOL, INST_SINGLE, (arg == 1) ? 0 : 1);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_CLEAR(unit, DBAL_TABLE_EGRESS_CURRENT_NEXT_PROTOCOL_MAP_TABLE, entry_handle_id));
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_CURRENT_PROTOCOL_TYPE,
+                               DBAL_ENUM_FVAL_CURRENT_PROTOCOL_TYPE_ETHERNET);
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_NEXT_PROTOCOL_NAMESPACE,
+                               DBAL_ENUM_FVAL_ETPP_NEXT_PROTOCOL_NAMESPACE_IP_NEXT_PROTOCOL);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_CURRENT_NEXT_PROTOCOL, INST_SINGLE,
+                                 current_next_protocol);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/**
+* \brief
+*  The function indicates what type of value for next protocol ETH is recognized by the parser.
+*  In case 143, the returned value is 1, otherwse for 59 - it's 0
+* \param [in] unit  -
+*   Relevant unit.
+* \param [out] arg  -
+*    enable or disable value.
+* \return
+*   \retval Zero if no error was detected
+*   \retval Negative if error was detected. See \ref shr_error_e
+*/
+static shr_error_e
+dnx_ip_next_protocol_eth_configure_get(
+    int unit,
+    int *arg)
+{
+    uint32 entry_handle_id;
+    uint32 next_protocol_eth;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    /** Read the Virtual Register value and decide the next protocol value */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_PEMLA_PARSERETHSRV6, &entry_handle_id));
+    SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_GET_ALL_FIELDS));
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field32_get
+                    (unit, entry_handle_id, DBAL_FIELD_NEXTPROTOCOLETH, INST_SINGLE, &next_protocol_eth));
+    *arg = (int) next_protocol_eth;
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+/**
  * \brief - Configure port-specific and device-wide operating modes.
  *
  * Use cases:
@@ -3632,6 +3715,11 @@ bcm_dnx_switch_control_set(
         case bcmSwitchMplsStack1HashSeed:
         {
             SHR_ERR_EXIT(BCM_E_UNAVAIL, "'bcmSwitchMplsStack1HashSeed' (%d) is, currently, unsupported", type);
+            break;
+        }
+        case bcmSwitchIpv6NextProtocolEthernet:
+        {
+            SHR_IF_ERR_EXIT(dnx_ip_next_protocol_eth_configure_set(unit, arg));
             break;
         }
         case bcmSwitchParserHashSeed:
@@ -4071,6 +4159,11 @@ bcm_dnx_switch_control_set(
             SHR_IF_ERR_EXIT(dnx_mpls_alternate_marking_special_label_set(unit, arg));
             break;
         }
+        case bcmSwitchMplsFlowInstructionIndicatorSpecialLabel:
+        {
+            SHR_IF_ERR_EXIT(dnx_mpls_flow_instrunction_indicator_label_set(unit, arg));
+            break;
+        }
         case bcmSwitchGlobalTodMode:
         {
             if ((arg < 0x0) || (arg >= bcmSwitchTodModeCount))
@@ -4183,6 +4276,11 @@ bcm_dnx_switch_control_set(
         {
             rv = dnx_l2_learn_limit_check_static_set(unit, arg);
             SHR_IF_ERR_EXIT(rv);
+            break;
+        }
+        case bcmSwitchOamAdditionalGalSpecialLabel:
+        {
+            SHR_IF_ERR_EXIT(dnx_oam_additional_gal_special_label_set(unit, arg));
             break;
         }
         default:
@@ -4341,6 +4439,11 @@ bcm_dnx_switch_control_get(
         case bcmSwitchMplsStack1HashSeed:
         {
             SHR_ERR_EXIT(BCM_E_UNAVAIL, "'bcmSwitchMplsStack1HashSeed' (%d) is, currently, unsupported", type);
+            break;
+        }
+        case bcmSwitchIpv6NextProtocolEthernet:
+        {
+            SHR_IF_ERR_EXIT(dnx_ip_next_protocol_eth_configure_get(unit, arg));
             break;
         }
         case bcmSwitchParserHashSeed:
@@ -4685,6 +4788,11 @@ bcm_dnx_switch_control_get(
         case bcmSwitchMplsAlternateMarkingSpecialLabel:
         {
             SHR_IF_ERR_EXIT(dnx_mpls_alternate_marking_special_label_get(unit, (uint32 *) arg));
+            break;
+        }
+        case bcmSwitchMplsFlowInstructionIndicatorSpecialLabel:
+        {
+            SHR_IF_ERR_EXIT(dnx_mpls_flow_instrunction_indicator_label_get(unit, (uint32 *) arg));
             break;
         }
         case bcmSwitchGlobalTodMode:

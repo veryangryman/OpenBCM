@@ -548,7 +548,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 31;
+    cur_field_type_param->nof_enum_vals = 32;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -598,6 +598,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "SRV6_BEYOND", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "IGMP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_RCH_USP_PSP_AND_PSP_EXT", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "INGRESS_SCTP_EGRESS_FTMH", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -701,6 +703,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 22;
             enum_info++;
             
+            enum_info->value_from_mapping = 23;
+            enum_info++;
+
             enum_info->value_from_mapping = 24;
             enum_info++;
             
@@ -747,7 +752,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 26;
+    cur_field_type_param->nof_enum_vals = 27;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -787,6 +792,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "PPPOE_SESSION", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "SRV6_ENDPOINT", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_SRH_ONLY", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "INGRESS_SCTP_EGRESS_FTMH", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -875,6 +882,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 20;
             enum_info++;
             
+            enum_info->value_from_mapping = 21;
+            enum_info++;
+
             enum_info->value_from_mapping = 24;
             enum_info++;
             
@@ -1276,7 +1286,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 32;
+    cur_field_type_param->nof_enum_vals = 34;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -1311,6 +1321,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "SRV6_ENDPOINT_PSP", sizeof(enum_info->name_from_interface));
         enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_ENDPOINT_PSP_EXTENDED_CUT", sizeof(enum_info->name_from_interface));
+        enum_info++;
         sal_strncpy(enum_info->name_from_interface, "TM", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "TDM", sizeof(enum_info->name_from_interface));
@@ -1339,9 +1351,11 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "RCH_XTERMINATION", sizeof(enum_info->name_from_interface));
         enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "RCH_JMODE_VRF", sizeof(enum_info->name_from_interface));
+        sal_strncpy(enum_info->name_from_interface, "RCH_VRF_REDIRECT", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "EXT_ENCAP_DO_NOTHING", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "RCH_SRV6_USP_PSP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "FWD_CODE_BUG_CODE", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -1407,6 +1421,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 17;
             enum_info++;
             
+            enum_info->value_from_mapping = 18;
+            enum_info++;
+
             enum_info->value_from_mapping = 19;
             enum_info++;
             
@@ -1455,6 +1472,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 53;
             enum_info++;
             
+            enum_info->value_from_mapping = 54;
+            enum_info++;
+
             enum_info->value_from_mapping = 63;
             enum_info++;
         }
@@ -1987,9 +2007,9 @@ dbal_field_types_basic_info_t ** field_types_info)
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
         dbal_db_enum_info_struct_t * enum_info = cur_field_type_param->enums;
-        sal_strncpy(enum_info->name_from_interface, "SRV6_CLASSIC_GRE_NO_TNI", sizeof(enum_info->name_from_interface));
+        sal_strncpy(enum_info->name_from_interface, "GRE_NO_TNI", sizeof(enum_info->name_from_interface));
         enum_info++;
-        sal_strncpy(enum_info->name_from_interface, "SRV6_MICRO_SID_GRE_TNI_FODO", sizeof(enum_info->name_from_interface));
+        sal_strncpy(enum_info->name_from_interface, "GRE_TNI_FODO", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     if (DBAL_IS_JR2_A0 || DBAL_IS_JR2_B0 || DBAL_IS_J2C_A0 || DBAL_IS_Q2A_A0 || DBAL_IS_Q2A_B0 || DBAL_IS_J2P_A0)
@@ -2907,7 +2927,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 26;
+    cur_field_type_param->nof_enum_vals = 27;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -2941,6 +2961,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "SRV6_ENDPOINT", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "SRV6_ENDPOINT_PSP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_ENDPOINT_PSP_EXTENDED_CUT", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "TM", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -3026,6 +3048,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 17;
             enum_info++;
             
+            enum_info->value_from_mapping = 18;
+            enum_info++;
+
             enum_info->value_from_mapping = 19;
             enum_info++;
             
@@ -3399,7 +3424,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 7;
+    cur_field_type_param->nof_enum_vals = 8;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -3409,6 +3434,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "ETH_A1", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "RCH_A1", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "RCH_SRV6_USP_PSP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "ITMH_JR1_A1", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -3444,6 +3471,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 2;
             enum_info++;
             
+            enum_info->value_from_mapping = 3;
+            enum_info++;
+
             enum_info->value_from_mapping = 4;
             enum_info++;
             
@@ -6673,7 +6703,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 2;
+    cur_field_type_param->nof_enum_vals = 6;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -6681,6 +6711,14 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "INTERMIDIATE_RESULT", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "LIF_ELIGIBLE", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "CLASSIC_SID_LOCATER64_FUNCTION_16", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "CLASSIC_SID_LOCATER96_FUNCTION_16", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "USID_PREFIX_32_USID_16", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "GSID_PREFIX_48_GSID_16", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     if (DBAL_IS_JR2_A0 || DBAL_IS_JR2_B0 || DBAL_IS_J2C_A0 || DBAL_IS_Q2A_A0 || DBAL_IS_Q2A_B0 || DBAL_IS_J2P_A0)
@@ -6703,6 +6741,18 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info++;
             
             enum_info->value_from_mapping = 1;
+            enum_info++;
+
+            enum_info->value_from_mapping = 2;
+            enum_info++;
+
+            enum_info->value_from_mapping = 3;
+            enum_info++;
+
+            enum_info->value_from_mapping = 4;
+            enum_info++;
+
+            enum_info->value_from_mapping = 5;
             enum_info++;
         }
     }
@@ -6727,7 +6777,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 18;
+    cur_field_type_param->nof_enum_vals = 19;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -6755,6 +6805,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "SRV6_BEYOND", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "DUMMY_ETHERNET", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_RCH_USP_PSP_AND_PSP_EXT", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "INGRESS_SCTP_EGRESS_FTMH", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -6821,6 +6873,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info->value_from_mapping = 22;
             enum_info++;
             
+            enum_info->value_from_mapping = 23;
+            enum_info++;
+
             enum_info->value_from_mapping = 24;
             enum_info++;
             
@@ -6861,7 +6916,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 16;
+    cur_field_type_param->nof_enum_vals = 17;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -6897,6 +6952,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "DUMMY_ETH", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "RCH_EXTENDED_ENCAP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_PSP_EXTENDED_TERMINATION", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     if (DBAL_IS_JR2_A0 || DBAL_IS_JR2_B0 || DBAL_IS_J2C_A0 || DBAL_IS_Q2A_A0 || DBAL_IS_Q2A_B0 || DBAL_IS_J2P_A0)
@@ -6961,6 +7018,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info++;
             
             enum_info->value_from_mapping = 15;
+            enum_info++;
+
+            enum_info->value_from_mapping = 16;
             enum_info++;
         }
     }
@@ -7109,7 +7169,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 14;
+    cur_field_type_param->nof_enum_vals = 15;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -7141,6 +7201,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "DUMMY_ETH", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "RCH_EXTENDED_ENCAP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_PSP_EXTENDED_TERMINATION", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     if (DBAL_IS_JR2_A0 || DBAL_IS_JR2_B0 || DBAL_IS_J2C_A0 || DBAL_IS_Q2A_A0 || DBAL_IS_Q2A_B0 || DBAL_IS_J2P_A0)
@@ -7199,6 +7261,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info++;
             
             enum_info->value_from_mapping = 15;
+            enum_info++;
+
+            enum_info->value_from_mapping = 16;
             enum_info++;
         }
     }
@@ -7297,7 +7362,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 16;
+    cur_field_type_param->nof_enum_vals = 17;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -7333,6 +7398,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "DUMMY_ETH", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "RCH_EXTENDED_ENCAP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_PSP_EXTENDED_TERMINATION", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     if (DBAL_IS_JR2_A0 || DBAL_IS_JR2_B0 || DBAL_IS_J2C_A0 || DBAL_IS_Q2A_A0 || DBAL_IS_Q2A_B0 || DBAL_IS_J2P_A0)
@@ -7397,6 +7464,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info++;
             
             enum_info->value_from_mapping = 15;
+            enum_info++;
+
+            enum_info->value_from_mapping = 16;
             enum_info++;
         }
     }
@@ -8289,7 +8359,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 2;
+    cur_field_type_param->nof_enum_vals = 3;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -8297,6 +8367,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "USP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "PSP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "USD", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     if (DBAL_IS_JR2_A0 || DBAL_IS_JR2_B0 || DBAL_IS_J2C_A0 || DBAL_IS_Q2A_A0 || DBAL_IS_Q2A_B0 || DBAL_IS_J2P_A0)
@@ -8319,6 +8391,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             enum_info++;
             
             enum_info->value_from_mapping = 1;
+            enum_info++;
+
+            enum_info->value_from_mapping = 2;
             enum_info++;
         }
     }
@@ -8392,7 +8467,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "TAIL_EDIT_PROFILE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 282)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "TAIL_EDIT_PROFILE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 284)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -8476,7 +8551,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "LLR_CS_PORT_CS_PROFILE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 283)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "LLR_CS_PORT_CS_PROFILE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 285)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -8555,7 +8630,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "VTT_SAVE_CONTEXT_PROFILE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 287)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "VTT_SAVE_CONTEXT_PROFILE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 289)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -8629,7 +8704,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "IPV4_QUALIFIER_TUNNEL_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 299)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "IPV4_QUALIFIER_TUNNEL_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 301)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -8743,7 +8818,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "IPV6_ADDITIONAL_HEADER" , dnx_data_aod_sizes.AOD.sizes_get(unit, 301)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "IPV6_ADDITIONAL_HEADER" , dnx_data_aod_sizes.AOD.sizes_get(unit, 303)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -8887,7 +8962,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "SRV6_UNIFIED_128B_INDEX" , dnx_data_aod_sizes.AOD.sizes_get(unit, 303)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "SRV6_UNIFIED_128B_INDEX" , dnx_data_aod_sizes.AOD.sizes_get(unit, 305)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -8946,7 +9021,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "FCOE_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 307)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "FCOE_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 309)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9000,7 +9075,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "FCOE_FIRST_ADDITIONAL_HEADER_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 308)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "FCOE_FIRST_ADDITIONAL_HEADER_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 310)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9059,7 +9134,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ASE_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 312)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ASE_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 314)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9118,7 +9193,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "GTP_VERSION" , dnx_data_aod_sizes.AOD.sizes_get(unit, 314)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "GTP_VERSION" , dnx_data_aod_sizes.AOD.sizes_get(unit, 316)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9177,7 +9252,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "GTP_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 315)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "GTP_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 317)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9231,7 +9306,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "PPPOE_S_OR_D" , dnx_data_aod_sizes.AOD.sizes_get(unit, 317)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "PPPOE_S_OR_D" , dnx_data_aod_sizes.AOD.sizes_get(unit, 319)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9285,7 +9360,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "L2TP_D_OR_C" , dnx_data_aod_sizes.AOD.sizes_get(unit, 319)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "L2TP_D_OR_C" , dnx_data_aod_sizes.AOD.sizes_get(unit, 321)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9339,12 +9414,12 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "RCH_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 321)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "RCH_TYPE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 323)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
     
-    cur_field_type_param->nof_enum_vals = 6;
+    cur_field_type_param->nof_enum_vals = 7;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -9358,6 +9433,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "REFLECTOR", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "VRFREDIRECT", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "SRV6_USP_PSP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "SRV6_EXT_ENCAPSULATION", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -9395,6 +9472,9 @@ dbal_field_types_basic_info_t ** field_types_info)
             
             enum_info->value_from_mapping = 5;
             enum_info++;
+
+            enum_info->value_from_mapping = 6;
+            enum_info++;
         }
     }
     
@@ -9413,7 +9493,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "TTL_ACTION_PROFILE_VALUE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 328)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "TTL_ACTION_PROFILE_VALUE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 330)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9472,7 +9552,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ERPP_EBTR_TERMINATE_SYSTEM_HEADERS_MODE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 329)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ERPP_EBTR_TERMINATE_SYSTEM_HEADERS_MODE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 331)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9526,7 +9606,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ERPP_EBTR_TERMINATE_NETWORK_HEADERS_MODE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 330)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ERPP_EBTR_TERMINATE_NETWORK_HEADERS_MODE" , dnx_data_aod_sizes.AOD.sizes_get(unit, 332)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9580,7 +9660,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPS_SRV6_RAW_DATA" , dnx_data_aod_sizes.AOD.sizes_get(unit, 337)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_STRUCTURE , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPS_SRV6_RAW_DATA" , dnx_data_aod_sizes.AOD.sizes_get(unit, 339)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_STRUCTURE , 0 , 1 , TRUE ));
     
     
     
@@ -9617,7 +9697,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC1_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 338)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC1_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 340)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9681,7 +9761,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC2_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 339)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC2_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 341)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9730,7 +9810,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC3_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 340)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC3_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 342)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9784,7 +9864,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC4_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 341)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC4_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 343)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     
@@ -9838,7 +9918,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC5_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 342)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ETPP_ENC5_PORT_CS_VAR" , dnx_data_aod_sizes.AOD.sizes_get(unit, 344)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_ENUM , 0 , 1 , TRUE ));
     
     
     

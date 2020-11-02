@@ -119,6 +119,10 @@
  */
 #define DNX_OAMP_OAM_MEP_IS_RF6374   SAL_BIT(21)
 /**
+ * When set, indicate that additional GAL label is used on the MEP
+ */
+#define DNX_OAMP_OAM_MEP_ADDITIONAL_GAL_LABEL   SAL_BIT(22)
+/**
  *  Bit in the "FEC-ID or Global out-LIF" field that determines
  *  whether the field is FEC-ID (1) or global out-LIF (0)
  */

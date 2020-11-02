@@ -2115,6 +2115,49 @@ _bcm_rlink_instru_ifa_encap_traverse_handler(
 	return bcm_rlink_traverse_reply_done(*r_data, r_rv);
 }
 
+/* bcm_instru_ifit_encap_traverse */
+
+STATIC int
+_bcm_rlink_instru_ifit_encap_traverse_callback(
+	int	unit,
+	bcm_instru_ifit_encap_info_t *	ifit_encap_info,
+	void *	user_data)
+{
+	bcm_rlink_traverse_data_t	**r_data = (bcm_rlink_traverse_data_t **)user_data;
+	int	r_rv;
+	int	r_size;
+
+	/* Pack reply */
+	r_size = 34;
+
+	if (BCM_SUCCESS(r_rv=bcm_rlink_traverse_reply_check(*r_data, r_size))) {
+		/* Skip unit */
+		if (ifit_encap_info == NULL) {
+			BCM_PACK_U8((*r_data)->tx_ptr, 1);
+		} else {
+			BCM_PACK_U8((*r_data)->tx_ptr, 0);
+			(*r_data)->tx_ptr = _bcm_pack_instru_ifit_encap_info((*r_data)->tx_ptr, ifit_encap_info);
+		}
+	}
+
+	return r_rv;
+}
+
+STATIC int
+_bcm_rlink_instru_ifit_encap_traverse_handler(
+	bcm_rlink_traverse_data_t **r_data)
+{
+	int	r_rv;
+	/* Skip unit */
+
+	/* Unpack request */
+	/* Skip unit */
+
+	r_rv = bcm_instru_ifit_encap_traverse((*r_data)->unit, _bcm_rlink_instru_ifit_encap_traverse_callback, (void *)r_data);
+
+	return bcm_rlink_traverse_reply_done(*r_data, r_rv);
+}
+
 /* bcm_instru_sflow_encap_extended_dst_traverse */
 
 STATIC int
@@ -3249,7 +3292,7 @@ _bcm_rlink_l2gre_tunnel_terminator_traverse_callback(
 	int	r_size;
 
 	/* Pack reply */
-	r_size = 214;
+	r_size = 218;
 
 	if (BCM_SUCCESS(r_rv=bcm_rlink_traverse_reply_check(*r_data, r_size))) {
 		/* Skip unit */
@@ -7040,7 +7083,7 @@ _bcm_rlink_tunnel_terminator_traverse_callback(
 	int	r_size;
 
 	/* Pack reply */
-	r_size = 214;
+	r_size = 218;
 
 	if (BCM_SUCCESS(r_rv=bcm_rlink_traverse_reply_check(*r_data, r_size))) {
 		/* Skip unit */
@@ -8022,7 +8065,7 @@ _bcm_rlink_vxlan_tunnel_terminator_traverse_callback(
 	int	r_size;
 
 	/* Pack reply */
-	r_size = 214;
+	r_size = 218;
 
 	if (BCM_SUCCESS(r_rv=bcm_rlink_traverse_reply_check(*r_data, r_size))) {
 		/* Skip unit */
@@ -8273,6 +8316,8 @@ _bcm_traverse_lookup_t _bcm_traverse_lookup[BCM_TRAVERSE_LOOKUP_COUNT] = {
 	  _bcm_rlink_switch_hash_entry_traverse_handler},
 	{ {0x2428b5d0,0x909f54aa,0xf64a8cee,0x9b352323,0x7e3273ef},
 	  _bcm_rlink_fabric_qsel_traverse_handler},
+	{ {0x264777a5,0xca57dac2,0x683cbb72,0x9a1d590f,0x66b0754c},
+	  _bcm_rlink_instru_ifit_encap_traverse_handler},
 	{ {0x295c9feb,0x8c75e357,0x8c42628e,0x49db7cf4,0x39540b43},
 	  _bcm_rlink_fabric_qsel_entry_traverse_handler},
 	{ {0x29ad9647,0x7764cdf1,0x9df9b1eb,0x0f5ad397,0x169731b3},
@@ -8624,6 +8669,8 @@ _bcm_traverse_lookup_t _bcm_traverse_lookup[BCM_TRAVERSE_LOOKUP_COUNT] = {
 	  _bcm_rlink_switch_hash_entry_traverse_handler},
 	{ {0x2428b5d0,0x909f54aa,0xf64a8cee,0x9b352323,0x7e3273ef},
 	  _bcm_rlink_fabric_qsel_traverse_handler},
+	{ {0x264777a5,0xca57dac2,0x683cbb72,0x9a1d590f,0x66b0754c},
+	  _bcm_rlink_instru_ifit_encap_traverse_handler},
 	{ {0x295c9feb,0x8c75e357,0x8c42628e,0x49db7cf4,0x39540b43},
 	  _bcm_rlink_fabric_qsel_entry_traverse_handler},
 	{ {0x29ad9647,0x7764cdf1,0x9df9b1eb,0x0f5ad397,0x169731b3},

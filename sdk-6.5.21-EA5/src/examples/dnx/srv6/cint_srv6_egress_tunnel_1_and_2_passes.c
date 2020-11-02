@@ -99,7 +99,7 @@ srv6_tunnel_terminator_create(int unit)
     tunnel_term_set.ingress_qos_model.ingress_remark = bcmQosIngressModelShortpipe;
 
     /** 'vlan' - if configured, it sets the termination LIF property FODO to be this VLAN value */
-    if (cint_srv6_tunnel_info.srh_next_protocol == 143)
+    if ((cint_srv6_tunnel_info.srh_next_protocol == 143) || (cint_srv6_tunnel_info.srh_next_protocol == 59))
     {
         tunnel_term_set.vlan = cint_srv6_tunnel_info.l2_termination_vsi;
         tunnel_term_set.type = bcmTunnelTypeEthSR6;
@@ -119,7 +119,7 @@ srv6_tunnel_terminator_create(int unit)
      *  - not needed if resulting LIF's FODO is to be VSI (when ETHoSRv6), because
      *    in this case it's set by 'bcm_tunnel_terminator_create' above with 'vlan' property
      */
-    if (cint_srv6_tunnel_info.srh_next_protocol != 143)
+    if ((cint_srv6_tunnel_info.srh_next_protocol != 143) && (cint_srv6_tunnel_info.srh_next_protocol != 59))
     {
         l3_ingress_intf_init(&ingress_rif);
         ingress_rif.vrf = cint_srv6_tunnel_info.vrf_out;

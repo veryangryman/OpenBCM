@@ -33,6 +33,7 @@
 #include <bcm_int/dnx/instru/instru_sflow.h>
 #include <bcm_int/dnx/instru/instru.h>
 #include <bcm_int/dnx/algo/algo_gpm.h>
+#include <bcm_int/dnx/qos/qos.h>
 #include <bcm_int/dnx/cmn/dnxcmn.h>
 #include <bcm/types.h>
 #include <bcm/instru.h>
@@ -1144,6 +1145,497 @@ bcm_dnx_instru_ifa_encap_traverse(
 exit:
     DBAL_FUNC_FREE_VARS;
     SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
+ * Verify ifit parameters for BCM-API: bcm_dnx_instru_ifit_encap_create().
+ * check the supported flags
+ */
+static shr_error_e
+dnx_instru_ifit_encap_create_verify(
+    int unit,
+    bcm_instru_ifit_encap_info_t * ifit_encap_info)
+{
+    SHR_FUNC_INIT_VARS(unit);
+    SHR_NULL_CHECK(ifit_encap_info, _SHR_E_PARAM, "ifit_encap_info");
+
+    /** Verify WITH_ID and REPLACE flags */
+    if (_SHR_IS_FLAG_SET(ifit_encap_info->flags, BCM_INSTRU_IFIT_ENCAP_REPLACE)
+        && !_SHR_IS_FLAG_SET(ifit_encap_info->flags, BCM_INSTRU_IFIT_ENCAP_WITH_ID))
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "BCM_INSTRU_IFIT_ENCAP_REPLACE can't be used without BCM_INSTRU_IFIT_ENCAP_WITH_ID");
+    }
+
+    if (!_SHR_IS_FLAG_SET(ifit_encap_info->flags, BCM_INSTRU_IFIT_ENCAP_WITH_ID)
+        && (ifit_encap_info->ifit_encap_id != 0))
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM,
+                     "ifit_encap_info->ifit_encap_id should be 0 when BCM_INSTRU_IFIT_ENCAP_WITH_ID is not set!");
+    }
+
+    if (ifit_encap_info->fieh_length > BCM_INSTRU_IFIT_ENCAP_FIEH_EXT_DATA_MAX)
+    {
+        SHR_ERR_EXIT(_SHR_E_PARAM, "FIEH length range is  0-%d\n", BCM_INSTRU_IFIT_ENCAP_FIEH_EXT_DATA_MAX);
+    }
+
+exit:
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
+ * Write to IFIT entry into EEDB table.
+ *
+ *   \param [in] unit - Relevant unit.
+ *   \param [in] ifit_encap_info - A pointer to the struct that holds
+ *     information for the IFIT entry
+ *   \param [in] local_outlif -
+ *     Local-Out-LIF whose entry should be added to out-LIF table.
+ */
+static shr_error_e
+dnx_instru_ifit_encap_table_set(
+    int unit,
+    bcm_instru_ifit_encap_info_t * ifit_encap_info,
+    uint32 local_outlif)
+{
+    uint32 entry_handle_id;
+    uint32 fih_data = 0;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+    SHR_NULL_CHECK(ifit_encap_info, _SHR_E_PARAM, "ifit_encap_info");
+
+    /** Take DBAL handle */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_EEDB_MPLS_IFIT, &entry_handle_id));
+
+    /** Set KEY field */
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OUT_LIF, local_outlif);
+
+    /** Set DATA fields */
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_RESULT_TYPE, INST_SINGLE,
+                                 DBAL_RESULT_TYPE_EEDB_MPLS_IFIT_ETPS_MPLS_IFIT);
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FIH_TYPE, INST_SINGLE, ifit_encap_info->fieh_length);
+
+    /** FII header*/
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FII_TC, INST_SINGLE, ifit_encap_info->fii_exp);
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FII_TTL, INST_SINGLE, ifit_encap_info->fii_ttl);
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FII_BOS, INST_SINGLE, TRUE);
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FII_BOS, INST_SINGLE, TRUE);
+
+    /** FIH header*/
+    fih_data =
+        ifit_encap_info->fih_flow_id << 12 | ifit_encap_info->
+        fih_r_s_bits << 8 | ifit_encap_info->fih_header_type_indicator;
+    if (_SHR_IS_FLAG_SET(ifit_encap_info->flags, BCM_INSTRU_IFIT_ENCAP_ALTERNATE_MARKING_LOSS_SET))
+    {
+        fih_data |= 1 << 11;    /* L bit */
+    }
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FLOW_ID_BASIC, INST_SINGLE, fih_data);
+
+    /** FIEH header*/
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FLOW_ID_EXT, INST_SINGLE,
+                                 ifit_encap_info->fieh_ext_data[0]);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_DIP_MASK, INST_SINGLE,
+                                 ifit_encap_info->fieh_ext_data[1] >> 24);
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_SIP_MASK, INST_SINGLE,
+                                 (ifit_encap_info->fieh_ext_data[1] >> 16) & 0xFF);
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FIEH_EXT_DATA, INST_SINGLE,
+                                 ifit_encap_info->fieh_ext_data[2] >> 16);
+
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_REMARK_PROFILE, INST_SINGLE,
+                                 DNX_QOS_MAP_PROFILE_GET(ifit_encap_info->qos_map_id));
+
+    /** Write to HW */
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
+ * Reset given entry from IFIT EEDB table.
+ *
+ *   \param [in] unit - Relevant unit.
+ *   \param [in] local_outlif -
+ *     Local-Out-LIF whose entry should be reset.
+ */
+static shr_error_e
+dnx_instru_ifit_encap_table_clear(
+    int unit,
+    uint32 local_outlif)
+{
+    uint32 entry_handle_id;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    /** Taking a handle */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_EEDB_RCH, &entry_handle_id));
+
+    /** Setting key fields -- DBAL_RESULT_TYPE_EEDB_MPLS_IFIT */
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OUT_LIF, local_outlif);
+
+    /** Setting result type */
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_RESULT_TYPE, INST_SINGLE,
+                                 DBAL_RESULT_TYPE_EEDB_MPLS_IFIT_ETPS_MPLS_IFIT);
+
+    /** clearing the entry */
+    SHR_IF_ERR_EXIT(dbal_entry_clear(unit, entry_handle_id, DBAL_COMMIT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief
+ * Read from IFIT entry EEDB table.
+ *
+ *   \param [in] unit - Relevant unit.
+ *   \param [out] ifit_encap_info - A pointer to the struct that holds
+ *     information for the IFIT encapsulation entry
+ *   \param [in] local_outlif -
+ *     Local-Out-LIF whose entry should be returned.
+ */
+static shr_error_e
+dnx_instru_ifit_encap_table_get(
+    int unit,
+    bcm_instru_ifit_encap_info_t * ifit_encap_info,
+    uint32 local_outlif)
+{
+    uint32 entry_handle_id;
+    uint32 fih_data = 0;
+    uint8 dip_mask = 0, sip_mask = 0;
+    uint32 fieh_ext_data = 0, field_val = 0;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+    SHR_NULL_CHECK(ifit_encap_info, _SHR_E_PARAM, "ifit_encap_info");
+
+    /** Taking a handle */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_EEDB_MPLS_IFIT, &entry_handle_id));
+
+    /** Setting key fields -- DBAL_RESULT_TYPE_EEDB_MPLS_IFIT */
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_OUT_LIF, local_outlif);
+
+    /** Setting result type */
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_RESULT_TYPE, INST_SINGLE,
+                                 DBAL_RESULT_TYPE_EEDB_MPLS_IFIT_ETPS_MPLS_IFIT);
+    SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_GET_ALL_FIELDS));
+
+    /**
+     * Get egress encapsulation data from dbal table
+     */
+
+    /** FII header*/
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field8_get
+                    (unit, entry_handle_id, DBAL_FIELD_FII_TC, INST_SINGLE, &ifit_encap_info->fii_exp));
+
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field8_get
+                    (unit, entry_handle_id, DBAL_FIELD_FII_TTL, INST_SINGLE, &ifit_encap_info->fii_ttl));
+
+    /** FIH header*/
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field32_get
+                    (unit, entry_handle_id, DBAL_FIELD_FLOW_ID_BASIC, INST_SINGLE, &fih_data));
+
+    ifit_encap_info->fih_flow_id = fih_data >> 12;
+    ifit_encap_info->fih_r_s_bits = (fih_data >> 8) & 0x3;;
+    ifit_encap_info->fih_header_type_indicator = fih_data & 0xFF;
+    ifit_encap_info->flags |= ((fih_data >> 11) & 1) ? BCM_INSTRU_IFIT_ENCAP_ALTERNATE_MARKING_LOSS_SET : 0;
+
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field8_get
+                    (unit, entry_handle_id, DBAL_FIELD_FIH_TYPE, INST_SINGLE, &ifit_encap_info->fieh_length));
+
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field32_get
+                    (unit, entry_handle_id, DBAL_FIELD_FLOW_ID_EXT, INST_SINGLE, &ifit_encap_info->fieh_ext_data[0]));
+
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field8_get
+                    (unit, entry_handle_id, DBAL_FIELD_DIP_MASK, INST_SINGLE, &dip_mask));
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field8_get
+                    (unit, entry_handle_id, DBAL_FIELD_SIP_MASK, INST_SINGLE, &sip_mask));
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field32_get
+                    (unit, entry_handle_id, DBAL_FIELD_FIEH_EXT_DATA, INST_SINGLE, &fieh_ext_data));
+
+    ifit_encap_info->fieh_ext_data[1] |= (dip_mask << 24) | (sip_mask << 16);
+    ifit_encap_info->fieh_ext_data[2] |= fieh_ext_data << 16;
+
+    SHR_IF_ERR_EXIT(dbal_entry_handle_value_field32_get
+                    (unit, entry_handle_id, DBAL_FIELD_REMARK_PROFILE, INST_SINGLE, &field_val));
+
+    ifit_encap_info->qos_map_id = field_val;
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief -
+ * Generic API function used for configuration of IFIT
+ * instrumentation.
+ * \ref bcm_dnx_instru_ifit_encap_get()
+ *      bcm_dnx_instru_ifit_encap_delete()
+ *      bcm_dnx_instru_ifit_encap_traverse()
+ *
+ * \param [in] unit -  Unit-ID
+ * \param [in] ifit_encap_info -  ifit configuration structure
+ * \return
+ *   See shr_error_e
+ * \remark
+ *   * None
+ * \see
+ *   bcm_dnx_instru_ifit_encap_get
+ *   bcm_dnx_instru_ifit_encap_delete
+ *   bcm_dnx_instru_ifit_encap_traverse
+ */
+int
+bcm_dnx_instru_ifit_encap_create(
+    int unit,
+    bcm_instru_ifit_encap_info_t * ifit_encap_info)
+{
+    dnx_algo_gpm_gport_hw_resources_t gport_hw_resources;
+    lif_mngr_local_outlif_info_t outlif_info;
+    lif_mngr_global_lif_info_t global_lif_info = { 0 };
+    int lif_alloc_flags = 0;
+    int lif_get_flags = 0;
+    bcm_gport_t gport;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DNX_ERR_RECOVERY_NOT_NEEDED(unit);
+    /** Verification of input parameters */
+    SHR_INVOKE_VERIFY_DNX(dnx_instru_ifit_encap_create_verify(unit, ifit_encap_info));
+    sal_memset(&gport_hw_resources, 0, sizeof(dnx_algo_gpm_gport_hw_resources_t));
+
+    /** WITH_ID flag is used - get global out-lif ID */
+    if (_SHR_IS_FLAG_SET(ifit_encap_info->flags, BCM_INSTRU_IFIT_ENCAP_REPLACE))
+    {
+        /** Add alloc_with_id flag */
+        global_lif_info.global_lif = BCM_L3_ITF_VAL_GET(ifit_encap_info->ifit_encap_id);
+        lif_alloc_flags |= LIF_MNGR_GLOBAL_LIF_WITH_ID;
+    }
+
+    /** Allocate new egr out-LIF - REPLACE flag is not set */
+    if (!_SHR_IS_FLAG_SET(ifit_encap_info->flags, BCM_INSTRU_IFIT_ENCAP_REPLACE))
+    {
+        /** fill the local outlif info. */
+        sal_memset(&outlif_info, 0, sizeof(lif_mngr_local_outlif_info_t));
+        outlif_info.dbal_table_id = DBAL_TABLE_EEDB_MPLS_IFIT;
+        outlif_info.logical_phase = DNX_ALGO_LOCAL_OUTLIF_LOGICAL_PHASE_1;
+        /** Allocate LIF - WITH_ID if the flag was set */
+        SHR_IF_ERR_EXIT(dnx_lif_lib_allocate(unit, lif_alloc_flags, &global_lif_info, NULL, &outlif_info));
+        /** update returned Encap ID's */
+        BCM_L3_ITF_SET(ifit_encap_info->ifit_encap_id, BCM_L3_ITF_TYPE_LIF, global_lif_info.global_lif);
+        /** Add entry to out-LIF table */
+        SHR_IF_ERR_EXIT(dnx_instru_ifit_encap_table_set(unit, ifit_encap_info, outlif_info.local_outlif));
+        /** Write global to local LIF mapping to GLEM. */
+        SHR_IF_ERR_EXIT(dnx_lif_lib_add_to_glem
+                        (unit, _SHR_CORE_ALL, global_lif_info.global_lif, outlif_info.local_outlif));
+    }
+
+    /** Replace existing out-LIF */
+    else
+    {
+        /** get GPort HW resources (global and local tunnel outlif) */
+        lif_get_flags =
+            DNX_ALGO_GPM_GPORT_HW_RESOURCES_LOCAL_LIF_EGRESS | DNX_ALGO_GPM_GPORT_HW_RESOURCES_GLOBAL_LIF_EGRESS;
+
+        BCM_L3_ITF_LIF_TO_GPORT_TUNNEL(gport, ifit_encap_info->ifit_encap_id);
+
+        /** we don't have gport here, so we're using gport tunnel */
+        SHR_IF_ERR_REPLACE_AND_EXIT(dnx_algo_gpm_gport_to_hw_resources(unit, gport, lif_get_flags, &gport_hw_resources),
+                                    _SHR_E_NOT_FOUND, _SHR_E_PARAM);
+
+        /** Check that eep is an index of a RCH OutLIF (in SW DB) */
+        if (gport_hw_resources.outlif_dbal_table_id != DBAL_TABLE_EEDB_MPLS_IFIT)
+        {
+            SHR_ERR_EXIT(_SHR_E_NOT_FOUND, "Illegal to replace non IFIT OutLIF to IFIT OutLIF");
+        }
+        /** Add entry to out-LIF table */
+        SHR_IF_ERR_EXIT(dnx_instru_ifit_encap_table_set(unit, ifit_encap_info, outlif_info.local_outlif));
+
+    }
+
+exit:
+    SHR_FUNC_EXIT;
+
+}
+
+/**
+ * \brief -
+ * API for deleting IFIT entity
+ *
+ *
+ * \param [in] unit -  Unit-ID
+ * \param [in] ifit_encap_info - ifit configuration structure
+ * \return
+ *   See shr_error_e
+ * \remark
+ *   * None
+ * \see
+ *   bcm_dnx_instru_ifit_encap_create
+ *   bcm_dnx_instru_ifit_encap_get
+ *   bcm_dnx_instru_ifit_encap_traverse
+ */
+int
+bcm_dnx_instru_ifit_encap_delete(
+    int unit,
+    bcm_instru_ifit_encap_info_t * ifit_encap_info)
+{
+    dnx_algo_gpm_gport_hw_resources_t gport_hw_resources;
+    bcm_gport_t gport;
+    uint32 flags;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DNX_ERR_RECOVERY_NOT_NEEDED(unit);
+
+    /** Get local outlif from he resources */
+    BCM_L3_ITF_LIF_TO_GPORT_TUNNEL(gport, ifit_encap_info->ifit_encap_id);
+
+    flags = DNX_ALGO_GPM_GPORT_HW_RESOURCES_LOCAL_LIF_EGRESS | DNX_ALGO_GPM_GPORT_HW_RESOURCES_GLOBAL_LIF_EGRESS;
+    SHR_IF_ERR_REPLACE_AND_EXIT(dnx_algo_gpm_gport_to_hw_resources(unit, gport, flags, &gport_hw_resources),
+                                _SHR_E_NOT_FOUND, _SHR_E_PARAM);
+
+    /** Clear --- table values */
+    SHR_IF_ERR_EXIT(dnx_instru_ifit_encap_table_clear(unit, gport_hw_resources.local_out_lif));
+
+    /** Remove global to local LIF mapping from GLEM. core-Id=0 until bcm_dnx_l2_egress_create is fixed */
+    SHR_IF_ERR_EXIT(dnx_lif_lib_remove_from_glem(unit, _SHR_CORE_ALL, gport_hw_resources.global_out_lif));
+
+    /** Free LIF */
+    SHR_IF_ERR_EXIT(dnx_lif_lib_free(unit, gport_hw_resources.global_out_lif, NULL, gport_hw_resources.local_out_lif));
+
+exit:
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief -
+ * API for getting IFIT entity info
+ *
+ *
+ * \param [in] unit -  Unit-ID
+ * \param [in,out] ifit_encap_info - ifit_encap_id should be supplied as
+ *        input. Structure will contain all information as
+ *        output
+ * \return
+ *   See shr_error_e
+ * \remark
+ *   * None
+ * \see
+ *   bcm_dnx_instru_ifit_encap_create
+ *   bcm_dnx_instru_ifit_encap_delete
+ *   bcm_dnx_instru_ifit_encap_traverse
+ */
+int
+bcm_dnx_instru_ifit_encap_get(
+    int unit,
+    bcm_instru_ifit_encap_info_t * ifit_encap_info)
+{
+    dnx_algo_gpm_gport_hw_resources_t gport_hw_resources;
+    bcm_gport_t gport;
+    uint32 flags;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DNX_ERR_RECOVERY_NOT_NEEDED(unit);
+
+    /** Get local outlif from he resources */
+    BCM_L3_ITF_LIF_TO_GPORT_TUNNEL(gport, ifit_encap_info->ifit_encap_id);
+
+    flags = DNX_ALGO_GPM_GPORT_HW_RESOURCES_LOCAL_LIF_EGRESS | DNX_ALGO_GPM_GPORT_HW_RESOURCES_GLOBAL_LIF_EGRESS;
+    SHR_IF_ERR_REPLACE_AND_EXIT(dnx_algo_gpm_gport_to_hw_resources(unit, gport, flags, &gport_hw_resources),
+                                _SHR_E_NOT_FOUND, _SHR_E_PARAM);
+
+    /** Set return values in ifit_encap_info */
+    SHR_IF_ERR_EXIT(dnx_instru_ifit_encap_table_get(unit, ifit_encap_info, gport_hw_resources.local_out_lif));
+
+exit:
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * \brief -
+ * API for traversing IFIT entity
+ *
+ *
+ * \param [in] unit -  Unit-ID
+ * \param [in] cb - Call back function
+ * \param [in] user_data - Pointer to user data structure
+ * \return
+ *   See shr_error_e
+ * \remark
+ *   * None
+ * \see
+ *   bcm_dnx_instru_ifit_encap_create
+ *   bcm_dnx_instru_ifit_encap_get
+ *   bcm_dnx_instru_ifit_encap_delete
+ */
+int
+bcm_dnx_instru_ifit_encap_traverse(
+    int unit,
+    bcm_instru_ifit_encap_traverse_cb cb,
+    void *user_data)
+{
+    uint32 entry_handle_id;
+    int is_end = 0;
+    uint32 local_out_lif = 0;
+    bcm_instru_ifit_encap_info_t ifit_encap_info;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DNX_ERR_RECOVERY_NOT_NEEDED(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    sal_memset(&ifit_encap_info, 0, sizeof(ifit_encap_info));
+
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_EEDB_MPLS_IFIT, &entry_handle_id));
+    SHR_IF_ERR_EXIT(dbal_iterator_init(unit, entry_handle_id, DBAL_ITER_MODE_ALL));
+
+    SHR_IF_ERR_EXIT(dbal_iterator_get_next(unit, entry_handle_id, &is_end));
+    while (!is_end)
+    {
+
+        SHR_IF_ERR_EXIT(dbal_entry_handle_key_field_arr32_get
+                        (unit, entry_handle_id, DBAL_FIELD_OUT_LIF, &local_out_lif));
+
+        /*
+         * If user provided a name of the callback function, it will be invoked with sending the ifit_encap_info structure
+         * of the entry that was found.
+         */
+
+        /*
+         * Get IFIT entry information.
+         */
+        SHR_IF_ERR_EXIT(dnx_instru_ifit_encap_table_get(unit, &ifit_encap_info, local_out_lif));
+
+        if (cb != NULL)
+        {
+            /*
+             * Invoke callback function
+             */
+            SHR_IF_ERR_EXIT((*cb) (unit, &ifit_encap_info, user_data));
+        }
+        else
+        {
+            SHR_ERR_EXIT(_SHR_E_PARAM, "Wrong callback function was provided");
+        }
+        /*
+         * Receive next entry in table.
+         */
+        SHR_IF_ERR_EXIT(dbal_iterator_get_next(unit, entry_handle_id, &is_end));
+    }
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+
 }
 
 /**

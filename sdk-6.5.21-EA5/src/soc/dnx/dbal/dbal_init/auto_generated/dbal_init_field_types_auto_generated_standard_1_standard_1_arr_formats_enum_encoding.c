@@ -999,7 +999,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 39;
+    cur_field_type_param->nof_enum_vals = 40;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -1043,6 +1043,8 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "IN_LIF_BIER_TI", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "IN_LIF_DROPPED_COPY", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "IN_LIF_DUMMY", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "IN_LIF_EVPN_EVI_MP", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -1157,6 +1159,9 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info->value_from_mapping = 34;
         enum_info++;
         
+        enum_info->value_from_mapping = 62;
+        enum_info++;
+
         enum_info->value_from_mapping = 51;
         enum_info++;
         

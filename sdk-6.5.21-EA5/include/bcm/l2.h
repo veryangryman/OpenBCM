@@ -302,7 +302,8 @@ typedef enum bcm_l2_egress_recycle_app_e {
     bcmL2EgressRecycleAppExtendedEncap = 2, 
     bcmL2EgressRecycleAppReflector = 3, 
     bcmL2EgressRecycleAppRedirectVrf = 4, 
-    bcmL2EgressRecycleAppCount = 5 
+    bcmL2EgressRecycleAppSrv6UspPsp = 5,
+    bcmL2EgressRecycleAppCount = 6
 } bcm_l2_egress_recycle_app_t;
 
 /* Device-independent L2 egress structure. */

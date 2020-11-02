@@ -1399,6 +1399,21 @@ const char *qumran2a_b0_SignalStructures_q2a_b0_13="  <field name=\"RCH_Type\" b
             <field name=\"Extension_size_in_Bytes\" bits=\"216:223\"/>\n\
             <field name=\"Eth_Type\" bits=\"224:239\"/>\n\
         </structure>\n\
+        <structure name=\"RCH_SRv6_USP_PSP\" size=\"144\" order=\"msb\">\n\
+            <field name=\"SSPA\" bits=\"00:15\"/>\n\
+            <field name=\"Ingress_TimeStamp\" bits=\"16:47\"/>\n\
+            <field name=\"Ctl_Lif\" bits=\"48:67\"/>\n\
+            <field name=\"Global_Inlif\" bits=\"68:89\"/>\n\
+            <field name=\"Forwarding_Domain\" bits=\"90:107\"/>\n\
+            <field name=\"RCH_Type\" bits=\"108:111\"/>\n\
+            <field name=\"NWK_QOS\" bits=\"112:119\"/>\n\
+            <field name=\"Traffic_Class\" bits=\"120:122\"/>\n\
+            <field name=\"CNI\" bits=\"123:123\"/>\n\
+            <field name=\"ECN\" bits=\"124:124\"/>\n\
+            <field name=\"DP\" bits=\"125:126\"/>\n\
+            <field name=\"Vis\" bits=\"127:127\"/>\n\
+            <field name=\"Eth_Type\" bits=\"128:143\"/>\n\
+        </structure>\n\
     </signal-structures>\n\
     <signal-params>\n\
         <signal name=\"NASID\" size=\"5\" dbal=\"NASID\"/>\n\
@@ -1422,7 +1437,9 @@ const char *qumran2a_b0_SignalStructures_q2a_b0_13="  <field name=\"RCH_Type\" b
         <signal name=\"context\" size=\"6\" from=\"FWD\"      dbal=\"ENCAP_1_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"Enc1\"     dbal=\"ENCAP_2_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"Enc2\"     dbal=\"ENCAP_3_CONTEXT_ID\"/>\n\
-        <signal name=\"context\" size=\"6\" from=\"Enc3\"     dbal=\"ENCAP_4_CONTEXT_ID\"/>\n\
+        <signal name=\"context\" size=\"6\" from=\"Enc3\"     dbal=\"ENCAP_";
+
+const char *qumran2a_b0_SignalStructures_q2a_b0_14="4_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"Enc4\"     dbal=\"ENCAP_5_CONTEXT_ID\"/>\n\
         <signal name=\"context\" size=\"6\" from=\"Enc5\"     dbal=\"TRAP_CONTEXT_ID\"/>\n\
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->\n\
@@ -1432,9 +1449,7 @@ const char *qumran2a_b0_SignalStructures_q2a_b0_13="  <field name=\"RCH_Type\" b
         <signal name=\"Snoop_Code\" size=\"9\" dbal=\"INGRESS_TRAP_ID\"/>\n\
         <signal name=\"LIF_Extension_Type\" size=\"3\" dbal=\"LIF_EXTENSION_TYPE\"/>\n\
         <signal name=\"OPCODE\" size=\"4\" dbal=\"OAM_INTERNAL_OPCODE\"/>\n\
-        <signal name=\"MP_Type\" size=\"4";
-
-const char *qumran2a_b0_SignalStructures_q2a_b0_14="\" dbal=\"MP_TYPE\"/>\n\
+        <signal name=\"MP_Type\" size=\"4\" dbal=\"MP_TYPE\"/>\n\
         <signal name=\"Tag_Encoding\" size=\"3\">\n\
             <entry value=\"0\" name=\"TPID0\"/>\n\
             <entry value=\"1\" name=\"TPID1\"/>\n\
@@ -1592,6 +1607,9 @@ const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_1="              </condition
             <extension name=\"PTCH_1\">\n\
                 <condition type=\"plugin\" mode=\"enable\" callback=\"packet_ptch1\"/>\n\
             </extension>\n\
+            <extension name=\"RCH_SRv6_USP_PSP\">\n\
+                <condition type=\"plugin\" mode=\"enable\" callback=\"packet_rch_srv6_usp_psp\"/>\n\
+            </extension>\n\
             <extension name=\"RCH\">\n\
                 <condition type=\"plugin\" mode=\"enable\" callback=\"packet_rch\"/>\n\
             </extension>\n\
@@ -1601,6 +1619,7 @@ const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_1="              </condition
             <extension name=\"ETH\">\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_ptch2\"/>\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_ptch1\"/>\n\
+                <condition type=\"plugin\" mode=\"disable\" callback=\"packet_rch_srv6_usp_psp\"/>\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_rch\"/>\n\
                 <condition type=\"plugin\" mode=\"disable\" callback=\"packet_itmh\"/>\n\
             </extension>\n\
@@ -1620,15 +1639,15 @@ const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_1="              </condition
             <extension name=\"ITMH_Base_J1\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"0\" mask=\"1\"/>\n\
-                    <field path=\"PTCH_2.Parser_Program_Control\"/>\n\
+                    <field path=\"PTCH";
+
+const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_2="_2.Parser_Program_Control\"/>\n\
                 </condition>\n\
                 <condition type=\"soc\" mode=\"enable\">\n\
                     <enable val=\"0\" />\n\
                     <soc_property name=\"system_headers_mode\" />\n\
                 </condition>\n\
-            </";
-
-const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_2="extension>\n\
+            </extension>\n\
             <extension name=\"ETH\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"1\" mask=\"1\"/>\n\
@@ -1702,15 +1721,15 @@ const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_2="extension>\n\
             <extension name=\"UDH_DATA_0\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"0x1\" mask=\"0x1\"/>\n\
-                    <field path=\"UDH_Base.UDH_Type_0\"/>\n\
+                    <field";
+
+const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_3=" path=\"UDH_Base.UDH_Type_0\"/>\n\
                 </condition>\n\
             </extension>\n\
             <extension name=\"UDH_DATA_0\">\n\
                 <condition type=\"field\" mode=\"enable\">\n\
                     <enable val=\"0x2\" mask=\"0x3\"/>\n\
-                    <f";
-
-const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_3="ield path=\"UDH_Base.UDH_Type_0\"/>\n\
+                    <field path=\"UDH_Base.UDH_Type_0\"/>\n\
                 </condition>\n\
             </extension>\n\
             <extension name=\"UDH_DATA_1\">\n\
@@ -1786,7 +1805,12 @@ const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_3="ield path=\"UDH_Base.UDH_
                 </condition>\n\
             </extension>\n\
         </object>\n\
-        <object name=\"RCH\" size=\"240\">\n\
+        <object name=\"RCH_SRv6_USP_PSP\" size=\"144\">\n\
+            <next-header field=\"RCH_SRv6_USP_PSP.Eth_Type\" options=\"ETH_Next_Protocol\"/>\n\
+        </object>\n\
+        <object name=\"RCH\" size=\"240";
+
+const char *qumran2a_b0_SystemHeadersObjects_q2a_b0_4="\">\n\
             <next-header field=\"RCH.Eth_Type\" options=\"ETH_Next_Protocol\"/>\n\
         </object>\n\
     </parsing-objects>\n\
@@ -40095,10 +40119,11 @@ pre_compiled_q2a_b0_common_xml_to_buf(
     if(!sal_strncmp("qumran2a_b0/SystemHeadersObjects.xml", filePath, RHFILE_MAX_SIZE))
     {
         _internal_size_p = 0;
-        _internal_size_p += sal_strlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_0);
-        _internal_size_p += sal_strlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_1);
-        _internal_size_p += sal_strlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_2);
-        _internal_size_p += sal_strlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_3);
+        _internal_size_p += sal_strnlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_0, 4000);
+        _internal_size_p += sal_strnlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_1, 4000);
+        _internal_size_p += sal_strnlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_2, 4000);
+        _internal_size_p += sal_strnlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_3, 4000);
+        _internal_size_p += sal_strnlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_4, 4000);
 
         *size_p = _internal_size_p;
         offset = 0;
@@ -40114,6 +40139,9 @@ pre_compiled_q2a_b0_common_xml_to_buf(
 
         offset += sal_strlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_2);
         sal_strncpy(file_buf + offset, qumran2a_b0_SystemHeadersObjects_q2a_b0_3, sal_strlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_3));
+
+        offset += sal_strnlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_3, 4000);
+        sal_strncpy(file_buf + offset, qumran2a_b0_SystemHeadersObjects_q2a_b0_4, sal_strnlen(qumran2a_b0_SystemHeadersObjects_q2a_b0_4, 4000));
 
 
         *buf = file_buf;

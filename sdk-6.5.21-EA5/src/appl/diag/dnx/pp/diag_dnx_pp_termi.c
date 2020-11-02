@@ -10,13 +10,13 @@
 
 /*************
  * INCLUDES  *
- */
+ *************/
 #include "diag_dnx_pp.h"
 #include <soc/dnx/dnx_data/auto_generated/dnx_data_device.h>
 #include <src/bcm/dnx/init/init_pp.h>
 /*************
  * DEFINES   *
- */
+ *************/
 
 #ifdef BSL_LOG_MODULE
 #error "BSL_LOG_MODULE redefined"
@@ -25,11 +25,11 @@
 
 /*************
  *  MACROS  *
- */
+ *************/
 
 /*************
  * TYPEDEFS  *
- */
+ *************/
 #define DNX_PP_TERMI_INGRESS_STAGES 6
 #define DNX_PP_TERMI_NOF_LAYERS 8
 #define DNX_PP_TERMI_MAX_NOF_CORES (dnx_data_device.general.nof_cores_get(unit))
@@ -39,12 +39,12 @@
 
 /*************
  * GLOBALS   *
- */
+ *************/
 char dnx_pp_termi_ingress_stages_str[DNX_PP_TERMI_INGRESS_STAGES][RHNAME_MAX_SIZE] =
     { "VTT1", "VTT2", "VTT3", "VTT4", "VTT5", "FWD1" };
 /*************
  * FUNCTIONS *
- */
+ *************/
 typedef struct
 {
     int core_id;

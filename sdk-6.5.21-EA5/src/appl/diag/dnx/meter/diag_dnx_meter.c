@@ -15,7 +15,7 @@
 
 /*************
  * INCLUDES  *
- */
+ *************/
 /** appl */
 #include <appl/diag/diag.h>
 #include <appl/diag/sand/diag_sand_framework.h>
@@ -45,7 +45,7 @@
 
 /*************
  * TYPEDEFS  *
- */
+ *************/
 typedef struct diag_dnx_meter_global_type_s
 {
     bcm_policer_fwd_types_t type;
@@ -84,7 +84,7 @@ static const diag_dnx_meter_policer_mode_t diag_dnx_meter_policer_mode_enum_to_c
 
 /*************
  * DEFINES   *
- */
+ *************/
 #define DIAG_DNX_METER_NO_OPTION     -1
 #define DIAG_DNX_METER_STR_LENGTH (20)
 

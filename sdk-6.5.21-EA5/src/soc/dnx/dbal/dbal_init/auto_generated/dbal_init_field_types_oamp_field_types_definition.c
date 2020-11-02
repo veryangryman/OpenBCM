@@ -1671,7 +1671,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 24;
+    cur_field_type_param->nof_enum_vals = 30;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -1723,6 +1723,18 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "SINGLE_HOP_BFD_RANDOM_DIP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "BFD_MPLS_TP_VCCV", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_MAID48", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_1DM", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_1DM_MAID48", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_MAID48", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
     
@@ -1810,6 +1822,24 @@ dbal_field_types_basic_info_t ** field_types_info)
         
         enum_info->value_from_mapping = 23;
         enum_info++;
+
+        enum_info->value_from_mapping = 24;
+        enum_info++;
+
+        enum_info->value_from_mapping = 25;
+        enum_info++;
+
+        enum_info->value_from_mapping = 26;
+        enum_info++;
+
+        enum_info->value_from_mapping = 27;
+        enum_info++;
+
+        enum_info->value_from_mapping = 28;
+        enum_info++;
+
+        enum_info->value_from_mapping = 29;
+        enum_info++;
     }
     
     SHR_IF_ERR_EXIT(dbal_db_init_field_type_add(unit, cur_field_type_param, cur_field_types_info));
@@ -1832,7 +1862,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 28;
+    cur_field_type_param->nof_enum_vals = 30;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -1890,6 +1920,10 @@ dbal_field_types_basic_info_t ** field_types_info)
         sal_strncpy(enum_info->name_from_interface, "SINGLE_HOP_BFD_RANDOM_DIP", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "BFD_MPLS_TP_VCCV", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_MAID48", sizeof(enum_info->name_from_interface));
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "INVALID", sizeof(enum_info->name_from_interface));
         enum_info++;
@@ -1989,6 +2023,12 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info->value_from_mapping = 26;
         enum_info++;
         
+        enum_info->value_from_mapping = 27;
+        enum_info++;
+
+        enum_info->value_from_mapping = 28;
+        enum_info++;
+
         enum_info->value_from_mapping = 127;
         enum_info++;
     }
@@ -2013,7 +2053,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     
     
-    cur_field_type_param->nof_enum_vals = 32;
+    cur_field_type_param->nof_enum_vals = 47;
     
     sal_memset(cur_field_type_param->enums, 0x0, cur_field_type_param->nof_enum_vals * sizeof(dbal_db_enum_info_struct_t));
     {
@@ -2080,6 +2120,36 @@ dbal_field_types_basic_info_t ** field_types_info)
         enum_info++;
         sal_strncpy(enum_info->name_from_interface, "BFD_MPLS_TP_VCCV", sizeof(enum_info->name_from_interface));
         enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_1DM", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_1DM_OTHER", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_1DM_MAID48", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_1DM_MAID48_LMM", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_1DM_MAID48_CCM", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_MAID48", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_MAID48_CCM", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_RSP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_OTHER", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_MAID48", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_MAID48_RSP", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_MAID48_LMM", sizeof(enum_info->name_from_interface));
+        enum_info++;
+        sal_strncpy(enum_info->name_from_interface, "ADDITIONAL_GAL_SPECIAL_LABEL_DM_JUMBO_TLV_MAID48_CCM", sizeof(enum_info->name_from_interface));
+        enum_info++;
         sal_strncpy(enum_info->name_from_interface, "DEFAULT", sizeof(enum_info->name_from_interface));
         enum_info++;
     }
@@ -2096,7 +2166,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     
     {
         int enum_index = 0;
-        for (enum_index = 0; enum_index < 32; enum_index++)
+        for (enum_index = 0; enum_index < 47; enum_index++)
         {
             cur_field_type_param->enums[enum_index].value_from_mapping = enum_index;
         }

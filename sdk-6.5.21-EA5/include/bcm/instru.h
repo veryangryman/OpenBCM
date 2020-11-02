@@ -887,4 +887,63 @@ extern int bcm_instru_eventor_generate_periodic_get(
 
 #endif /* BCM_HIDE_DISPATCHABLE */
 
+/* IFIT encap flags. */
+#define BCM_INSTRU_IFIT_ENCAP_WITH_ID       0x00000001 /* Create IFIT entity
+                                                          with specific
+                                                          encap_id. */
+#define BCM_INSTRU_IFIT_ENCAP_REPLACE       0x00000002 /* Replace existing IFIT
+                                                          entity. */
+#define BCM_INSTRU_IFIT_ENCAP_ALTERNATE_MARKING_LOSS_SET 0x00000004 /* Set loss bit of flow
+                                                          header. */
+
+#define BCM_INSTRU_IFIT_ENCAP_FIEH_EXT_DATA_MAX 3          /* Maximal FIEH extended
+                                                          data */
+
+/* IFIT info */
+typedef struct bcm_instru_ifit_encap_info_s {
+    uint32 flags;                       /* See BCM_INSTRU_IFIT_ENCAP_XXX flags
+                                           definitions. */
+    int ifit_encap_id;                  /* Global lif */
+    uint8 fieh_length;                  /* FIEH length - in case of 0, does not
+                                           exist */
+    uint8 fii_exp;                      /* EXP value for FII label. */
+    uint8 fii_ttl;                      /* TTL value for FII label. */
+    uint32 fih_flow_id;                 /* Flow ID */
+    uint8 fih_r_s_bits;                 /* R bit and R/S bit */
+    uint8 fih_header_type_indicator;    /* header type indicator */
+    uint32 fieh_ext_data[BCM_INSTRU_IFIT_ENCAP_FIEH_EXT_DATA_MAX]; /* FIEH extended data */
+    int qos_map_id;                     /* QoS map identifier */
+} bcm_instru_ifit_encap_info_t;
+
+/* callback function prototype */
+typedef int (*bcm_instru_ifit_encap_traverse_cb)(
+    int unit,
+    bcm_instru_ifit_encap_info_t *ifit_encap_info,
+    void *user_data);
+
+#ifndef BCM_HIDE_DISPATCHABLE
+
+/* Create IFIT encapsulation entry. */
+extern int bcm_instru_ifit_encap_create(
+    int unit,
+    bcm_instru_ifit_encap_info_t *ifit_encap_info);
+
+/* Get IFIT entry. */
+extern int bcm_instru_ifit_encap_get(
+    int unit,
+    bcm_instru_ifit_encap_info_t *ifit_encap_info);
+
+/* Delete IFIT entry. */
+extern int bcm_instru_ifit_encap_delete(
+    int unit,
+    bcm_instru_ifit_encap_info_t *ifit_encap_info);
+
+/* Traverse IFIT entries. */
+extern int bcm_instru_ifit_encap_traverse(
+    int unit,
+    bcm_instru_ifit_encap_traverse_cb cb,
+    void *user_data);
+
+#endif /* BCM_HIDE_DISPATCHABLE */
+
 #endif /* __BCM_INSTRU_H__ */

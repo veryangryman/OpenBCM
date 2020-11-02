@@ -29,6 +29,7 @@
 #include <soc/dnx/dnx_data/auto_generated/dnx_data_mpls.h>
 #include <soc/dnx/dnx_data/auto_generated/dnx_data_esem.h>
 #include <soc/dnx/dnx_data/auto_generated/dnx_data_qos.h>
+#include <soc/dnx/dnx_data/auto_generated/dnx_data_switch.h>
 #include <bcm_int/dnx/mpls/mpls.h>
 #include <src/bcm/dnx/qos/qos_internal.h>
 #include <src/bcm/dnx/mpls_port/mpls_port.h>
@@ -1766,6 +1767,55 @@ exit:
     SHR_FUNC_EXIT;
 }
 
+/**
+ * \brief -
+ * Create dummy In-LIF:
+ *   - no global or local lif allocation
+ *   - MP
+ */
+static shr_error_e
+dnx_mpls_dummy_lif_create(
+    int unit)
+{
+    uint32 dummy_in_lif;
+    uint32 entry_handle_id;
+    lif_mngr_local_inlif_info_t inlif_info;
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+    sal_memset(&inlif_info, 0, sizeof(inlif_info));
+    inlif_info.dbal_table_id = DBAL_TABLE_IN_LIF_FORMAT_DUMMY;
+    inlif_info.dbal_result_type = DBAL_RESULT_TYPE_IN_LIF_FORMAT_DUMMY_IN_LIF_DUMMY;
+    inlif_info.core_id = _SHR_CORE_ALL;
+    SHR_IF_ERR_EXIT(dnx_lif_lib_allocate(unit, LIF_MNGR_DONT_ALLOCATE_GLOBAL_LIF, NULL, &inlif_info, NULL));
+    dummy_in_lif = inlif_info.local_inlif;
+    /*
+     * Take table handle:
+     */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_PEMLA_DUMMY_LIF_LOOKUP, &entry_handle_id));
+    /*
+     * Set values:
+     */
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_LIF_INDEX, INST_SINGLE, dummy_in_lif);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+    /*
+     * Take table handle:
+     */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_IN_LIF_FORMAT_DUMMY, &entry_handle_id));
+    /*
+     * Set keys:
+     */
+    dbal_entry_key_field32_set(unit, entry_handle_id, DBAL_FIELD_IN_LIF, dummy_in_lif);
+    /*
+     * Set values:
+     */
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_RESULT_TYPE, INST_SINGLE,
+                                 DBAL_RESULT_TYPE_IN_LIF_FORMAT_DUMMY_IN_LIF_DUMMY);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
 /*
  * See .h file
  */
@@ -1773,7 +1823,11 @@ shr_error_e
 dnx_mpls_module_init(
     int unit)
 {
+    uint8 is_standard_image;
+
     SHR_FUNC_INIT_VARS(unit);
+
+    SHR_IF_ERR_EXIT(dnx_pp_prgm_default_image_check(unit, &is_standard_image));
 
     /** initialize MAP_FIRST_NIBBLE table */
     SHR_IF_ERR_EXIT(dnx_mpls_init_map_first_nibble(unit));
@@ -1798,6 +1852,12 @@ dnx_mpls_module_init(
 
     /** initialize Flow-Label termination tables */
     SHR_IF_ERR_EXIT(dnx_mpls_dual_homing_fl_termination_enable_set(unit, MPLS_EVPN_IML_FL_CW_ENABLE));
+
+    if (dnx_data_switch.feature.feature_get(unit, dnx_data_switch_feature_silent_dummy_lif_lookup) && is_standard_image)
+    {
+        /** initialize Dummy LIF*/
+        SHR_IF_ERR_EXIT(dnx_mpls_dummy_lif_create(unit));
+    }
 
     if (!(soc_sand_is_emulation_system(unit) != 0))
     {
@@ -3125,6 +3185,67 @@ exit:
     DBAL_FUNC_FREE_VARS;
     SHR_FUNC_EXIT;
 }
+
+/**
+ * see mpls.h file
+ */
+shr_error_e
+dnx_mpls_flow_instrunction_indicator_label_set(
+    int unit,
+    uint32 label_value)
+{
+    uint32 entry_handle_id;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    SHR_INVOKE_VERIFY_DNX(dnx_mpls_alternate_marking_special_label_set_verify(unit, label_value));
+
+    /*
+     * Write to virtual register of special label
+     */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_PEMLA_FLOW_INSTRUCTION_INDICATOR_LABEL, &entry_handle_id));
+    dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_FLOW_INSTRUCTION_INDICATOR_LABEL, INST_SINGLE,
+                                 label_value);
+    SHR_IF_ERR_EXIT(dbal_entry_commit(unit, entry_handle_id, DBAL_COMMIT));
+    /*
+     * Write to special label termination table.
+     * Alternate Marking profile is similar with OAM_Alert, except the force_oam should be 0
+     */
+    SHR_IF_ERR_EXIT(dnx_mpls_init_mpls_special_label_profile_map_single_entry
+                    (unit, (label_value & 0xF), 1, DBAL_ENUM_FVAL_VTT_MPLS_SPECIAL_LABEL_PROFILE_OAM_ALERT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
+/**
+ * see mpls.h file
+ */
+shr_error_e
+dnx_mpls_flow_instrunction_indicator_label_get(
+    int unit,
+    uint32 *label_value)
+{
+    uint32 entry_handle_id;
+
+    SHR_FUNC_INIT_VARS(unit);
+    DBAL_FUNC_INIT_VARS(unit);
+
+    /*
+     * Write to virtual register of special label
+     */
+    SHR_IF_ERR_EXIT(DBAL_HANDLE_ALLOC(unit, DBAL_TABLE_PEMLA_FLOW_INSTRUCTION_INDICATOR_LABEL, &entry_handle_id));
+    dbal_value_field32_request(unit, entry_handle_id, DBAL_FIELD_FLOW_INSTRUCTION_INDICATOR_LABEL, INST_SINGLE,
+                               label_value);
+    SHR_IF_ERR_EXIT(dbal_entry_get(unit, entry_handle_id, DBAL_COMMIT));
+
+exit:
+    DBAL_FUNC_FREE_VARS;
+    SHR_FUNC_EXIT;
+}
+
 /*
  * }
  */

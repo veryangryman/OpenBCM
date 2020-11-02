@@ -85,7 +85,10 @@ dnx_l2_egress_recycle_app_to_forward_code_translate(
             *fwd_code = DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_XTERMINATION;
             break;
         case bcmL2EgressRecycleAppRedirectVrf:
-            *fwd_code = DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_JMODE_VRF;
+            *fwd_code = DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_VRF_REDIRECT;
+            break;
+        case bcmL2EgressRecycleAppSrv6UspPsp:
+            *fwd_code = DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_SRV6_USP_PSP;
             break;
         default:
             SHR_ERR_EXIT(_SHR_E_INTERNAL, "Unknown RCY app %d\n", recycle_app);
@@ -123,8 +126,11 @@ dnx_l2_egress_forward_code_to_recycle_app_translate(
         case DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_XTERMINATION:
             *recycle_app = bcmL2EgressRecycleAppExtendedTerm;
             break;
-        case DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_JMODE_VRF:
+        case DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_VRF_REDIRECT:
             *recycle_app = bcmL2EgressRecycleAppRedirectVrf;
+            break;
+        case DBAL_ENUM_FVAL_EGRESS_FWD_CODE_RCH_SRV6_USP_PSP:
+            *recycle_app = bcmL2EgressRecycleAppSrv6UspPsp;
             break;
         default:
             SHR_ERR_EXIT(_SHR_E_INTERNAL, "fwd_code %d is not a RCY forward code\n", fwd_code);

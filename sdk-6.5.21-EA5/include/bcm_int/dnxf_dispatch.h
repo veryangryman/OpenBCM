@@ -3781,6 +3781,10 @@ extern int bcm_dnxf_init_check(int);
 /* bcm_instru_ifa_encap_delete mapped to bcm_e_unavail */
 /* bcm_instru_ifa_encap_get mapped to bcm_e_unavail */
 /* bcm_instru_ifa_encap_traverse mapped to bcm_e_unavail */
+/* bcm_instru_ifit_encap_create mapped to bcm_e_unavail */
+/* bcm_instru_ifit_encap_delete mapped to bcm_e_unavail */
+/* bcm_instru_ifit_encap_get mapped to bcm_e_unavail */
+/* bcm_instru_ifit_encap_traverse mapped to bcm_e_unavail */
 /* bcm_instru_ipt_profile_get mapped to bcm_e_unavail */
 /* bcm_instru_ipt_profile_set mapped to bcm_e_unavail */
 /* bcm_instru_ipt_t_init not dispatchable */

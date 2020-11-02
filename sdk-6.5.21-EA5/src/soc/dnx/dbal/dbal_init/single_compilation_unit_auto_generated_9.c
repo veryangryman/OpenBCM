@@ -27,6 +27,8 @@
 #include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_sw_pp_algo_gpm.c>
 #include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_sw_pp_tcam_tables.c>
 #include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_sw_pp_virtual_port.c>
+#include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_tunnel.c>
+#include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_tunnel_tunnel.c>
 #include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_vlan.c>
 #include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_vlan_sw_pp_vlan_port.c>
 #include <src/soc/dnx/dbal/dbal_init/auto_generated/dbal_init_tables_sw_state_pp_vlan_sw_pp_vlan_translate.c>

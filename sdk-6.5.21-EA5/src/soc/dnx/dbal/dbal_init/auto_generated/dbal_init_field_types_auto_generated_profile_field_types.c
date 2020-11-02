@@ -1707,7 +1707,7 @@ dbal_field_types_basic_info_t ** field_types_info)
     int is_valid = TRUE;
     SHR_FUNC_INIT_VARS(unit);
     dbal_init_field_type_db_struct_clear(unit, cur_field_type_param);
-    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ERSPAN_V3_CANDIDATE_HEADER" , dnx_data_aod_sizes.AOD.sizes_get(unit, 327)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_STRUCTURE , 0 , 1 , FALSE ));
+    SHR_IF_ERR_EXIT(dbal_db_init_field_type_general_info_set(unit, cur_field_type_param, cur_field_types_info, "ERSPAN_V3_CANDIDATE_HEADER" , dnx_data_aod_sizes.AOD.sizes_get(unit, 329)->value , is_valid , FALSE , DBAL_FIELD_PRINT_TYPE_STRUCTURE , 0 , 1 , FALSE ));
     
     
     

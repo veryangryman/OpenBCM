@@ -2086,6 +2086,47 @@ bcm_client_instru_ifa_encap_traverse(
 }
 
 int
+bcm_client_instru_ifit_encap_traverse(
+	int	unit,
+	bcm_instru_ifit_encap_traverse_cb	cb,
+	void *	user_data)
+{
+	bcm_rlink_traverse_data_t	r_req;
+	int	r_rv;
+	uint32	r_key[] = {
+		0x264777a5,0xca57dac2,0x683cbb72,0x9a1d590f,0x66b0754c };
+	bcm_instru_ifit_encap_info_t	r_ifit_encap_info;
+	bcm_instru_ifit_encap_info_t *	r_p_ifit_encap_info;
+
+	sal_memset(&r_req, 0, sizeof(r_req));
+	r_rv = bcm_rlink_traverse_request_start(unit, &r_req, r_key);
+	if (BCM_SUCCESS(r_rv)) {
+		/* Pack request */
+		/* Skip unit */
+
+		while (bcm_rlink_traverse_reply_get(unit, &r_req)) {
+			/* Unpack reply */
+			/* Skip unit */
+			if (*r_req.rx_ptr++ == 1) {
+				r_p_ifit_encap_info = NULL;
+			} else {
+				r_p_ifit_encap_info = &r_ifit_encap_info;
+				r_req.rx_ptr = _bcm_unpack_instru_ifit_encap_info(r_req.rx_ptr, r_p_ifit_encap_info);
+			}
+
+			r_rv = cb(unit, r_p_ifit_encap_info, user_data);
+
+			if (BCM_FAILURE(r_rv)) {
+				break;
+			}
+		}
+		r_rv = bcm_rlink_traverse_request_done(unit, r_rv, &r_req);
+	}
+
+	return r_rv;
+}
+
+int
 bcm_client_instru_sflow_encap_extended_dst_traverse(
 	int	unit,
 	bcm_instru_sflow_encap_extended_dst_cb	cb,

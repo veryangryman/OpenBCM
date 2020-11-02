@@ -16,7 +16,7 @@
 
 /*************
  * INCLUDES  *
- */
+ *************/
 #include <bcm_int/dnx/algo/lif_mngr/lif_mngr.h>
 #include <bcm_int/dnx/kbp/kbp_mngr.h>
 #include <soc/dnx/dnx_data/auto_generated/dnx_data_debug.h>
@@ -41,6 +41,7 @@ extern shr_error_e dbal_tables_table_by_mdb_phy_get(
 
 /*
  * \brief Mapping of Key[0..3] signals containers of up to 160bits to corresponding KBR index, in KBP case, in the FWD12 stage
+ *
  */
 kbr_value_e key_sig_fwd12_2kbp_kbr[4] = {
     KBR_4,
@@ -51,7 +52,7 @@ kbr_value_e key_sig_fwd12_2kbp_kbr[4] = {
 
 /*************
  * DEFINES   *
- */
+ *************/
 
 #define STAGE_INFO ikleap_stages[stage_index]
 
@@ -322,14 +323,14 @@ do                                                                              
 
 /*************
  * TYPEDEFS  *
- */
+ *************/
 static char key_signal_str[DNX_KBP_MAX_NOF_LOOKUPS + 1][DIAG_DNX_KLEAP_MAX_STRING_LENGTH];
 static char res_signal_str[DNX_KBP_MAX_NOF_LOOKUPS + 1][DIAG_DNX_KLEAP_MAX_STRING_LENGTH];
 
 #define IKEAP_KAPS_STRENGTH_WIDTH   3
 /*************
  * FUNCTIONS *
- */
+ *************/
 /*
  * \brief - check if stage is a PMF stage or not. return TRUE if PMF stage, otherwise FALSE
  */
@@ -491,13 +492,7 @@ diag_dnx_ikleap_find_last_local_lif(
         else if (sub_stage == 1)
         {
             tt_pd_idx = 2;
-            /*
-             * FIXME ARCHAD-135 support VTT5 inner eth default lif
-             * if(stage_index == KLEAP_STAGE_VT45)
-             * {
-             *     default_supported = TRUE;
-             * }
- */
+
         }
         else
         {

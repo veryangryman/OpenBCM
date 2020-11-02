@@ -1616,9 +1616,8 @@ dbal_logical_table_t * table_info)
         
         {
             dbal_db_field = &table_entry->keys_info[field_index];
-            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_LAYER_TYPE , DBAL_FIELD_TYPE_DEF_LAYER_TYPES , dbal_db_field));
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_CURRENT_PROTOCOL_TYPE , DBAL_FIELD_TYPE_DEF_CURRENT_PROTOCOL_TYPE , dbal_db_field));
             dbal_db_init_table_field_params_init(&db_field);
-            db_field.size = 5;
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, TRUE));
             field_index += dbal_db_field->nof_instances;
         }

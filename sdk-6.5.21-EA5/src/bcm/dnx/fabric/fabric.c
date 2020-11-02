@@ -3493,6 +3493,8 @@ dnx_fabric_pcp_dest_mode_config_set_verify(
 
     SHR_FUNC_INIT_VARS(unit);
 
+    SHR_NULL_CHECK(pcp_config, _SHR_E_PARAM, "pcp_config");
+
     SHR_MASK_VERIFY(flags, 0, _SHR_E_PARAM, "Unrecognized flags");
 
     SHR_RANGE_VERIFY(modid, 0, dnx_data_device.general.nof_faps_get(unit) - 1, _SHR_E_PARAM, "modid out of bound.\n");
@@ -3525,8 +3527,6 @@ dnx_fabric_pcp_dest_mode_config_set_verify(
             }
         }
     }
-
-    SHR_NULL_CHECK(pcp_config, _SHR_E_PARAM, "pcp_config");
 
 exit:
     SHR_FUNC_EXIT;

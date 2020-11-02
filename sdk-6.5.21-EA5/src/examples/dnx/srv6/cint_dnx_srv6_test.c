@@ -1192,7 +1192,8 @@ srv6_usid_egress_cross_connect(
     /*
      * 9. Egress extended termination
      */
-    bcm_ip6_t ip6_mask = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+    bcm_ip6_t dip6_mask_usid = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+    bcm_ip6_t sip6_mask = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
     bcm_tunnel_terminator_t tunnel_term_set;
 
     bcm_tunnel_terminator_t_init(&tunnel_term_set);
@@ -1203,8 +1204,8 @@ srv6_usid_egress_cross_connect(
     }
     sal_memcpy(tunnel_term_set.dip6, cint_srv6_tunnel_info.tunnel_ip6_dip[EGRESS_DIP], 16);
     sal_memcpy(tunnel_term_set.sip6, cint_srv6_tunnel_info.tunnel_ip6_sip, 16);
-    sal_memcpy(tunnel_term_set.dip6_mask, ip6_mask, 16);
-    sal_memcpy(tunnel_term_set.sip6_mask, ip6_mask, 16);
+    sal_memcpy(tunnel_term_set.dip6_mask, dip6_mask_usid, 16);
+    sal_memcpy(tunnel_term_set.sip6_mask, sip6_mask, 16);
     tunnel_term_set.vrf = cint_srv6_tunnel_info.vrf_in[EGRESS];
     /* Following is for configuring for the IPv6 LIF, to increase the strength of its TTL
      * so that terminated IPv6 header's TTL would get to sysh, from which the IPv6 TTL decrease

@@ -990,6 +990,7 @@ dnx_port_initial_eth_properties_set(
         case BCM_SWITCH_PORT_HEADER_TYPE_INJECTED_2_PP_JR1_MODE:
         case BCM_SWITCH_PORT_HEADER_TYPE_RCH_0:
         case BCM_SWITCH_PORT_HEADER_TYPE_RCH_1:
+        case BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP:
         {
             int initial_default_in_lif;
             dbal_enum_value_field_irpp_1st_parser_parser_context_e parser_context =
@@ -1004,7 +1005,8 @@ dnx_port_initial_eth_properties_set(
                 parser_context = DBAL_ENUM_FVAL_IRPP_1ST_PARSER_PARSER_CONTEXT_RAW_MPLS_A1;
             }
             else if ((header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_0)
-                     || (header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_1))
+                     || (header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_1)
+                     || (header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP))
             {
                 parser_context = DBAL_ENUM_FVAL_IRPP_1ST_PARSER_PARSER_CONTEXT_RCH_A1;
             }
@@ -1150,6 +1152,7 @@ dnx_port_initial_eth_properties_unset(
         case BCM_SWITCH_PORT_HEADER_TYPE_INJECTED_2_PP_JR1_MODE:
         case BCM_SWITCH_PORT_HEADER_TYPE_RCH_0:
         case BCM_SWITCH_PORT_HEADER_TYPE_RCH_1:
+        case BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP:
         {
 
             /*
@@ -4652,6 +4655,10 @@ dnx_port_pp_egress_set(
         {
             SHR_ERR_EXIT(_SHR_E_PARAM, "BCM_SWITCH_PORT_HEADER_TYPE_RCH_1 is not supported on egress!");
         }
+        case BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP:
+        {
+            SHR_ERR_EXIT(_SHR_E_PARAM, "BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP is not supported on egress!");
+        }
         default:
         {
             SHR_ERR_EXIT(_SHR_E_INTERNAL, "Switch header type (%d) is not expected!", switch_header_type);
@@ -4840,6 +4847,7 @@ dnx_port_pp_prt_ptc_profile_internal_set_verify(
         && (header_type != BCM_SWITCH_PORT_HEADER_TYPE_MPLS_RAW)
         && (header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_0)
         && (header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_1)
+        && (header_type != BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP)
         && (header_type != BCM_SWITCH_PORT_HEADER_TYPE_STACKING)
         && ((system_headers_mode != dnx_data_headers.system_headers.system_headers_mode_jericho_get(unit))
             && (header_type != BCM_SWITCH_PORT_HEADER_TYPE_INJECTED_2_PP_JR1_MODE))
@@ -4909,6 +4917,11 @@ dnx_port_pp_prt_ptc_profile_internal_set(
         case BCM_SWITCH_PORT_HEADER_TYPE_RCH_1:
         {
             port_termination_ptc_profile = DBAL_ENUM_FVAL_PORT_TERMINATION_PTC_PROFILE_RCH;
+            break;
+        }
+        case BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP:
+        {
+            port_termination_ptc_profile = DBAL_ENUM_FVAL_PORT_TERMINATION_PTC_PROFILE_SRV6_USP_PSP;
             break;
         }
         case BCM_SWITCH_PORT_HEADER_TYPE_STACKING:
@@ -5000,7 +5013,8 @@ dnx_port_pp_prt_ptc_profile_internal_set(
                                          DBAL_ENUM_FVAL_PTC_ROUTING_ENABLE_PROFILE_VTT1_ALWAYSTERMINATE);
         }
         else if ((header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_0)
-                 || (header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_1))
+                 || (header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_1)
+                 || (header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP))
         {
 
             dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_PTC_CS_PROFILE_VTT1,
@@ -5014,6 +5028,12 @@ dnx_port_pp_prt_ptc_profile_internal_set(
             {
                 dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_IRPP_1ST_PARSER_PARSER_CONTEXT,
                                              INST_SINGLE, DBAL_ENUM_FVAL_IRPP_1ST_PARSER_PARSER_CONTEXT_RCH_A1);
+            }
+            else if (header_type == BCM_SWITCH_PORT_HEADER_TYPE_RCH_SRV6_USP_PSP)
+            {
+                dbal_entry_value_field32_set(unit, entry_handle_id, DBAL_FIELD_IRPP_1ST_PARSER_PARSER_CONTEXT,
+                                             INST_SINGLE,
+                                             DBAL_ENUM_FVAL_IRPP_1ST_PARSER_PARSER_CONTEXT_RCH_SRV6_USP_PSP);
             }
         }
         else

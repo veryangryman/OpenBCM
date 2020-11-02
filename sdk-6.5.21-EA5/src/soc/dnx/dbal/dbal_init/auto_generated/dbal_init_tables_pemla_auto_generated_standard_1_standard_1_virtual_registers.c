@@ -54,7 +54,7 @@ dbal_logical_table_t * table_info)
             dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_ENDPOINT , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
             dbal_db_init_table_field_params_init(&db_field);
-            db_field.size = 1;
+            db_field.size = 2;
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
             field_index += dbal_db_field->nof_instances;
         }
@@ -2165,7 +2165,7 @@ dbal_logical_table_t * table_info)
         DBAL_DB_INIT_TABLE_NOF_RESULT_TYPES_SET(table_entry, 1);
         SHR_IF_ERR_EXIT(dbal_db_init_table_db_interface_results_alloc(unit, table_entry));
         
-        DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 9);
+        DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 10);
         DBAL_DB_INIT_TABLE_INTERFACE_RESULT_FIELDS_ALLOC(table_entry, table_entry->multi_res_info[result_type_counter]);
         
         {
@@ -2211,6 +2211,14 @@ dbal_logical_table_t * table_info)
         {
             dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_FWD2___IPV6___PRIVATE_UC , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 22;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
+            field_index += dbal_db_field->nof_instances;
+        }
+        {
+            dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_FWD2___SRV6___CLASSIC_NOP_CTX , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
             dbal_db_init_table_field_params_init(&db_field);
             db_field.size = 22;
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
@@ -2298,7 +2306,7 @@ dbal_logical_table_t * table_info)
         DBAL_DB_INIT_TABLE_NOF_RESULT_TYPES_SET(table_entry, 1);
         SHR_IF_ERR_EXIT(dbal_db_init_table_db_interface_results_alloc(unit, table_entry));
         
-        DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 23);
+        DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 24);
         DBAL_DB_INIT_TABLE_INTERFACE_RESULT_FIELDS_ALLOC(table_entry, table_entry->multi_res_info[result_type_counter]);
         
         {
@@ -2455,7 +2463,7 @@ dbal_logical_table_t * table_info)
         }
         {
             dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
-            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_FWD1___SRV6___SEGMENT_END_POINT_FORWARDING , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_FWD1___SRV6___CLASSIC_NOP_CTX , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
             dbal_db_init_table_field_params_init(&db_field);
             db_field.size = 1;
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
@@ -2463,7 +2471,15 @@ dbal_logical_table_t * table_info)
         }
         {
             dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
-            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_FWD1___SRV6___UNIFIED_END_POINT_FORWARDING , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_FWD1___SRV6___GSID_ENDPOINT_FORWARDING , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 1;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
+            field_index += dbal_db_field->nof_instances;
+        }
+        {
+            dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_FWD1___SRV6___SEGMENT_END_POINT_FORWARDING , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
             dbal_db_init_table_field_params_init(&db_field);
             db_field.size = 1;
             SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
@@ -3896,6 +3912,83 @@ exit:
 }
 
 shr_error_e
+_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parserethsrv6_init(
+int unit,
+table_db_struct_t * cur_table_param,
+dbal_logical_table_t * table_info)
+{
+    dbal_logical_table_t * table_entry = table_info + DBAL_TABLE_PEMLA_PARSERETHSRV6;
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_table_db_struct_clear(cur_table_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_general_info_set(unit, table_entry, DBAL_TABLE_PEMLA_PARSERETHSRV6 , is_valid , "PEMLA_PARSERETHSRV6" , DBAL_ACCESS_METHOD_PEMLA ));
+
+
+    table_entry->maturity_level = DBAL_MATURITY_HIGH;
+
+
+
+
+    table_entry->table_type = DBAL_TABLE_TYPE_DIRECT;
+
+
+    table_entry->nof_labels = 0;
+    SHR_ALLOC_SET_ZERO(table_entry->table_labels, table_entry->nof_labels * sizeof(dbal_labels_e), "table labels allocation", "%s%s%s\r\n", table_entry->table_name, EMPTY, EMPTY);
+
+
+    {
+        int field_index = 0;
+        int result_type_counter = 0;
+        dbal_table_field_info_t * dbal_db_field;
+        table_db_field_params_struct_t db_field;
+        DBAL_DB_INIT_TABLE_NOF_RESULT_TYPES_SET(table_entry, 1);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_db_interface_results_alloc(unit, table_entry));
+
+        DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 2);
+        DBAL_DB_INIT_TABLE_INTERFACE_RESULT_FIELDS_ALLOC(table_entry, table_entry->multi_res_info[result_type_counter]);
+
+        {
+            dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_NEXTPROTOCOLETH , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 1;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
+            field_index += dbal_db_field->nof_instances;
+        }
+        {
+            dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_NONEXTPROTOCOL , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 1;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
+            field_index += dbal_db_field->nof_instances;
+        }
+    }
+
+
+
+
+    dbal_db_init_table_db_struct_access_clear(cur_table_param, table_entry);
+
+    {
+
+        uint8 is_standard_1 = TRUE;
+
+        uint8 is_compatible_with_all_images = FALSE;
+        DBAL_DB_INIT_TABLE_IMAGE_SPECIFIC_TABLE_INDICATION_SET(table_entry, is_standard_1, is_compatible_with_all_images);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_set_table_incompatible_image_sw_state_indication(unit, DBAL_TABLE_PEMLA_PARSERETHSRV6, is_standard_1, is_compatible_with_all_images));
+    }
+
+    table_entry->core_mode = DBAL_CORE_MODE_SBC;
+
+
+    dbal_db_init_table_set_pemla_mapping_by_index(cur_table_param, table_entry);
+    SHR_IF_ERR_EXIT(dbal_db_init_table_add(unit, cur_table_param, DBAL_TABLE_PEMLA_PARSERETHSRV6, table_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
 _dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parserpppoe_init(
 int unit,
 table_db_struct_t * cur_table_param,
@@ -4657,6 +4750,75 @@ exit:
 }
 
 shr_error_e
+_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_dummy_lif_lookup_init(
+int unit,
+table_db_struct_t * cur_table_param,
+dbal_logical_table_t * table_info)
+{
+    dbal_logical_table_t * table_entry = table_info + DBAL_TABLE_PEMLA_DUMMY_LIF_LOOKUP;
+    int is_valid = TRUE;
+    SHR_FUNC_INIT_VARS(unit);
+    dbal_init_table_db_struct_clear(cur_table_param);
+    SHR_IF_ERR_EXIT(dbal_db_init_general_info_set(unit, table_entry, DBAL_TABLE_PEMLA_DUMMY_LIF_LOOKUP , is_valid , "PEMLA_DUMMY_LIF_LOOKUP" , DBAL_ACCESS_METHOD_PEMLA ));
+
+
+    table_entry->maturity_level = DBAL_MATURITY_HIGH;
+
+
+
+
+    table_entry->table_type = DBAL_TABLE_TYPE_DIRECT;
+
+
+    table_entry->nof_labels = 0;
+    SHR_ALLOC_SET_ZERO(table_entry->table_labels, table_entry->nof_labels * sizeof(dbal_labels_e), "table labels allocation", "%s%s%s\r\n", table_entry->table_name, EMPTY, EMPTY);
+
+
+    {
+        int field_index = 0;
+        int result_type_counter = 0;
+        dbal_table_field_info_t * dbal_db_field;
+        table_db_field_params_struct_t db_field;
+        DBAL_DB_INIT_TABLE_NOF_RESULT_TYPES_SET(table_entry, 1);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_db_interface_results_alloc(unit, table_entry));
+
+        DBAL_DB_INIT_TABLE_NOF_RESULT_FIELDS_SET(table_entry, (table_entry->multi_res_info[result_type_counter]), 1);
+        DBAL_DB_INIT_TABLE_INTERFACE_RESULT_FIELDS_ALLOC(table_entry, table_entry->multi_res_info[result_type_counter]);
+
+        {
+            dbal_db_field = &table_entry->multi_res_info[result_type_counter].results_info[field_index];
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_mandatory_values(unit, DBAL_FIELD_LIF_INDEX , DBAL_FIELD_TYPE_DEF_UINT , dbal_db_field));
+            dbal_db_init_table_field_params_init(&db_field);
+            db_field.size = 20;
+            SHR_IF_ERR_EXIT(dbal_db_init_table_field_set_optional_or_default_values(unit, table_entry, dbal_db_field, &db_field, FALSE));
+            field_index += dbal_db_field->nof_instances;
+        }
+    }
+
+
+
+
+    dbal_db_init_table_db_struct_access_clear(cur_table_param, table_entry);
+
+    {
+
+        uint8 is_standard_1 = TRUE;
+
+        uint8 is_compatible_with_all_images = FALSE;
+        DBAL_DB_INIT_TABLE_IMAGE_SPECIFIC_TABLE_INDICATION_SET(table_entry, is_standard_1, is_compatible_with_all_images);
+        SHR_IF_ERR_EXIT(dbal_db_init_table_set_table_incompatible_image_sw_state_indication(unit, DBAL_TABLE_PEMLA_DUMMY_LIF_LOOKUP, is_standard_1, is_compatible_with_all_images));
+    }
+
+    table_entry->core_mode = DBAL_CORE_MODE_SBC;
+
+
+    dbal_db_init_table_set_pemla_mapping_by_index(cur_table_param, table_entry);
+    SHR_IF_ERR_EXIT(dbal_db_init_table_add(unit, cur_table_param, DBAL_TABLE_PEMLA_DUMMY_LIF_LOOKUP, table_info));
+exit:
+    SHR_FUNC_EXIT;
+}
+
+shr_error_e
 _dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_ioam_mpls_special_label_indication_init(
 int unit,
 table_db_struct_t * cur_table_param,
@@ -5093,11 +5255,13 @@ dbal_logical_table_t * table_info)
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parservxlan_gpe_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parsergre_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parsergeneve_init(unit, cur_table_param, table_info));
+    SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parserethsrv6_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parserpppoe_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parserin1_mpls_speculative_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parserbiermpls_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_parserloadbalancing_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_vtt5_dummy_lif_lookup_init(unit, cur_table_param, table_info));
+    SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_dummy_lif_lookup_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_ioam_mpls_special_label_indication_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_flow_instruction_indicator_label_init(unit, cur_table_param, table_info));
     SHR_IF_ERR_EXIT(_dbal_init_tables_pemla_auto_generated_standard_1_standard_1_virtual_registers_pemla_pppoe_session_spoofing_check_msb_init(unit, cur_table_param, table_info));

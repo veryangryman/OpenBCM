@@ -82,7 +82,9 @@ static kleap_layer_to_pparse_t *standard_1_vt1_header[DBAL_NOF_ENUM_VT1_CONTEXT_
     /**GENERAL___NOP_CTX*/
     &General_header, &General_header, &General_header, &General_header,
     /**MPLS___RAW_MPLS*/
-    &INITIALIZATION_header, &General_header, &General_header, &General_header
+    &INITIALIZATION_header, &General_header, &General_header, &General_header,
+    /**SRv6___RCH_SRv6_USP_PSP*/
+    &SRV6_RCH_USP_PSP_AND_PSP_EXT_header, &General_header, &General_header, &General_header
 };
 
 static kleap_layer_to_pparse_t *standard_1_vt2_header[DBAL_NOF_ENUM_VT2_CONTEXT_ID_VALUES * KLEAP_NOF_RELATIVE_LAYERS] = {
@@ -178,7 +180,9 @@ static kleap_layer_to_pparse_t *standard_1_vt3_header[DBAL_NOF_ENUM_VT3_CONTEXT_
     /**VxLAN_GPE___VNI2VSI_VTT3*/
     &IPv4_header, &IPv6_header, &General_header, &General_header,
     /**VxLAN_GPE___VNI2VRF_VTT3*/
-    &IPv4_header, &IPv6_header, &General_header, &General_header
+    &IPv4_header, &IPv6_header, &General_header, &General_header,
+    /**MPLS___IFIT*/
+    &MPLS_header, &General_header, &General_header, &General_header
 };
 
 static kleap_layer_to_pparse_t *standard_1_vt4_header[DBAL_NOF_ENUM_VT4_CONTEXT_ID_VALUES * KLEAP_NOF_RELATIVE_LAYERS] = {
@@ -197,6 +201,14 @@ static kleap_layer_to_pparse_t *standard_1_vt4_header[DBAL_NOF_ENUM_VT4_CONTEXT_
     /**IPV6___TT_SIP_IDX_DIP_OR_DIP*/
     &IPv6_header, &General_header, &General_header, &General_header,
     /**IPV6___TT_SIP_IDX_DIP*/
+    &IPv6_header, &General_header, &General_header, &General_header,
+    /**IPV6___TT_CLASSIC_SID_LOCATER64_FUNCTION_16*/
+    &IPv6_header, &General_header, &General_header, &General_header,
+    /**IPV6___TT_CLASSIC_SID_LOCATER96_FUNCTION_16*/
+    &IPv6_header, &General_header, &General_header, &General_header,
+    /**IPV6___TT_USID_PREFIX_32_USID_16*/
+    &IPv6_header, &General_header, &General_header, &General_header,
+    /**IPV6___TT_GSID_PREFIX_48_GSID_16*/
     &IPv6_header, &General_header, &General_header, &General_header,
     /**L2TPv2___TT_WO_LENGTH*/
     &L2TP_header, &General_header, &General_header, &General_header,
@@ -231,7 +243,9 @@ static kleap_layer_to_pparse_t *standard_1_vt4_header[DBAL_NOF_ENUM_VT4_CONTEXT_
     /**VxLAN_GPE___VNI2VSI_VTT4*/
     &IPv4_header, &IPv6_header, &General_header, &General_header,
     /**VxLAN_GPE___VNI2VRF_VTT4*/
-    &IPv4_header, &IPv6_header, &General_header, &General_header
+    &IPv4_header, &IPv6_header, &General_header, &General_header,
+    /**MPLS___IFIT*/
+    &MPLS_header, &General_header, &General_header, &General_header
 };
 
 static kleap_layer_to_pparse_t *standard_1_vt5_header[DBAL_NOF_ENUM_VT5_CONTEXT_ID_VALUES * KLEAP_NOF_RELATIVE_LAYERS] = {
@@ -305,13 +319,15 @@ static kleap_layer_to_pparse_t *standard_1_vt5_header[DBAL_NOF_ENUM_VT5_CONTEXT_
     &IPv6_header, &General_header, &General_header, &General_header,
     /**SRv6___One_Pass_Tunnel_terminate_ETH*/
     &IPv6_header, &General_header, &General_header, &General_header,
+    /**SRv6___Classic_EndPoint*/
+    &IPv6_header, &General_header, &General_header, &General_header,
     /**SRv6___uSID_EndPoint*/
     &IPv6_header, &General_header, &General_header, &General_header,
-    /**SRv6___Unified_end_point_SID_extract_0*/
+    /**SRv6___GSID_endpoint_SID_extract_0*/
     &IPv6_header, &General_header, &General_header, &General_header,
-    /**SRv6___Unified_end_point_SID_extract_1*/
+    /**SRv6___GSID_endpoint_SID_extract_1*/
     &IPv6_header, &General_header, &General_header, &General_header,
-    /**SRv6___Unified_end_point_SID_extract_2*/
+    /**SRv6___GSID_endpoint_SID_extract_2*/
     &IPv6_header, &General_header, &General_header, &General_header,
     /**VxLAN_GPE___VNI2VSI_VTT5*/
     &IPv4_header, &IPv6_header, &General_header, &General_header,
@@ -402,11 +418,13 @@ static kleap_layer_to_pparse_t *standard_1_fwd1_header[DBAL_NOF_ENUM_FWD1_CONTEX
     &IPv6_header, &General_header, &General_header, &General_header,
     /**SRv6___Segment_end_point_forwarding*/
     &IPv6_header, &General_header, &General_header, &General_header,
+    /**SRv6___Classic_NOP_CTX*/
+    &IPv6_header, &General_header, &General_header, &General_header,
     /**SRv6___uSID_end_point_forwarding*/
     &IPv6_header, &General_header, &General_header, &General_header,
     /**SRv6___uSID_NOP_CTX*/
     &IPv6_header, &General_header, &General_header, &General_header,
-    /**SRv6___Unified_end_point_forwarding*/
+    /**SRv6___GSID_endpoint_forwarding*/
     &IPv6_header, &General_header, &General_header, &General_header,
     /**IPV4___NAT_UPSTREAM*/
     &IPv4_header, &General_header, &General_header, &General_header,
@@ -464,6 +482,8 @@ static kleap_layer_to_pparse_t *standard_1_fwd2_header[DBAL_NOF_ENUM_FWD2_CONTEX
     /**SLLB___SIMPLE_IPV6_ROUTE*/
     &IPv6_header, &General_header, &General_header, &General_header,
     /**SRv6___Private_UC*/
+    &IPv6_header, &General_header, &General_header, &General_header,
+    /**SRv6___Classic_NOP_CTX*/
     &IPv6_header, &General_header, &General_header, &General_header,
     /**SRv6___uSID_Private_UC*/
     &IPv6_header, &General_header, &General_header, &General_header,
@@ -609,7 +629,9 @@ static kleap_layer_to_pparse_t *standard_1_vt1_qualifier[DBAL_NOF_ENUM_VT1_CONTE
     /**GENERAL___NOP_CTX*/
     &General_layer, &General_layer, &General_layer, &General_layer,
     /**MPLS___RAW_MPLS*/
-    &INITIALIZATION_layer, &General_layer, &General_layer, &General_layer
+    &INITIALIZATION_layer, &General_layer, &General_layer, &General_layer,
+    /**SRv6___RCH_SRv6_USP_PSP*/
+    &SRV6_RCH_USP_PSP_AND_PSP_EXT_layer, &General_layer, &General_layer, &General_layer
 };
 
 static kleap_layer_to_pparse_t *standard_1_vt2_qualifier[DBAL_NOF_ENUM_VT2_CONTEXT_ID_VALUES * KLEAP_NOF_RELATIVE_LAYERS] = {
@@ -705,7 +727,9 @@ static kleap_layer_to_pparse_t *standard_1_vt3_qualifier[DBAL_NOF_ENUM_VT3_CONTE
     /**VxLAN_GPE___VNI2VSI_VTT3*/
     &IPv4_layer, &IPv6_layer, &General_layer, &General_layer,
     /**VxLAN_GPE___VNI2VRF_VTT3*/
-    &IPv4_layer, &IPv6_layer, &General_layer, &General_layer
+    &IPv4_layer, &IPv6_layer, &General_layer, &General_layer,
+    /**MPLS___IFIT*/
+    &MPLS_layer, &General_layer, &General_layer, &General_layer
 };
 
 static kleap_layer_to_pparse_t *standard_1_vt4_qualifier[DBAL_NOF_ENUM_VT4_CONTEXT_ID_VALUES * KLEAP_NOF_RELATIVE_LAYERS] = {
@@ -724,6 +748,14 @@ static kleap_layer_to_pparse_t *standard_1_vt4_qualifier[DBAL_NOF_ENUM_VT4_CONTE
     /**IPV6___TT_SIP_IDX_DIP_OR_DIP*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**IPV6___TT_SIP_IDX_DIP*/
+    &IPv6_layer, &General_layer, &General_layer, &General_layer,
+    /**IPV6___TT_CLASSIC_SID_LOCATER64_FUNCTION_16*/
+    &IPv6_layer, &General_layer, &General_layer, &General_layer,
+    /**IPV6___TT_CLASSIC_SID_LOCATER96_FUNCTION_16*/
+    &IPv6_layer, &General_layer, &General_layer, &General_layer,
+    /**IPV6___TT_USID_PREFIX_32_USID_16*/
+    &IPv6_layer, &General_layer, &General_layer, &General_layer,
+    /**IPV6___TT_GSID_PREFIX_48_GSID_16*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**L2TPv2___TT_WO_LENGTH*/
     &L2TP_layer, &General_layer, &General_layer, &General_layer,
@@ -758,7 +790,9 @@ static kleap_layer_to_pparse_t *standard_1_vt4_qualifier[DBAL_NOF_ENUM_VT4_CONTE
     /**VxLAN_GPE___VNI2VSI_VTT4*/
     &IPv4_layer, &IPv6_layer, &General_layer, &General_layer,
     /**VxLAN_GPE___VNI2VRF_VTT4*/
-    &IPv4_layer, &IPv6_layer, &General_layer, &General_layer
+    &IPv4_layer, &IPv6_layer, &General_layer, &General_layer,
+    /**MPLS___IFIT*/
+    &MPLS_layer, &General_layer, &General_layer, &General_layer
 };
 
 static kleap_layer_to_pparse_t *standard_1_vt5_qualifier[DBAL_NOF_ENUM_VT5_CONTEXT_ID_VALUES * KLEAP_NOF_RELATIVE_LAYERS] = {
@@ -832,13 +866,15 @@ static kleap_layer_to_pparse_t *standard_1_vt5_qualifier[DBAL_NOF_ENUM_VT5_CONTE
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**SRv6___One_Pass_Tunnel_terminate_ETH*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
+    /**SRv6___Classic_EndPoint*/
+    &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**SRv6___uSID_EndPoint*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
-    /**SRv6___Unified_end_point_SID_extract_0*/
+    /**SRv6___GSID_endpoint_SID_extract_0*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
-    /**SRv6___Unified_end_point_SID_extract_1*/
+    /**SRv6___GSID_endpoint_SID_extract_1*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
-    /**SRv6___Unified_end_point_SID_extract_2*/
+    /**SRv6___GSID_endpoint_SID_extract_2*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**VxLAN_GPE___VNI2VSI_VTT5*/
     &IPv4_layer, &IPv6_layer, &General_layer, &General_layer,
@@ -929,11 +965,13 @@ static kleap_layer_to_pparse_t *standard_1_fwd1_qualifier[DBAL_NOF_ENUM_FWD1_CON
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**SRv6___Segment_end_point_forwarding*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
+    /**SRv6___Classic_NOP_CTX*/
+    &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**SRv6___uSID_end_point_forwarding*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**SRv6___uSID_NOP_CTX*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
-    /**SRv6___Unified_end_point_forwarding*/
+    /**SRv6___GSID_endpoint_forwarding*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**IPV4___NAT_UPSTREAM*/
     &IPv4_layer, &General_layer, &General_layer, &General_layer,
@@ -991,6 +1029,8 @@ static kleap_layer_to_pparse_t *standard_1_fwd2_qualifier[DBAL_NOF_ENUM_FWD2_CON
     /**SLLB___SIMPLE_IPV6_ROUTE*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**SRv6___Private_UC*/
+    &IPv6_layer, &General_layer, &General_layer, &General_layer,
+    /**SRv6___Classic_NOP_CTX*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
     /**SRv6___uSID_Private_UC*/
     &IPv6_layer, &General_layer, &General_layer, &General_layer,
